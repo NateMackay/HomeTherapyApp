@@ -44,7 +44,7 @@ public class signIn extends AppCompatActivity {
                 // go to Register activity
                 startActivity(intentRegister);
             }
-        });     
+        });
 
     }
 }
