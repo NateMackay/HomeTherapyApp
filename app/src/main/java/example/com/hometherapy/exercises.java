@@ -28,7 +28,7 @@ public class exercises extends AppCompatActivity {
         _ExercisesList = new ArrayList<String>();
 
         // initialize array adapter and bind exercise list to it
-        _adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, _ExercisesList);
+        _adapter = new ArrayAdapter<String>(this, android.R.layout.simple_selectable_list_item, _ExercisesList);
 
         // initialize view widget
         _listView = (ListView) findViewById(R.id.lvExerciseList);
