@@ -3,11 +3,14 @@ package example.com.hometherapy;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 public class SignIn extends AppCompatActivity {
+
+    private static final String TAG = "SignIn_Activity";
 
     private EditText _etSignInEmail;
     private EditText _etSignInPassword;
@@ -47,13 +50,19 @@ public class SignIn extends AppCompatActivity {
 
                 boolean isTherapist = false;
 
-                for (String email : _therapistEmails) {
-                    if (SignInEmail == email) {
+                for (String value : _therapistEmails) {
+
+                    Log.d(TAG, "onClick: SignInEmail - " + SignInEmail);
+                    Log.d(TAG, "onClick: Therapist Email - " + value);
+
+                    if (SignInEmail.equals(value)) {
                         isTherapist = true;
                     }
                 }
 
-                if (isTherapist) {
+                Log.d(TAG, "onClick: isTherpapist - " + isTherapist);
+
+                if (isTherapist == true) {
                     // intent to go to Clients screen
                     Intent intentClients = new Intent(SignIn.this, Clients.class);
                     startActivity(intentClients);
