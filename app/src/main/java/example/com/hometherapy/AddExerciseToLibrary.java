@@ -3,7 +3,7 @@ package example.com.hometherapy;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class addExerciseToLibrary extends AppCompatActivity {
+public class AddExerciseToLibrary extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

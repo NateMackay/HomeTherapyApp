@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class signIn extends AppCompatActivity {
+public class SignIn extends AppCompatActivity {
 
     private EditText _etEmail;
     private EditText _etPassword;
@@ -27,7 +27,7 @@ public class signIn extends AppCompatActivity {
             public void onClick(View v) {
 
                 // intent to go to Exercises screen
-                Intent intentExercises = new Intent(signIn.this, exercises.class);
+                Intent intentExercises = new Intent(SignIn.this, Exercises.class);
 
                 // go to Exercises activity after login
                 startActivity(intentExercises);
@@ -39,7 +39,7 @@ public class signIn extends AppCompatActivity {
             public void onClick(View v) {
 
                 // intent to go to Register activity
-                Intent intentRegister = new Intent(signIn.this, register.class);
+                Intent intentRegister = new Intent(SignIn.this, Register.class);
 
                 // go to Register activity
                 startActivity(intentRegister);

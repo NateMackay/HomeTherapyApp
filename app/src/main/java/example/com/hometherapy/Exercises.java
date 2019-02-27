@@ -9,7 +9,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class exercises extends AppCompatActivity {
+public class Exercises extends AppCompatActivity {
 
     // for log
     private static final String TAG = "ExercisesActivity";
@@ -24,7 +24,7 @@ public class exercises extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercises);
 
-        // instantiate a new list of exercises
+        // instantiate a new list of Exercises
         _ExercisesList = new ArrayList<String>();
 
         // initialize array adapter and bind exercise list to it
@@ -46,7 +46,7 @@ public class exercises extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            // add some exercises to the list
+            // add some Exercises to the list
             _ExercisesList.add("TH Sound");
             _ExercisesList.add("R Sound");
             _ExercisesList.add("S Sound");

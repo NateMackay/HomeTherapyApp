@@ -3,13 +3,11 @@ package example.com.hometherapy;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class register extends AppCompatActivity {
+public class Register extends AppCompatActivity {
 
     private Button _btnCreateAccount;
     private EditText _etEmail;
@@ -39,10 +37,10 @@ public class register extends AppCompatActivity {
                     return;
                 }
 
-                // create intent to move to exercises activity
-                Intent intentExercises = new Intent(register.this, exercises.class);
+                // create intent to move to Exercises activity
+                Intent intentExercises = new Intent(Register.this, Exercises.class);
 
-                // go to exercises activity after registration
+                // go to Exercises activity after registration
                 startActivity(intentExercises);
             }
         });

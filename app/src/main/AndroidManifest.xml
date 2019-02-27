@@ -11,18 +11,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".myRewards"></activity>
-        <activity android:name=".userProfile" />
-        <activity android:name=".clientProfile" />
-        <activity android:name=".addExerciseToLibrary" />
-        <activity android:name=".myExercise" />
-        <activity android:name=".addEditClient" />
-        <activity android:name=".addEditUser" />
-        <activity android:name=".users" />
-        <activity android:name=".clients" />
-        <activity android:name=".exercises" />
-        <activity android:name=".register" />
-        <activity android:name=".signIn" />
+        <activity android:name=".MyRewards"></activity>
+        <activity android:name=".UserProfile" />
+        <activity android:name=".ClientProfile" />
+        <activity android:name=".AddExerciseToLibrary" />
+        <activity android:name=".MyExercise" />
+        <activity android:name=".AddEditClient" />
+        <activity android:name=".AddEditUser" />
+        <activity android:name=".Users" />
+        <activity android:name=".Clients" />
+        <activity android:name=".Exercises" />
+        <activity android:name=".Register" />
+        <activity android:name=".SignIn" />
         <activity android:name=".Messaging" />
 
         <meta-data

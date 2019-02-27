@@ -3,7 +3,7 @@ package example.com.hometherapy;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class addEditUser extends AppCompatActivity {
+public class AddEditUser extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -107,7 +107,7 @@ public class MyMessaging extends Service {
     }
 
     /**
-     * Handler of incoming messages from clients.
+     * Handler of incoming messages from Clients.
      */
     class IncomingHandler extends Handler {
         @Override
