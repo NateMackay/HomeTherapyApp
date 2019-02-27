@@ -33,7 +33,7 @@
         app:layout_constraintVertical_bias="0.159" />
 
     <EditText
-        android:id="@+id/etEmail"
+        android:id="@+id/etSignInEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -52,7 +52,7 @@
         app:layout_constraintVertical_bias="0.432" />
 
     <EditText
-        android:id="@+id/etPassword"
+        android:id="@+id/etSignInPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
