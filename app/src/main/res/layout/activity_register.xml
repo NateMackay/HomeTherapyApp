@@ -7,14 +7,14 @@
     tools:context=".register">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tvCreateAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:text="Create an Account"
-        android:textSize="24sp"
         android:textColor="@color/colorPrimary"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.11"
@@ -76,7 +76,7 @@
         app:layout_constraintVertical_bias="0.607" />
 
     <EditText
-        android:id="@+id/editText5"
+        android:id="@+id/etEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -92,7 +92,7 @@
         app:layout_constraintVertical_bias="0.486" />
 
     <EditText
-        android:id="@+id/editText6"
+        android:id="@+id/etPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -109,7 +109,7 @@
         app:layout_constraintVertical_bias="0.72" />
 
     <EditText
-        android:id="@+id/editText7"
+        android:id="@+id/etPasswordConfirm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
