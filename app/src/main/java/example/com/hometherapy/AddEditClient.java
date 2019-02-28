@@ -24,9 +24,9 @@ public class AddEditClient extends AppCompatActivity {
     private Spinner _spinStatus;
     private Button _btnSave;
 
-    String _therapistNames[] = {"Adam Therapist", "Bonnie Therapist", "Charlie Therpaist"};
-    String _clinicNames[] = {"Wenatchee", "Spokane", "Moses Lake", "Kennewick"};
-    String _statusNames[] = {"Pending", "Active", "Inactive"};
+    String _therapistNames[] = {"Therapist", "Adam Therapist", "Bonnie Therapist", "Charlie Therpaist"};
+    String _clinicNames[] = {"Location", "Wenatchee", "Spokane", "Moses Lake", "Kennewick"};
+    String _statusNames[] = {"Status", "Pending", "Active", "Inactive"};
     ArrayAdapter<String> _adapterTherapists;
     ArrayAdapter<String> _adapterClinics;
     ArrayAdapter<String> _adapterStatus;
