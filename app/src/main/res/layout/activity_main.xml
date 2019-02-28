@@ -7,19 +7,6 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="60dp"
-        android:clickable="true"
-        android:onClick="createNewMessage"
-        android:text="@string/my_messages"
-        android:textAllCaps="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
         android:id="@+id/btnGoToSignIn"
         android:layout_width="263dp"
         android:layout_height="wrap_content"
