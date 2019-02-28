@@ -1,9 +1,12 @@
 package example.com.hometherapy;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ public class Exercises extends AppCompatActivity {
     private List<String> _ExercisesList;
     private ArrayAdapter<String> _adapter;
     private ListView _listView;
+    private Button _btnAddExercise;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,14 +34,24 @@ public class Exercises extends AppCompatActivity {
         // initialize array adapter and bind exercise list to it
         _adapter = new ArrayAdapter<String>(this, android.R.layout.simple_selectable_list_item, _ExercisesList);
 
-        // initialize view widget
+        // initialize view widgets
         _listView = (ListView) findViewById(R.id.lvExerciseList);
+        _btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
 
         // execute task in background
         new addDataToListTask().execute();
 
         // set the adapter to the list view
         _listView.setAdapter(_adapter);
+
+        _btnAddExercise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentAddExercise = new Intent(Exercises.this, AddExerciseToLibrary.class);
+                startActivity(intentAddExercise);
+            }
+        });
+
 
     }
 
