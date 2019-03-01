@@ -11,7 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MyRewards"></activity>
+        <activity android:name=".AddExerciseToClient"></activity>
+        <activity android:name=".MyRewards" />
         <activity android:name=".UserProfile" />
         <activity android:name=".ClientProfile" />
         <activity android:name=".AddExerciseToLibrary" />
