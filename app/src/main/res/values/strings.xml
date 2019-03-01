@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">HomeTherapy</string>
     <string name="my_messages">My Messages</string>
+    <string name="my_or_my_client_s_exercises">My (or My Client\'s) Exercises</string>
 </resources>
