@@ -1,0 +1,92 @@
+[33mcommit 9bab243cfe42c9b93766b458442d3f6a961ca071[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Nate <mac17039@byui.edu>
+Date:   Sat Feb 23 13:34:38 2019 -0700
+
+    Added a Messaging screen
+
+[33mcommit c6b3982ba73e693f1cf357b0fb16c6d1a29aaaa8[m
+Author: Nate <mac17039@byui.edu>
+Date:   Sat Feb 23 10:33:54 2019 -0700
+
+    Added a Messaging Activity
+
+[33mcommit 2847338a2f80b6a7d5aeba78dd50df8ce897ac72[m
+Author: Nate <mac17039@byui.edu>
+Date:   Fri Feb 15 17:43:28 2019 -0700
+
+    Added both comments by Emile and Nate.
+
+[33mcommit 01583fdbf77cf5fc40bf552a35df622632c6ee80[m
+Merge: 0e32f17 1049e28
+Author: Eric Burns <eburns000@byui.edu>
+Date:   Fri Feb 15 12:11:36 2019 -0800
+
+    Add Comment from Eric
+
+[33mcommit 1049e28d480509d87d5c3eb42ac800fb25de1f4b[m
+Merge: 08536f2 ab1cd09
+Author: Nate <mac17039@byui.edu>
+Date:   Fri Feb 15 13:07:33 2019 -0700
+
+    Added both comments by Emile and Nate.
+
+[33mcommit 0e32f171c836b036a7a0741322c8a72a5b45ed7a[m
+Author: Eric Burns <eburns000@byui.edu>
+Date:   Fri Feb 15 12:05:04 2019 -0800
+
+    Adding comment by Eric
+
+[33mcommit 08536f278f35d99c8bb25e6fbbd7c37735344a1c[m
+Author: Nate <mac17039@byui.edu>
+Date:   Fri Feb 15 13:04:58 2019 -0700
+
+    Can you see my comment.
+
+[33mcommit ab1cd09733119e191f1d986c9dd9a0c0f9bb6cab[m
+Author: Emile Moosman <emilemoosman@byui.edu>
+Date:   Sat Feb 16 06:59:45 2019 +1100
+
+    Emile commit
+
+[33mcommit 188a68e8b7df4df64abb49f42c8d5fd1352e8532[m
+Author: Emile Moosman <emilemoosman@byui.edu>
+Date:   Sat Feb 16 06:55:38 2019 +1100
+
+    Merge branch 'master' of https://github.com/emilemoosman/Home_Therapy
+    
+    # Conflicts:
+    #       .idea/vcs.xml
+
+[33mcommit 00857f61f571ea8fc6c0b814d8f176d73bc8a1b8[m
+Merge: 046c92a dc6041e
+Author: Emile Moosman <emilemoosman@byui.edu>
+Date:   Sat Feb 16 06:51:54 2019 +1100
+
+    Merge branch 'master' of https://github.com/emilemoosman/Home_Therapy
+    
+    # Conflicts:
+    #       .idea/vcs.xml
+
+[33mcommit 046c92a6d697ebb0234c981483610fdb60fa9578[m
+Author: Emile Moosman <emilemoosman@byui.edu>
+Date:   Sat Feb 16 06:34:26 2019 +1100
+
+    Merge
+
+[33mcommit dc6041e7b2e5926913c48c221b6f1613008c0a08[m
+Author: Eric Burns <eburns000@byui.edu>
+Date:   Fri Feb 15 11:22:33 2019 -0800
+
+    Adding comment by Eric
+
+[33mcommit b2617516321b15718d7997acf208b7915c78e7da[m
+Author: Nate <mac17039@byui.edu>
+Date:   Fri Feb 15 12:16:31 2019 -0700
+
+    Can you see my comment.
+
+[33mcommit 1d7b21106b6745c6d2d1771854038e0dff4bc69b[m
+Author: Emile Moosman <emilemoosman@byui.edu>
+Date:   Sat Feb 16 05:58:43 2019 +1100
+
+    Initial commit
