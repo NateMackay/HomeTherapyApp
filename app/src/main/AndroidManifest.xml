@@ -11,7 +11,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".AddExerciseToClient"></activity>
+        <activity
+            android:name=".TestNavigation"
+            android:label="@string/title_activity_test_navigation"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".AddExerciseToClient" />
         <activity android:name=".MyRewards" />
         <activity android:name=".UserProfile" />
         <activity android:name=".ClientProfile" />

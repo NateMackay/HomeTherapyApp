@@ -68,7 +68,7 @@ public class SignIn extends AppCompatActivity {
                     startActivity(intentClients);
                 } else {
                     // intent to go to Exercises screen
-                    Intent intentExercises = new Intent(SignIn.this, Exercises.class);
+                    Intent intentExercises = new Intent(SignIn.this, TestNavigation.class);
                     startActivity(intentExercises);
                 }
             }
