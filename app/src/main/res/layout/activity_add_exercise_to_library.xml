@@ -33,9 +33,10 @@
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.132" />
+        app:layout_constraintTop_toBottomOf="@+id/tvATLLabel"
+        app:layout_constraintVertical_bias="0.025" />
 
     <Spinner
         android:id="@+id/spinATLDiscipline"
@@ -48,10 +49,10 @@
         android:dropDownWidth="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.232" />
+        app:layout_constraintTop_toBottomOf="@+id/etATLExerciseTitle"
+        app:layout_constraintVertical_bias="0.027" />
 
     <Spinner
         android:id="@+id/spinATLModality"
@@ -66,13 +67,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.306" />
+        app:layout_constraintTop_toBottomOf="@+id/spinATLDiscipline"
+        app:layout_constraintVertical_bias="0.044" />
 
     <EditText
         android:id="@+id/etATLAssignment"
         android:layout_width="0dp"
-        android:layout_height="216dp"
+        android:layout_height="265dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
@@ -87,8 +88,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.521" />
+        app:layout_constraintTop_toBottomOf="@+id/spinATLModality"
+        app:layout_constraintVertical_bias="0.098" />
 
     <Button
         android:id="@+id/btnATLSave"
@@ -101,9 +102,9 @@
         android:text="Save Changes"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.056"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/etATLAssignment"
+        app:layout_constraintVertical_bias="0.705" />
 
 </android.support.constraint.ConstraintLayout>
