@@ -1,5 +1,6 @@
 package example.com.hometherapy;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,16 +22,17 @@ public class TestNavigation extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setTitle("My Exercises");
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -67,9 +69,9 @@ public class TestNavigation extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -82,16 +84,20 @@ public class TestNavigation extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            Intent intentExercises = new Intent(TestNavigation.this, Exercises.class);
+            startActivity(intentExercises);
         } else if (id == R.id.nav_gallery) {
-
+            Intent intentClients = new Intent(TestNavigation.this, Messaging.class);
+            startActivity(intentClients);
         } else if (id == R.id.nav_slideshow) {
-
+            Intent intentClients = new Intent(TestNavigation.this, MyRewards.class);
+            startActivity(intentClients);
         } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
+            Intent intentClients = new Intent(TestNavigation.this, Clients.class);
+            startActivity(intentClients);
         } else if (id == R.id.nav_send) {
-
+            Intent intentClients = new Intent(TestNavigation.this, ClientProfile.class);
+            startActivity(intentClients);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
