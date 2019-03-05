@@ -36,20 +36,30 @@ public class AddEditUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_user);
 
-        _spinUserAccountType = (Spinner) findViewById(R.id.spinUserAccountType);
-        _spinUserAssignedClinic = (Spinner) findViewById(R.id.spinUserAssignedClinic);
-        _spinUserStatus = (Spinner) findViewById(R.id.spinUserStatus);
+        // activity elements
+        _tvAddEditUser = (TextView) findViewById(R.id.tvAEULabel);
+        _etUserFirstName = (EditText) findViewById(R.id.etAEUFirstName);
+        _etUserLastName = (EditText) findViewById(R.id.etAEULastName);
+        _etUserEmail = (EditText) findViewById(R.id.etAEUEmail);
+        _etUserPhone = (EditText) findViewById(R.id.etAEUPhone);
+        _etUserPassword = (EditText) findViewById(R.id.etAEUPassword);
+        _etUserPasswordConfirm = (EditText) findViewById(R.id.etAEUPasswordConfirm);
+        _spinUserAccountType = (Spinner) findViewById(R.id.spinAEUAccountType);
+        _spinUserAssignedClinic = (Spinner) findViewById(R.id.spinAEUAssignedClinic);
+        _spinUserStatus = (Spinner) findViewById(R.id.spinAEUStatus);
+        _btnUserSave = (Button) findViewById(R.id.btnAEUSave);
 
+        // adapters
         _adapterAccountTypes = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, _userAccountTypes);
         _adapterClinics = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, _userClinicNames);
         _adapterStatus = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, _userStatusNames);
 
+        // set adapters
         _spinUserAccountType.setAdapter(_adapterAccountTypes);
         _spinUserAssignedClinic.setAdapter(_adapterClinics);
         _spinUserStatus.setAdapter(_adapterStatus);
 
-        _btnUserSave = (Button) findViewById(R.id.btnUserSave);
-
+        // listeners
         _btnUserSave.setOnClickListener(new View.OnClickListener() {
 
             @Override

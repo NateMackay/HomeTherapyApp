@@ -7,7 +7,7 @@
     tools:context=".AddEditUser">
 
     <TextView
-        android:id="@+id/tvAddEditUser"
+        android:id="@+id/tvAEULabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -21,7 +21,7 @@
         app:layout_constraintVertical_bias="0.068" />
 
     <EditText
-        android:id="@+id/etUserFirstName"
+        android:id="@+id/etAEUFirstName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -38,7 +38,7 @@
         app:layout_constraintVertical_bias="0.132" />
 
     <EditText
-        android:id="@+id/etUserLastName"
+        android:id="@+id/etAEULastName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -55,7 +55,7 @@
         app:layout_constraintVertical_bias="0.225" />
 
     <EditText
-        android:id="@+id/etUserEmail"
+        android:id="@+id/etAEUEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -73,7 +73,7 @@
         app:layout_constraintVertical_bias="0.32" />
 
     <EditText
-        android:id="@+id/etUserPhone"
+        android:id="@+id/etAEUPhone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -91,7 +91,7 @@
         app:layout_constraintVertical_bias="0.41" />
 
     <EditText
-        android:id="@+id/etUserPassword"
+        android:id="@+id/etAEUPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -106,7 +106,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/etUserPasswordConfirm"
+        android:id="@+id/etAEUPasswordConfirm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -124,7 +124,7 @@
         app:layout_constraintVertical_bias="0.588" />
 
     <Spinner
-        android:id="@+id/spinUserAccountType"
+        android:id="@+id/spinAEUAccountType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -140,7 +140,7 @@
         app:layout_constraintVertical_bias="0.68" />
 
     <Spinner
-        android:id="@+id/spinUserAssignedClinic"
+        android:id="@+id/spinAEUAssignedClinic"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -156,7 +156,7 @@
         app:layout_constraintVertical_bias="0.756" />
 
     <Spinner
-        android:id="@+id/spinUserStatus"
+        android:id="@+id/spinAEUStatus"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -172,7 +172,7 @@
         app:layout_constraintVertical_bias="0.833" />
 
     <Button
-        android:id="@+id/btnUserSave"
+        android:id="@+id/btnAEUSave"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
