@@ -3,9 +3,9 @@ package example.com.hometherapy;
 public abstract class User {
 
     // move to enums - and use
-//    private static final int USER_ADMIN = 1;
-//    private static final int USER_THERAPIST = 2;
-//    private static final int USER_CLIENT = 3;
+    // private static final String USER_ADMIN = "admin";
+    private static final int CLIENT_USER_ = 1;
+    private static final int NON_CLIENT_USER = 2;
 
     //
     private int _userID;         // Unique ID to each user. Probably replaced by Firebase "User" but keep for now
@@ -15,15 +15,17 @@ public abstract class User {
     private String _lastName;
     private int _phone;
     private String status;
+    private int _userType;
 
     // constructors
-    public User(String email, String password, String firstName, String lastName, int phone, int userID) {
+    public User(String email, String password, String firstName, String lastName, int phone, int userID, int _userType) {
         this._email = email;
         this._password = password;
         this._firstName = firstName;
         this._lastName = lastName;
         this._phone = phone;
         this._userID = userID;
+        this._userType = _userType;
     }
 
     // getters
@@ -51,6 +53,10 @@ public abstract class User {
         return _userID;
     }
 
+    public int get_userType() {
+        return _userType;
+    }
+
     // setters
     public void setUserName(String email) {
         this._email = email;
@@ -74,6 +80,10 @@ public abstract class User {
 
     public void setUserID(int userID) {
         this._userID = userID;
+    }
+
+    public void set_userType (int userType) {
+        this._userType = userType;
     }
 
 }
