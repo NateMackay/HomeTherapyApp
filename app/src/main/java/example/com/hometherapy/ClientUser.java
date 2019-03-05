@@ -7,7 +7,7 @@ public class ClientUser extends User {
 
     // constructor
     public ClientUser(String email, String password, String firstName, String lastName, int phone, int userID, String assignedTherapist) {
-        super(email, password, firstName, lastName, phone, userID);
+        super(email, password, firstName, lastName, phone, userID, "CLIENT");
         _assignedTherapist = assignedTherapist;
     }
 

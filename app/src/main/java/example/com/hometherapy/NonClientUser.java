@@ -7,7 +7,7 @@ public class NonClientUser extends User {
 
     // constructor
     public NonClientUser(String email, String password, String firstName, String lastName, int phone, int userID, String accountType) {
-        super(email, password, firstName, lastName, phone, userID);
+        super(email, password, firstName, lastName, phone, userID, "NON_CLIENT");
         _accountType = accountType;
     }
 
