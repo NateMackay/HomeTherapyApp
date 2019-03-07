@@ -3,10 +3,14 @@
 /local.properties
 /.idea/caches
 /.idea/libraries
+/.idea/codeStyles
+/.idea/dictionaries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+/.idea/gradle.xml
+/.idea/misc.xml
 .DS_Store
 /build
 /captures
