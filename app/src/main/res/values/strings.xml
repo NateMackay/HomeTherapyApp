@@ -10,4 +10,5 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Do not click</string>
     <string name="newUserDataSaved">New user data saved</string>
+    <string name="my_exercises">My Exercises</string>
 </resources>
