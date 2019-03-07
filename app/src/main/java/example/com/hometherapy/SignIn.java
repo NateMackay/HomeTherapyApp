@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,6 +120,11 @@ public class SignIn extends AppCompatActivity {
         _userAccounts.put("user004", an004);
         _userAccounts.put("user005", an005);
         _userAccounts.put("user006", an006);
+
+        // put map structure into a GSON object
+        Gson gson = new Gson();
+
+
 
         // initialize view elements
         _btnLogin = (Button) findViewById(R.id.btnLogin);
