@@ -32,6 +32,8 @@ public class Register extends AppCompatActivity {
     // name shared preferences
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String USER_DATA = "userData";
+//    public static final String EXERCISE_DATA = "exerciseData";
+//    public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
 
     // validator for email input field
     private EmailValidator _emailValidator;
@@ -68,6 +70,8 @@ public class Register extends AppCompatActivity {
                     return;
                 }
 
+                Log.d(TAG, "Email Validated");
+
                 // verify password confirmation matches password
                 // note no other password validity
                 // consider adding a password validation class
@@ -97,6 +101,8 @@ public class Register extends AppCompatActivity {
                 // if nothing is in SHARED_PREFS then default value will be empty string
                 SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
                 String jsonUserList = sharedPreferences.getString(USER_DATA, "");
+//                String jsonExerciseList = sharedPreferences.getString(EXERCISE_DATA, "");
+//                String jsonAssignedExerciseList = sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
 
                 // for adding users
                 UserList currentUsers = new UserList();

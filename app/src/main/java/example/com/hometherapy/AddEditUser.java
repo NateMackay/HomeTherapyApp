@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class AddEditUser extends AppCompatActivity {
@@ -29,7 +30,8 @@ public class AddEditUser extends AppCompatActivity {
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
     private String _currentUserEmail;
 
-    // note - add email validator here later
+    // validator for email input field
+    private EmailValidator _emailValidator;
 
     // private member variables
     private TextView _tvAddEditUser;
@@ -49,9 +51,9 @@ public class AddEditUser extends AppCompatActivity {
     private SharedPreferences _sharedPreferences;
 
     // array adapters for spinner views
-    private String _userAccountTypes[] = {"Account Type", "pending", "Client", "Therapist", "Admin"};
-    private String _userClinicNames[] = {"Location", "pending", "Wenatchee", "Spokane", "Moses Lake", "Kennewick"};
-    private String _userStatusNames[] = {"Status", "pending", "Active", "Inactive"};
+    private String _userAccountTypes[] = {"Account Type", "pending", "client", "therapist", "admin"};
+    private String _userClinicNames[] = {"Location", "pending", "wenatchee", "spokane", "moses lake", "kennewick"};
+    private String _userStatusNames[] = {"Status", "pending", "active", "inactive"};
     private ArrayAdapter<String> _adapterAccountTypes;
     private ArrayAdapter<String> _adapterClinics;
     private ArrayAdapter<String> _adapterStatus;
@@ -88,9 +90,7 @@ public class AddEditUser extends AppCompatActivity {
         Log.d(TAG, "currentUser: " + _currentUser);
         Log.e(TAG, _currentUser + "user not found");
 
-        // need to do a null check for currentUser
-
-        // initialize view elements
+        // register views
         _tvAddEditUser = (TextView) findViewById(R.id.tvAEULabel);
         _etUserFirstName = (EditText) findViewById(R.id.etAEUFirstName);
         _etUserLastName = (EditText) findViewById(R.id.etAEULastName);
@@ -103,23 +103,9 @@ public class AddEditUser extends AppCompatActivity {
         _spinUserStatus = (Spinner) findViewById(R.id.spinAEUStatus);
         _btnUserSave = (Button) findViewById(R.id.btnAEUSave);
 
-        // set initial views of EditText values based on current user
-        _etUserFirstName.setText(_currentUser.getFirstName());
-        _etUserLastName.setText(_currentUser.getLastName());
-        _etUserEmail.setText(_currentUser.getEmail());
-        _etUserPhone.setText(_currentUser.getPhone());
-
-
-        // setup field validators here later
-
-        // set views to variables
-        String tvAddEditUser = _tvAddEditUser.getText().toString();
-        String etUserFirstName = _etUserFirstName.getText().toString();
-        String etUserLastName = _etUserLastName.getText().toString();
-        String etUserEmail = _etUserEmail.getText().toString();
-        String etUserPhone = _etUserPhone.getText().toString();
-        String etUserPassword = _etUserPassword.getText().toString();
-        String etUserPasswordConfirm = _etUserPasswordConfirm.getText().toString();
+        // setup field validators
+        _emailValidator = new EmailValidator();
+        _etUserEmail.addTextChangedListener(_emailValidator);
 
         // adapters
         _adapterAccountTypes = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, _userAccountTypes);
@@ -131,11 +117,57 @@ public class AddEditUser extends AppCompatActivity {
         _spinUserAssignedClinic.setAdapter(_adapterClinics);
         _spinUserStatus.setAdapter(_adapterStatus);
 
+        // set initial views of EditText values based on current user
+        // only if _currentUser is not null
+        if (_currentUser != null) {
+            _etUserFirstName.setText(_currentUser.getFirstName());
+            _etUserLastName.setText(_currentUser.getLastName());
+            _etUserEmail.setText(_currentUser.getEmail());
+            _etUserPhone.setText(_currentUser.getPhone());
+
+            // get indices of _currentUser's account type, assigned clinic, and status
+            // this is for setting the value for each spinner
+            // ref: https://stackoverflow.com/questions/23160832/how-to-find-index-of-string-array-in-java-from-a-given-value
+            int iUserAccountType = Arrays.asList(_userAccountTypes).indexOf(_currentUser.get_accountType());
+            int iUserAssignedClinic = Arrays.asList(_userClinicNames).indexOf(_currentUser.get_assignedClinic());
+            int iUserStatus = Arrays.asList(_userStatusNames).indexOf(_currentUser.get_status());
+
+            // set spinner values based on current user
+            // note that a value of -1 means indexOf() did not find value searching for
+            if (iUserAccountType >= 0) {
+                _spinUserAccountType.setSelection(iUserAccountType);
+            }
+
+            if (iUserAssignedClinic >= 0) {
+                _spinUserAssignedClinic.setSelection(iUserAssignedClinic);
+            }
+
+            if (iUserStatus >= 0) {
+                _spinUserStatus.setSelection(iUserStatus);
+            }
+        }
+
         // listeners
         _btnUserSave.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+
+                // validate email
+                if (!_emailValidator.isValid()) {
+                    _etUserEmail.setError("Invalid Email");
+                    _etUserEmail.requestFocus();
+                    return;
+                }
+
+                // verify password confirmation matches password
+                // note no other password validity
+                // consider adding a password validation class
+                if (!_etUserPassword.getText().toString().equals(_etUserPasswordConfirm.getText().toString())) {
+                    _etUserPasswordConfirm.setError("Password does not match");
+                    _etUserPasswordConfirm.requestFocus();
+                    return;
+                }
 
                 // set views to variables
                 String etUserFirstName = _etUserFirstName.getText().toString();
@@ -144,8 +176,12 @@ public class AddEditUser extends AppCompatActivity {
                 String etUserPhone = _etUserPhone.getText().toString();
                 String etUserPassword = _etUserPassword.getText().toString();
                 String etUserPasswordConfirm = _etUserPasswordConfirm.getText().toString();
+                String spinUserAccountType = _spinUserAccountType.getSelectedItem().toString();
+                String spinUserAssignedClinic = _spinUserAssignedClinic.getSelectedItem().toString();
+                String spinUserStatus = _spinUserStatus.getSelectedItem().toString();
 
-                // add logic to confirm that password is the same
+                Log.d(TAG, "spin values: " + spinUserAccountType + ", " + spinUserAssignedClinic +
+                        ", " + spinUserStatus);
 
                 // update current user with any changes
                 _currentUser.setFirstName(etUserFirstName);
@@ -153,10 +189,9 @@ public class AddEditUser extends AppCompatActivity {
                 _currentUser.setEmail(etUserEmail);
                 _currentUser.setPhone(etUserPhone);
                 _currentUser.setPassword(etUserPassword);
-
-                // add logic to set the account type, location, and status
-                // first need to display those values
-                // see: https://android--code.blogspot.com/2015/08/android-spinner-set-selected-item.html
+                _currentUser.set_accountType(spinUserAccountType);
+                _currentUser.set_assignedClinic(spinUserAssignedClinic);
+                _currentUser.set_status(spinUserStatus);
 
                 // convert updated UserList object back to JSON format
                 String updatedList = _gson.toJson(_currentUsers);
