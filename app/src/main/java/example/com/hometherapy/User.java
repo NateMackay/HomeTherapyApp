@@ -51,7 +51,7 @@ public class User {
     public String get_accountType() { return _accountType; }
 
     // setters
-    public void setUserName(String email) {
+    public void setEmail(String email) {
         this._email = email;
     }
     public void setPassword(String password) {
