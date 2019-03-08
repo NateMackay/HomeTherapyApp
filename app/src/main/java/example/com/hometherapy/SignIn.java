@@ -24,6 +24,9 @@ public class SignIn extends AppCompatActivity {
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String USER_DATA = "userData";
 
+    // Key for extra message for user email address to pass to activity
+    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
+
     // private member variables
     private EditText _etSignInEmail;
     private EditText _etSignInPassword;
@@ -124,16 +127,19 @@ public class SignIn extends AppCompatActivity {
 
                 if (accountType != null) {
                     if (accountType.equals("therapist")) {
-                        // intent to go to Clients screen
+                        // intent to go to Clients screen, passing user via extra message
                         Intent intentClients = new Intent(SignIn.this, Clients.class);
+                        intentClients.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
                         startActivity(intentClients);
                     } else if (accountType.equals("client")) {
-                        // intent to go to Exercises screen
+                        // intent to go to Exercises screen, passing user via extra message
                         Intent intentExercises = new Intent(SignIn.this, Exercises.class);
+                        intentExercises.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
                         startActivity(intentExercises);
                     } else if (accountType.equals("admin")) {
-                        // intent to go to Users screen
+                        // intent to go to Users screen, passing user via extra message
                         Intent intentUsers = new Intent(SignIn.this, Users.class);
+                        intentUsers.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
                         startActivity(intentUsers);
                     } else if (accountType.equals("pending")) {
                         // intent to go to add edit user screen - temporary - will
@@ -141,6 +147,7 @@ public class SignIn extends AppCompatActivity {
                         // once users screen is set up for admin to set user profile
                         // then this can be directed to error that user is not yet configured by admin
                         Intent intentAEU = new Intent(SignIn.this, AddEditUser.class);
+                        intentAEU.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
                         startActivity(intentAEU);
                     } else {
                         _etSignInEmail.setError("Problem with account. See administrator. Error 001.");
