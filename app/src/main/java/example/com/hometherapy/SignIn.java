@@ -93,17 +93,33 @@ public class SignIn extends AppCompatActivity {
                         }
                     }
                 } else {
+                    // there are no users in the list
+                    // direct user to register for an account
                     _etSignInEmail.setError("Account not found. Please register for new account.");
                     _etSignInEmail.requestFocus();
                     return;
                 }
 
-                // get account type of user
-                String accountType = null;
-                if (loginUser != null) {
-                    accountType = loginUser.get_accountType();
+                // if loginUser is still null, it means that user wasn't found in the list
+                // direct user to register
+                if (loginUser == null) {
+                    // user is not in the list
+                    // direct user to register for an account
+                    _etSignInEmail.setError("Account not found. Please register for new account.");
+                    _etSignInEmail.requestFocus();
+                    return;
                 }
 
+                // if password entered does not match saved password, return to password field
+                if (!loginUser.getPassword().equals(_etSignInPassword.getText().toString())) {
+                    _etSignInPassword.setError("Password is incorrect. Re-enter password");
+                    _etSignInPassword.requestFocus();
+                    return;
+                }
+
+                // login user is not null and there is a password match
+                // get account type of user and log account type
+                String accountType = loginUser.get_accountType();
                 Log.d(TAG, "account type: " + accountType);
 
                 if (accountType != null) {
