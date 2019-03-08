@@ -11,4 +11,6 @@
     <string name="action_settings">Do not click</string>
     <string name="newUserDataSaved">New user data saved</string>
     <string name="my_exercises">My Exercises</string>
+    <string name="my_rewards">My Rewards</string>
+    <string name="my_clients">My Clients</string>
 </resources>
