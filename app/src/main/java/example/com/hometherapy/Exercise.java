@@ -3,11 +3,11 @@ package example.com.hometherapy;
 public class Exercise {
 
     // private member variables
-    String _exerciseName;
-    String _discipline;
-    String _modality;
-    String _assignment;
-    String _videoLink;
+    private String _exerciseName;
+    private String _discipline;
+    private String _modality;
+    private String _assignment;
+    private String _videoLink;
 
     public Exercise(String _exerciseName, String _discipline, String _modality, String _assignment, String _videoLink) {
         this._exerciseName = _exerciseName;
@@ -55,5 +55,17 @@ public class Exercise {
 
     public void set_videoLink(String _videoLink) {
         this._videoLink = _videoLink;
+    }
+
+    // toString
+    @Override
+    public String toString() {
+        return "Exercise{" +
+                " _exerciseName='" +  _exerciseName + '\'' +
+                ", _discipline='" + _discipline + '\'' +
+                ", _modality='" + _modality + '\'' +
+                ", _assignment='" + _assignment + '\'' +
+                ", _videoLink='" + _videoLink + '\'' +
+                '}';
     }
 }
