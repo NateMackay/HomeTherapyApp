@@ -15,4 +15,16 @@ public class UserList {
         _userList.add(user);
     }
 
+    // getter
+    public List<User> getUserList() {
+        return _userList;
+    }
+
+    // output current list of users
+    @Override
+    public String toString() {
+        return "UserList{" +
+                "_userList=" + _userList +
+                '}';
+    }
 }

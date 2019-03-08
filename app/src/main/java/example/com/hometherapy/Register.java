@@ -94,40 +94,61 @@ public class Register extends AppCompatActivity {
 
                 // pull existing user list from shared preferences into a JSON format "List" of
                 // "User" or rather a UserList object
+                // if nothing is in SHARED_PREFS then default value will be empty string
                 SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
                 String jsonUserList = sharedPreferences.getString(USER_DATA, "");
 
                 // for adding users
                 UserList currentUsers = new UserList();
+                boolean userExists = false;
 
                 // if there are existing users, convert JSON formatted string of existing users
-                // into a UserList object
+                // into a UserList object and store in currentUsers
+                // and check if user email is already in database
                 if (jsonUserList.length() > 0) {
                     currentUsers = gson.fromJson(jsonUserList, UserList.class);
+
+                    // get reference to list of users
+                    List<User> tempUserList = currentUsers.getUserList();
+
+                    // loop through list of current users to see if newUser email already exists
+                    for (int i = 0; i < tempUserList.size(); i++) {
+                        // if email entered by user is in the database, set flag to true
+                        if (tempUserList.get(i).getEmail().equals(email)) {
+                            userExists = true;
+                        }
+                    }
                 }
 
-                // add new user account to list of existing users
-                currentUsers.addUser(newUser);
+                // add new user to database only if user does not already exist
+                if (!userExists) {
 
-                // convert existing user list back to JSON format
-                String updatedList = gson.toJson(currentUsers);
+                    // add new user account to list of existing users
+                    currentUsers.addUser(newUser);
 
-                // update Shared Prefs with updated data
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(USER_DATA, updatedList);
-                editor.apply();
+                    // convert existing user list back to JSON format
+                    String updatedList = gson.toJson(currentUsers);
 
-                // display contents for testing purposes
-                String fromSharedPrefs = sharedPreferences.getString(USER_DATA, "");
-                Log.d(TAG, "fromSharedPrefs: " + fromSharedPrefs);
+                    // update Shared Prefs with updated data
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(USER_DATA, updatedList);
+                    editor.apply();
+
+                    // display contents for testing purposes
+                    String fromSharedPrefs = sharedPreferences.getString(USER_DATA, "");
+                    Log.d(TAG, "fromSharedPrefs: " + fromSharedPrefs);
+                } else {
+                    _etEmail.setError("Email address is already registered");
+                    _etEmail.requestFocus();
+                    return;
+                }
 
                 // create intent to move to Exercises activity
-//                Intent intentExercises = new Intent(Register.this, Exercises.class);
+                Intent intentSignIn = new Intent(Register.this, SignIn.class);
 
                 // go to Exercises activity after registration
-//                startActivity(intentExercises);
+                startActivity(intentSignIn);
             }
         });
-
     }
 }
