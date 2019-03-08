@@ -9,6 +9,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
 
     private Button _btnGoToSignIn;
+    private Button _btnGoToAddExToLib;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         _btnGoToSignIn = (Button) findViewById(R.id.btnGoToSignIn);
+        _btnGoToAddExToLib = (Button) findViewById(R.id.btnGoToAddExToLib);
+
 
         _btnGoToSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -27,6 +30,18 @@ public class MainActivity extends AppCompatActivity {
 
                 // start the new activity
                 startActivity(intentSignInScreen);
+            }
+        });
+
+        _btnGoToAddExToLib.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // create intent to move to sign in screen
+                Intent intent_AETL_Screen = new Intent (MainActivity.this, AddExerciseToLibrary.class);
+
+                // start the new activity
+                startActivity(intent_AETL_Screen);
             }
         });
     }
