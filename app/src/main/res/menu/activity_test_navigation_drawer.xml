@@ -15,11 +15,11 @@
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="My Rewards" />
+            android:title="@string/my_rewards" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="My Clients" />
+            android:title="@string/my_clients" />
     </group>
 
     <item android:title="Personal">
