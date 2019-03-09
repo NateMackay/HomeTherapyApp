@@ -10,23 +10,23 @@ public class MainActivity extends AppCompatActivity {
 
     private Button _btnGoToSignIn;
     private Button _btnGoToAddExToLib;
+    private Button _btnGoToMyClients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         _btnGoToSignIn = (Button) findViewById(R.id.btnGoToSignIn);
         _btnGoToAddExToLib = (Button) findViewById(R.id.btnGoToAddExToLib);
-
+        _btnGoToMyClients = (Button) findViewById(R.id.btnGoToMyClients);
 
         _btnGoToSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 // create intent to move to sign in screen
-                Intent intentSignInScreen = new Intent (MainActivity.this, SignIn.class);
+                Intent intentSignInScreen = new Intent(MainActivity.this, SignIn.class);
 
                 // start the new activity
                 startActivity(intentSignInScreen);
@@ -38,10 +38,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // create intent to move to sign in screen
-                Intent intent_AETL_Screen = new Intent (MainActivity.this, AddExerciseToLibrary.class);
+                Intent intent_AETL_Screen = new Intent(MainActivity.this, AddExerciseToLibrary.class);
 
                 // start the new activity
                 startActivity(intent_AETL_Screen);
+            }
+        });
+
+        _btnGoToMyClients.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // create intent to move to sign in screen
+                Intent intentSignInScreen = new Intent(MainActivity.this, Clients.class);
+
+                // start the new activity
+                startActivity(intentSignInScreen);
             }
         });
     }
