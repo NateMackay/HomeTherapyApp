@@ -1,5 +1,6 @@
 package example.com.hometherapy;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,6 +24,7 @@ public class MyMessages extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -31,6 +33,7 @@ public class MyMessages extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -80,19 +83,24 @@ public class MyMessages extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_myClients) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
+            Intent intentExercises = new Intent(MyMessages.this, MyClients.class);
+            startActivity(intentExercises);
+        } else if (id == R.id.nav_myExercises) {
+            Intent intentMessage = new Intent(MyMessages.this, MyExercise.class);
+            startActivity(intentMessage);
+        } else if (id == R.id.nav_myMessages) {
+            Intent intentRewards = new Intent(MyMessages.this, MyMessages.class);
+            startActivity(intentRewards);
         } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
+            Intent intentClients = new Intent(MyMessages.this, Clients.class);
+            startActivity(intentClients);
         } else if (id == R.id.nav_send) {
-
+            Intent intentProfile = new Intent(MyMessages.this, ClientProfile.class);
+            startActivity(intentProfile);
         }
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
