@@ -55,6 +55,8 @@ public class Exercises extends AppCompatActivity {
 
         Log.d(TAG, " _currentExercises = _gson.fromJson(jsonExerciseList, ExerciseList.class:  " + _currentExercises);
 
+        // if current exercise database is not empty, then proceed wtih getting list of exercises
+        // and binding to array adapter
         if (_currentExercises != null) {
 
             List<Exercise> tempExerciseList = _currentExercises.getExerciseList();

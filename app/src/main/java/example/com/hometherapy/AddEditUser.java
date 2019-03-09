@@ -63,33 +63,6 @@ public class AddEditUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_user);
 
-        // open up database for given user (shared preferences)
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonUserList = _sharedPreferences.getString(USER_DATA, "");
-
-        // initialize GSON object
-        _gson = new Gson();
-
-        // get user email (i.e. account) from extra message
-        Intent thisIntent = getIntent();
-        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
-        Log.d(TAG, "verify current user: " + _currentUserEmail);
-
-        // deserialize sharedPrefs JSON user database into List of Users
-        _currentUsers = _gson.fromJson(jsonUserList, UserList.class);
-        List<User> tempUserList = _currentUsers.getUserList();
-
-        // find matching user account by email
-        // reference: section 3.5 on this page https://www.baeldung.com/find-list-element-java
-        _currentUser = tempUserList.stream()
-                .filter(user -> _currentUserEmail.equals(user.getEmail()))
-                .findAny()
-                .orElse(null);
-
-        // check current user
-        Log.d(TAG, "currentUser: " + _currentUser);
-        Log.e(TAG, _currentUser + "user not found");
-
         // register views
         _tvAddEditUser = (TextView) findViewById(R.id.tvAEULabel);
         _etUserFirstName = (EditText) findViewById(R.id.etAEUFirstName);
@@ -116,6 +89,37 @@ public class AddEditUser extends AppCompatActivity {
         _spinUserAccountType.setAdapter(_adapterAccountTypes);
         _spinUserAssignedClinic.setAdapter(_adapterClinics);
         _spinUserStatus.setAdapter(_adapterStatus);
+
+        // open up database for given user (shared preferences)
+        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        String jsonUserList = _sharedPreferences.getString(USER_DATA, "");
+
+        // initialize GSON object
+        _gson = new Gson();
+
+        // get user email (i.e. account) from extra message
+        Intent thisIntent = getIntent();
+        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
+        Log.d(TAG, "verify current user: " + _currentUserEmail);
+
+        // deserialize sharedPrefs JSON user database into List of Users
+        _currentUsers = _gson.fromJson(jsonUserList, UserList.class);
+
+        if (_currentUsers != null) {
+            List<User> tempUserList = _currentUsers.getUserList();
+
+            // find matching user account by email
+            // reference: section 3.5 on this page https://www.baeldung.com/find-list-element-java
+            _currentUser = tempUserList.stream()
+                    .filter(user -> _currentUserEmail.equals(user.getEmail()))
+                    .findAny()
+                    .orElse(null);
+        } else {
+            Log.e(TAG, "_currentUsers is empty");
+        }
+
+        // check current user
+        Log.d(TAG, "currentUser: " + _currentUser);
 
         // set initial views of EditText values based on current user
         // only if _currentUser is not null
