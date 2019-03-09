@@ -136,7 +136,7 @@ public class SignIn extends AppCompatActivity {
                         Intent intentExercises = new Intent(SignIn.this, Exercises.class);
                         intentExercises.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
                         startActivity(intentExercises);
-                    } else if (accountType.equals("Admin") || accountType.equals("admin")) {
+                    } else if (accountType.equals("admin")) {
                         // intent to go to Users screen, passing user via extra message
                         Intent intentUsers = new Intent(SignIn.this, Users.class);
                         intentUsers.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
