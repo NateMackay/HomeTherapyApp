@@ -130,12 +130,16 @@ public class SignIn extends AppCompatActivity {
                 if (accountType != null) {
                     if (accountType.equals("therapist")) {
                         // intent to go to Clients screen, passing user via extra message
-                        Intent intentClients = new Intent(SignIn.this, Clients.class);
+
+                        // note temporarily changed to go to Exercises, which will be exercise
+                        // library, until view for My Client's exercises is complete
+
+                        Intent intentClients = new Intent(SignIn.this, Exercises.class);
                         intentClients.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
                         startActivity(intentClients);
                     } else if (accountType.equals("client")) {
                         // intent to go to Exercises screen, passing user via extra message
-                        Intent intentExercises = new Intent(SignIn.this, Exercises.class);
+                        Intent intentExercises = new Intent(SignIn.this, ClientExercises.class);
                         intentExercises.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
                         startActivity(intentExercises);
                     } else if (accountType.equals("admin")) {
