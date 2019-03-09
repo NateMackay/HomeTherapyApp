@@ -7,15 +7,15 @@
         <item
             android:id="@+id/nav_myClients"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="My Clients" />
+            android:title="@string/my_clients" />
         <item
             android:id="@+id/nav_myExercises"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="My Exercises" />
+            android:title="@string/my_exercises" />
         <item
             android:id="@+id/nav_myMessages"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="My Messages" />
+            android:title="@string/my_messages" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
