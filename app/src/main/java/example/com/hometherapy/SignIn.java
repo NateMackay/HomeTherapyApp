@@ -17,6 +17,8 @@ import java.util.Map;
 
 public class SignIn extends AppCompatActivity {
 
+    // future feature: add to this class functionality to log to a file anytime someone has logged in
+
     // for log
     private static final String TAG = "SignIn_Activity";
 
