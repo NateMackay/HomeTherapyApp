@@ -9,7 +9,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
 
     private Button _btnGoToSignIn;
-    private Button _btnGoToAddExToLib;
+    private Button _btnGoToExercises;
     private Button _btnGoToMyClients;
 
     @Override
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         _btnGoToSignIn = (Button) findViewById(R.id.btnGoToSignIn);
-        _btnGoToAddExToLib = (Button) findViewById(R.id.btnGoToAddExToLib);
+        _btnGoToExercises = (Button) findViewById(R.id.btnGoToExercises);
         _btnGoToMyClients = (Button) findViewById(R.id.btnGoToMyClients);
 
         _btnGoToSignIn.setOnClickListener(new View.OnClickListener() {
@@ -33,15 +33,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        _btnGoToAddExToLib.setOnClickListener(new View.OnClickListener() {
+        _btnGoToExercises.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 // create intent to move to sign in screen
-                Intent intent_AETL_Screen = new Intent(MainActivity.this, AddExerciseToLibrary.class);
+                Intent intent_Exercises_Screen = new Intent(MainActivity.this, Exercises.class);
 
                 // start the new activity
-                startActivity(intent_AETL_Screen);
+                startActivity(intent_Exercises_Screen);
             }
         });
 

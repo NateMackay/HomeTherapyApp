@@ -53,7 +53,7 @@ public class Exercises extends AppCompatActivity {
         _currentExercies = _gson.fromJson(jsonExerciseList, ExerciseList.class);
 
         Log.d(TAG, " _currentExercies = _gson.fromJson(jsonExerciseList, ExerciseList.class:  " + _currentExercies);
-        
+
         List<Exercise> tempExerciseList = _currentExercies.getExerciseList();
 
         // initialize array adapter and bind exercise list to it

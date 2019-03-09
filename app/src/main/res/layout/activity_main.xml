@@ -7,12 +7,12 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/btnGoToAddExToLib"
-        android:layout_width="294dp"
+        android:id="@+id/btnGoToExercises"
+        android:layout_width="262dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:text="AddExerciseToLibrary.java"
+        android:text="Exercises Screen"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
