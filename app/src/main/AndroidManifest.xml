@@ -12,9 +12,13 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".MyMessages"
+            android:label="@string/title_activity_my_messages"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".MyClients"
             android:label="@string/title_activity_my_clients"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ExerciseView" />
         <activity
             android:name=".TestNavigation"
