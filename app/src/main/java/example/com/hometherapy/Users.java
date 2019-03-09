@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ public class Users extends AppCompatActivity {
     // private member variables
     private TextView _tvUsersLabel;
     private ListView _lvUserList;
+    private Button _btnUserLogOut;
     private UserList _currentUsers;
     private User _currentUser;
     private Gson _gson;
@@ -60,6 +62,7 @@ public class Users extends AppCompatActivity {
         // register views
         _tvUsersLabel = (TextView) findViewById(R.id.tvUsersLabel);
         _lvUserList = (ListView) findViewById(R.id.lvUserList);
+        _btnUserLogOut = (Button) findViewById(R.id.btnUsersLogOut);
 
         // initialize array adapter and bind user list to it
         _adapterUserList = new UserListAdapter(this, _tempUserList);
@@ -80,6 +83,17 @@ public class Users extends AppCompatActivity {
                 Intent intentAEU = new Intent(Users.this, AddEditUser.class);
                 intentAEU.putExtra(MSG_USER_EMAIL, currentUser.getEmail());
                 startActivity(intentAEU);
+            }
+        });
+
+        // on click, just go back to signIn screen
+        _btnUserLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intentSignIn = new Intent(Users.this, SignIn.class);
+                startActivity(intentSignIn);
+
             }
         });
 
