@@ -14,6 +14,7 @@
     <string name="my_exercises">My Exercises</string>
     <string name="my_messages">My Messages</string>
     <string name="my_clients">My Clients</string>
-    <string name="title_activity_my_messages">MyMessages</string>
+    <string name="title_activity_my_messages">My Messages</string>
+    <string name="title_activity_my_profile">MyProfile</string>
 
 </resources>

@@ -93,9 +93,9 @@ public class MyMessages extends AppCompatActivity
         } else if (id == R.id.nav_myMessages) {
             Intent intentRewards = new Intent(MyMessages.this, MyMessages.class);
             startActivity(intentRewards);
-        } else if (id == R.id.nav_manage) {
-            Intent intentClients = new Intent(MyMessages.this, Clients.class);
-            startActivity(intentClients);
+        } else if (id == R.id.nav_myProfile) {
+            Intent intentProfile = new Intent(MyMessages.this, MyProfile.class);
+            startActivity(intentProfile);
         } else if (id == R.id.nav_send) {
             Intent intentProfile = new Intent(MyMessages.this, ClientProfile.class);
             startActivity(intentProfile);
