@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // create intent to move to sign in screen
-                Intent intentSignInScreen = new Intent(MainActivity.this, Clients.class);
+                Intent intentSignInScreen = new Intent(MainActivity.this, MyClients.class);
 
                 // start the new activity
                 startActivity(intentSignInScreen);
