@@ -124,6 +124,9 @@ public class Register extends AppCompatActivity {
                             userExists = true;
                         }
                     }
+                } else {
+                    // if this is the first user added to the database, set user type to admin
+                    accountType = "admin";
                 }
 
                 // add new user to database only if user does not already exist
