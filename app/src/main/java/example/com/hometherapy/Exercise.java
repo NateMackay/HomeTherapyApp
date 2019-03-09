@@ -60,12 +60,14 @@ public class Exercise {
     // toString
     @Override
     public String toString() {
-        return "Exercise{" +
-                " _exerciseName='" +  _exerciseName + '\'' +
-                ", _discipline='" + _discipline + '\'' +
-                ", _modality='" + _modality + '\'' +
-                ", _assignment='" + _assignment + '\'' +
-                ", _videoLink='" + _videoLink + '\'' +
-                '}';
+        return //"Exercise{" +
+                //" _exerciseName='" +  _exerciseName + '\'' +
+                //", _discipline='" + _discipline + '\'' +
+                //", _modality='" + _modality + '\'' +
+                //", _assignment='" + _assignment + '\'' +
+                //", _videoLink='" + _videoLink + '\'' +
+                //'}';
+        _exerciseName;
     }
+
 }
