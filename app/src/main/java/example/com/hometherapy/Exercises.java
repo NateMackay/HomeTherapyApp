@@ -2,7 +2,6 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.widget.ListView;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Exercises extends AppCompatActivity {
@@ -26,7 +24,7 @@ public class Exercises extends AppCompatActivity {
     public static final String EXERCISE_DATA = "exerciseData";
 
     // member variables
-    private ExerciseList _currentExercies;
+    private ExerciseList _currentExercises;
     private Exercise _exercise;
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
@@ -41,6 +39,9 @@ public class Exercises extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercises);
 
+        // initialize view widgets
+        _listView = (ListView) findViewById(R.id.lvExerciseList);
+        _btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -50,25 +51,25 @@ public class Exercises extends AppCompatActivity {
         _gson = new Gson();
 
         // deserialize sharedPrefs JSON user database into List of Exercises
-        _currentExercies = _gson.fromJson(jsonExerciseList, ExerciseList.class);
+        _currentExercises = _gson.fromJson(jsonExerciseList, ExerciseList.class);
 
-        Log.d(TAG, " _currentExercies = _gson.fromJson(jsonExerciseList, ExerciseList.class:  " + _currentExercies);
+        Log.d(TAG, " _currentExercises = _gson.fromJson(jsonExerciseList, ExerciseList.class:  " + _currentExercises);
 
-        List<Exercise> tempExerciseList = _currentExercies.getExerciseList();
+        if (_currentExercises != null) {
 
-        // initialize array adapter and bind exercise list to it
-        _adapter = new ArrayAdapter<Exercise>(this, android.R.layout.simple_selectable_list_item, tempExerciseList);
+            List<Exercise> tempExerciseList = _currentExercises.getExerciseList();
 
-        // initialize view widgets
-        _listView = (ListView) findViewById(R.id.lvExerciseList);
-        _btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
+            Log.d(TAG, "tempExerciseList: " + tempExerciseList);
 
+            // initialize array adapter and bind exercise list to it
+            _adapter = new ArrayAdapter<Exercise>(this, android.R.layout.simple_selectable_list_item, tempExerciseList);
 
-        // set the adapter to the list view
-        _listView.setAdapter(_adapter);
+            // set the adapter to the list view
+            _listView.setAdapter(_adapter);
+        }
 
         // execute task in background
-        new AddDataToListTask().execute();
+//        new AddDataToListTask().execute();
 
         _btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,30 +80,30 @@ public class Exercises extends AppCompatActivity {
         });
     }
 
-    private class AddDataToListTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            // add some Exercises to the list
-            //_ExercisesList.add("TH Sound");
-            //_ExercisesList.add("R Sound");
-            //_ExercisesList.add("S Sound");
-            //_ExercisesList.add("Basic Swallow");
-            //_ExercisesList.add("3 Step Directions");
-
-
-
-            // simulate time delay
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-    }
+//    private class AddDataToListTask extends AsyncTask<Void, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//
+//            // add some Exercises to the list
+//            //_ExercisesList.add("TH Sound");
+//            //_ExercisesList.add("R Sound");
+//            //_ExercisesList.add("S Sound");
+//            //_ExercisesList.add("Basic Swallow");
+//            //_ExercisesList.add("3 Step Directions");
+//
+//
+//
+//            // simulate time delay
+//            try {
+//                Thread.sleep(2000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return null;
+//        }
+//    }
 
 }
 
