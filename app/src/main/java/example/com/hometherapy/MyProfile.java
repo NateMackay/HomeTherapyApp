@@ -13,46 +13,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 
-public class MyClients extends AppCompatActivity
+public class MyProfile extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    private TextView _tvClientViewTitle;
-    private ListView _lvClientList;
-    private Button _btnAddClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_clients);
+        setContentView(R.layout.activity_my_profile);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+     /*   FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
-*/
-
-        _tvClientViewTitle = (TextView) findViewById(R.id.tvClientViewTitle);
-        _lvClientList = (ListView) findViewById(R.id.lvClientList);
-        _btnAddClient = (Button) findViewById(R.id.btnAddClient);
-
-        _btnAddClient.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentAddClient = new Intent(MyClients.this, AddEditClient.class);
-                startActivity(intentAddClient);
-            }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -77,7 +56,7 @@ public class MyClients extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.my_clients, menu);
+        getMenuInflater().inflate(R.menu.my_profile, menu);
         return true;
     }
 
@@ -89,9 +68,11 @@ public class MyClients extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_settings) {
+/*
+        if (id == R.id.action_settings) {
             return true;
-        }*/
+        }
+*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -101,21 +82,22 @@ public class MyClients extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
         if (id == R.id.nav_myClients) {
             // Handle the camera action
-            Intent intentExercises = new Intent(MyClients.this, MyClients.class);
+            Intent intentExercises = new Intent(MyProfile.this, MyClients.class);
             startActivity(intentExercises);
         } else if (id == R.id.nav_myExercises) {
-            Intent intentMessage = new Intent(MyClients.this, MyExercise.class);
+            Intent intentMessage = new Intent(MyProfile.this, MyExercise.class);
             startActivity(intentMessage);
         } else if (id == R.id.nav_myMessages) {
-            Intent intentRewards = new Intent(MyClients.this, MyMessages.class);
+            Intent intentRewards = new Intent(MyProfile.this, MyMessages.class);
             startActivity(intentRewards);
-        } else if (id == R.id.nav_myProfile) {
-            Intent intentProfile = new Intent(MyClients.this, MyProfile.class);
+        } else if (id == R.id.nav_manage) {
+            Intent intentProfile = new Intent(MyProfile.this, MyProfile.class);
             startActivity(intentProfile);
         } else if (id == R.id.nav_send) {
-            Intent intentProfile = new Intent(MyClients.this, ClientProfile.class);
+            Intent intentProfile = new Intent(MyProfile.this, ClientProfile.class);
             startActivity(intentProfile);
         }
 
