@@ -175,7 +175,6 @@ public class AddEditUser extends AppCompatActivity {
                 String etUserEmail = _etUserEmail.getText().toString();
                 String etUserPhone = _etUserPhone.getText().toString();
                 String etUserPassword = _etUserPassword.getText().toString();
-                String etUserPasswordConfirm = _etUserPasswordConfirm.getText().toString();
                 String spinUserAccountType = _spinUserAccountType.getSelectedItem().toString();
                 String spinUserAssignedClinic = _spinUserAssignedClinic.getSelectedItem().toString();
                 String spinUserStatus = _spinUserStatus.getSelectedItem().toString();
@@ -188,10 +187,14 @@ public class AddEditUser extends AppCompatActivity {
                 _currentUser.setLastName(etUserLastName);
                 _currentUser.setEmail(etUserEmail);
                 _currentUser.setPhone(etUserPhone);
-                _currentUser.setPassword(etUserPassword);
                 _currentUser.set_accountType(spinUserAccountType);
                 _currentUser.set_assignedClinic(spinUserAssignedClinic);
                 _currentUser.set_status(spinUserStatus);
+
+                // update password only if password has been updated
+                if (etUserPassword.length() > 0) {
+                    _currentUser.setPassword(etUserPassword);
+                }
 
                 // convert updated UserList object back to JSON format
                 String updatedList = _gson.toJson(_currentUsers);
