@@ -13,9 +13,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 public class MyClients extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private TextView _tvClientViewTitle;
+    private ListView _lvClientList;
+    private Button _btnAddClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +41,18 @@ public class MyClients extends AppCompatActivity
             }
         });
 */
+
+        _tvClientViewTitle = (TextView) findViewById(R.id.tvClientViewTitle);
+        _lvClientList = (ListView) findViewById(R.id.lvClientList);
+        _btnAddClient = (Button) findViewById(R.id.btnAddClient);
+
+        _btnAddClient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentAddClient = new Intent(MyClients.this, AddEditClient.class);
+                startActivity(intentAddClient);
+            }
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
