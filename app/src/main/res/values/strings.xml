@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Home Therapy</string>
     <string name="my_messages">My Messages</string>
-    <string name="my_or_my_client_s_exercises">My (or My Client\'s) Exercises</string>
+    <string name="my_or_my_client_s_exercises">Exercise Library</string>
     <string name="title_activity_test_navigation">Test Navigation</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
