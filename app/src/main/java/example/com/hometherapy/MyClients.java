@@ -1,5 +1,6 @@
 package example.com.hometherapy;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -69,9 +70,9 @@ public class MyClients extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -81,19 +82,22 @@ public class MyClients extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_myClients) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
+            Intent intentExercises = new Intent(MyClients.this, MyClients.class);
+            startActivity(intentExercises);
+        } else if (id == R.id.nav_myExercises) {
+            Intent intentMessage = new Intent(MyClients.this, MyExercise.class);
+            startActivity(intentMessage);
+        } else if (id == R.id.nav_myMessages) {
+            Intent intentRewards = new Intent(MyClients.this, Messaging.class);
+            startActivity(intentRewards);
         } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
+            Intent intentClients = new Intent(MyClients.this, Clients.class);
+            startActivity(intentClients);
         } else if (id == R.id.nav_send) {
-
+            Intent intentProfile = new Intent(MyClients.this, ClientProfile.class);
+            startActivity(intentProfile);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

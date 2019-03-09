@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Home Therapy</string>
-    <string name="my_messages">My Messages</string>
     <string name="my_or_my_client_s_exercises">Exercise Library</string>
     <string name="title_activity_test_navigation">Test Navigation</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -10,8 +9,7 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Do not click</string>
     <string name="newUserDataSaved">New user data saved</string>
-    <string name="my_exercises">My Exercises</string>
     <string name="my_rewards">My Rewards</string>
-    <string name="my_clients">My Clients</string>
     <string name="title_activity_my_clients">My Clients</string>
+
 </resources>

@@ -38,6 +38,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // List of Exercises screen
+        _btnGoToExercises.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // create intent to move to sign in screen
+                Intent intent_Exercises_Screen = new Intent(MainActivity.this, Exercises.class);
+
+                // start the new activity
+                startActivity(intent_Exercises_Screen);
+            }
+        });
+
         // Exercises screen
         _btnGoToExercises.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // My Clients list screen
+        // My Messages screen
         _btnGoToMyMessages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
