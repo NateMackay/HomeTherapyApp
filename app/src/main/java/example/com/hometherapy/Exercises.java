@@ -59,7 +59,7 @@ public class Exercises extends AppCompatActivity {
 
         Log.d(TAG, " _currentExercises = _gson.fromJson(jsonExerciseList, ExerciseList.class:  " + _currentExercises);
 
-        // if current exercise database is not empty, then proceed wtih getting list of exercises
+        // if current exercise database is not empty, then proceed with getting list of exercises
         // and binding to array adapter
         if (_currentExercises != null) {
 
@@ -74,8 +74,7 @@ public class Exercises extends AppCompatActivity {
             _listView.setAdapter(_adapter);
         }
 
-        // execute task in background
-//        new AddDataToListTask().execute();
+        // add an on item click listener that will open up the existing exercise for editing
 
         _btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +84,14 @@ public class Exercises extends AppCompatActivity {
             }
         });
     }
+
+
+
+
+
+    // future logic - add async tasks
+    // execute task in background
+//        new AddDataToListTask().execute();
 
 //    private class AddDataToListTask extends AsyncTask<Void, Void, Void> {
 //

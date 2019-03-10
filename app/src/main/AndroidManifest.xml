@@ -11,7 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ClientExercises"></activity>
+        <activity android:name=".ClientExerciseLibrary"></activity>
+        <activity android:name=".ClientExercises" />
         <activity
             android:name=".MyProfile"
             android:label="@string/title_activity_my_profile"
