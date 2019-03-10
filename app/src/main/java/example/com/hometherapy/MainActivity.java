@@ -13,6 +13,8 @@ public class MainActivity extends AppCompatActivity {
     private Button _btnGoToMyClients;
     private Button _btnTestNavigation;
     private Button _btnGoToMyMessages;
+    private Button _btnGoToUsers;
+    private Button _btnGoToMyExercises;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
         _btnGoToMyClients =  (Button) findViewById(R.id.btnGoToMyClients);
         _btnGoToMyMessages = (Button) findViewById(R.id.btnGoToMyMessages);
         _btnTestNavigation = (Button) findViewById(R.id.btnTestNavigation);
+        _btnGoToUsers      = (Button) findViewById(R.id.btnGoToUsers);
+        _btnGoToMyExercises = (Button) findViewById(R.id.btnGoToMyExercises);
 
         // Sign in screen
         _btnGoToSignIn.setOnClickListener(new View.OnClickListener() {
@@ -52,15 +56,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Exercises screen
-        _btnGoToExercises.setOnClickListener(new View.OnClickListener() {
+        _btnGoToMyExercises.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 // create intent to move to sign in screen
-                Intent intent_Exercises_Screen = new Intent(MainActivity.this, Exercises.class);
+                Intent intent_My_Exercises_Screen = new Intent(MainActivity.this, Exercises.class);
 
                 // start the new activity
-                startActivity(intent_Exercises_Screen);
+                startActivity(intent_My_Exercises_Screen);
             }
         });
 
@@ -83,13 +87,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // create intent to move to sign in screen
-                Intent intentSignInScreen = new Intent(MainActivity.this, TestNavigation.class);
+                Intent intentTestNavScreen = new Intent(MainActivity.this, TestNavigation.class);
 
                 // start the new activity
-                startActivity(intentSignInScreen);
+                startActivity(intentTestNavScreen);
             }
         });
-
 
         // My Messages screen
         _btnGoToMyMessages.setOnClickListener(new View.OnClickListener() {
@@ -97,12 +100,26 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // create intent to move to sign in screen
-                Intent intentSignInScreen = new Intent(MainActivity.this, MyMessages.class);
+                Intent intentMessagesScreen = new Intent(MainActivity.this, MyMessages.class);
+
+                // start the new activity
+                startActivity(intentMessagesScreen);
+            }
+        });
+
+        // Users screen
+        _btnGoToUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // create intent to move to sign in screen
+                Intent intentSignInScreen = new Intent(MainActivity.this, Users.class);
 
                 // start the new activity
                 startActivity(intentSignInScreen);
             }
         });
+
     }
 
     // create a new message
