@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
     private Button _btnGoToMyClients;
     private Button _btnTestNavigation;
     private Button _btnGoToMyMessages;
+    private Button _btnGoToUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
         _btnGoToMyClients =  (Button) findViewById(R.id.btnGoToMyClients);
         _btnGoToMyMessages = (Button) findViewById(R.id.btnGoToMyMessages);
         _btnTestNavigation = (Button) findViewById(R.id.btnTestNavigation);
+        _btnGoToUsers      = (Button) findViewById(R.id.btnGoToUsers);
 
         // Sign in screen
         _btnGoToSignIn.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         // My Messages screen
         _btnGoToMyMessages.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,6 +104,20 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intentSignInScreen);
             }
         });
+
+        // Users screen
+        _btnGoToUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // create intent to move to sign in screen
+                Intent intentSignInScreen = new Intent(MainActivity.this, Users.class);
+
+                // start the new activity
+                startActivity(intentSignInScreen);
+            }
+        });
+
     }
 
     // create a new message
