@@ -1,7 +1,7 @@
+package example.com.hometherapy;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import example.com.hometherapy.Exercise;
 
 public class AssignedExerciseList {
 
@@ -25,4 +25,6 @@ public class AssignedExerciseList {
                 "_assignedExerciseList=" + _assignedExerciseList +
                 '}';
     }
+
+
 }
