@@ -1,5 +1,6 @@
 package example.com.hometherapy;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,10 @@ public class ClientExercises extends AppCompatActivity {
     // name shared preferences
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
+
+    // Key for extra message for user email address to pass to activity
+    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
+    private String _currentUserEmail;
 
     // member variables
     private AssignedExerciseList _assignedExercises;
@@ -51,6 +56,11 @@ public class ClientExercises extends AppCompatActivity {
         // initialize GSON object
         _gson = new Gson();
 
+        // get user email (i.e. account) from extra message
+        Intent thisIntent = getIntent();
+        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
+        Log.d(TAG, "verify current user: " + _currentUserEmail);
+
         // deserialize sharedPrefs JSON user database into List of Assigned Exercises
         _assignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);
 
@@ -78,10 +88,10 @@ public class ClientExercises extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
-
-
-
+                // intent to go to Exercises screen, passing user via extra message
+                Intent intentClientExerciseLibrary = new Intent(ClientExercises.this, ClientExerciseLibrary.class);
+                intentClientExerciseLibrary.putExtra(MSG_USER_EMAIL, _currentUserEmail);
+                startActivity(intentClientExerciseLibrary);
 
             }
         });

@@ -38,7 +38,7 @@ public class Users extends AppCompatActivity {
     private User _currentUser;
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
-    List<User> _tempUserList;
+    private List<User> _tempUserList;
 
     // array adapter for user list
     private UserListAdapter _adapterUserList;
