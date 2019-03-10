@@ -81,9 +81,9 @@ public class AddEditUser extends AppCompatActivity {
         _etUserEmail.addTextChangedListener(_emailValidator);
 
         // adapters
-        _adapterAccountTypes = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, _userAccountTypes);
-        _adapterClinics = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, _userClinicNames);
-        _adapterStatus = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, _userStatusNames);
+        _adapterAccountTypes = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _userAccountTypes);
+        _adapterClinics = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _userClinicNames);
+        _adapterStatus = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _userStatusNames);
 
         // set adapters
         _spinUserAccountType.setAdapter(_adapterAccountTypes);
