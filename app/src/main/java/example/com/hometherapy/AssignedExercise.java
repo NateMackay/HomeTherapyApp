@@ -3,15 +3,32 @@ package example.com.hometherapy;
 public class AssignedExercise extends Exercise {
 
     // private member variables
+    private String _assignedUserEmail;
     private int _pointValue;
     private String _status;
-    private String _dueDate;
 
-    public AssignedExercise(String _exerciseName, String _discipline, String _modality, String _assignment, String _videoLink, int _pointValue, String _status, String _dueDate) {
+    // for future use - idea is to reset this to false at Midnight of each day
+    // possible solution is to create an observable class that this would observe
+    // that would track time and update this to false for each day
+    private boolean _completedToday;
+
+    public AssignedExercise(String _exerciseName, String _discipline, String _modality,
+                            String _assignment, String _videoLink,
+                            String _assignedUserEmail, int _pointValue,
+                            String _status, boolean _completedToday) {
         super(_exerciseName, _discipline, _modality, _assignment, _videoLink);
+        this._assignedUserEmail = _assignedUserEmail;
         this._pointValue = _pointValue;
         this._status = _status;
-        this._dueDate = _dueDate;
+        this._completedToday = _completedToday;
+    }
+
+    public String get_assignedUserEmail() {
+        return _assignedUserEmail;
+    }
+
+    public void set_assignedUserEmail(String _assignedUserEmail) {
+        this._assignedUserEmail = _assignedUserEmail;
     }
 
     public int get_pointValue() {
@@ -30,11 +47,21 @@ public class AssignedExercise extends Exercise {
         this._status = _status;
     }
 
-    public String get_dueDate() {
-        return _dueDate;
+    public boolean is_completedToday() {
+        return _completedToday;
     }
 
-    public void set_dueDate(String _dueDate) {
-        this._dueDate = _dueDate;
+    public void set_completedToday(boolean _completedToday) {
+        this._completedToday = _completedToday;
     }
+
+    @Override
+    public String toString() {
+        return "AssignedExercise{" +
+                "_pointValue=" + _pointValue +
+                ", _status='" + _status + '\'' +
+                ", _completedToday=" + _completedToday +
+                '}';
+    }
+
 }

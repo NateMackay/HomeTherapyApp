@@ -10,4 +10,8 @@ public class AddExerciseToClient extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exercise_to_client);
     }
+
+
+
+
 }

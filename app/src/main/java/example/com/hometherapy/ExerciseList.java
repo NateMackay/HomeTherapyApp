@@ -20,7 +20,7 @@ public class ExerciseList {
         return _exerciseList;
     }
 
-    // output current list of users
+    // output current list of exercises
     @Override
     public String toString() {
         return "ExerciseList{" +

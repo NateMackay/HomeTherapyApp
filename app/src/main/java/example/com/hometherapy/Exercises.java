@@ -14,6 +14,10 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+/**
+ * This is the class that is for the exercise library view
+ * linked to activity_exercises.xml *
+ */
 public class Exercises extends AppCompatActivity {
 
     // for log
