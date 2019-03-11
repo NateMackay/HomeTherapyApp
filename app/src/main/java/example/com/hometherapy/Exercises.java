@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -27,25 +28,27 @@ public class Exercises extends AppCompatActivity {
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String EXERCISE_DATA = "exerciseData";
 
+    // Key for extra message for exercise name to pass to activity
+    public static final String MSG_EXERCISE_NAME = "example.com.hometherapy.EXERCISENAME";
+
     // member variables
     private ExerciseList _currentExercises;
     private Exercise _exercise;
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
+    private List<Exercise> tempExerciseList;
 
     // views
-    private ArrayAdapter<Exercise> _adapter;
-    private ListView _listView;
+    private ListView _lvExerciseList;
     private Button _btnAddExercise;
+
+    // array adapter for exercise list
+    private ExerciseListAdapter _adapterExerciseList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercises);
-
-        // initialize view widgets
-        _listView = (ListView) findViewById(R.id.lvExerciseList);
-        _btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -57,24 +60,39 @@ public class Exercises extends AppCompatActivity {
         // deserialize sharedPrefs JSON user database into List of Exercises
         _currentExercises = _gson.fromJson(jsonExerciseList, ExerciseList.class);
 
-        Log.d(TAG, " _currentExercises = _gson.fromJson(jsonExerciseList, ExerciseList.class:  " + _currentExercises);
+        // register view widgets
+        _lvExerciseList = (ListView) findViewById(R.id.lvExerciseList);
+        _btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
 
         // if current exercise database is not empty, then proceed with getting list of exercises
         // and binding to array adapter
         if (_currentExercises != null) {
 
-            List<Exercise> tempExerciseList = _currentExercises.getExerciseList();
+            tempExerciseList = _currentExercises.getExerciseList();
 
             Log.d(TAG, "tempExerciseList: " + tempExerciseList);
 
             // initialize array adapter and bind exercise list to it
-            _adapter = new ArrayAdapter<Exercise>(this, android.R.layout.simple_selectable_list_item, tempExerciseList);
+            _adapterExerciseList = new ExerciseListAdapter(this, tempExerciseList);
 
             // set the adapter to the list view
-            _listView.setAdapter(_adapter);
+            _lvExerciseList.setAdapter(_adapterExerciseList);
         }
 
         // add an on item click listener that will open up the existing exercise for editing
+        _lvExerciseList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                // get current exercise from position in list
+                Exercise currentExercise = tempExerciseList.get(position);
+
+                // intent to go to Exercise View screen, passing exercise via extra message
+                Intent intentEV = new Intent(Exercises.this, ExerciseView.class);
+                intentEV.putExtra(MSG_EXERCISE_NAME, currentExercise.get_exerciseName());
+                startActivity(intentEV);
+            }
+        });
 
         _btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
