@@ -9,6 +9,7 @@ public class Exercise {
     private String _assignment;
     private String _videoLink;
 
+    // constructors
     public Exercise(String _exerciseName, String _discipline, String _modality, String _assignment, String _videoLink) {
         this._exerciseName = _exerciseName;
         this._discipline = _discipline;

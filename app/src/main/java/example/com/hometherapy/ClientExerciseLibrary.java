@@ -29,6 +29,7 @@ public class ClientExerciseLibrary extends AppCompatActivity {
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
 
     // Keys for extra message to pass elements of exercise from library to add library
+    public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
     public static final String MSG_EXERCISE_NAME = "example.com.hometherapy.EXERCISE_NAME";
     public static final String MSG_MODALITY = "example.com.hometherapy.MODALITY";
     public static final String MSG_DISCIPLINE = "example.com.hometherapy.DISCIPLINE";
@@ -44,7 +45,7 @@ public class ClientExerciseLibrary extends AppCompatActivity {
     private String _currentUserEmail;
 
     // views
-    private ArrayAdapter<Exercise> _adapter; // implement a custom adapter
+    private ArrayAdapter<Exercise> _adapter1; // implement a custom adapter
     private TextView _tvCELLabel;
     private ListView _lvCELExerciseList;
 
@@ -54,7 +55,7 @@ public class ClientExerciseLibrary extends AppCompatActivity {
         setContentView(R.layout.activity_client_exercise_library);
 
         // initialize view widgets
-        _lvCELExerciseList = (ListView) findViewById(R.id.lvExerciseList);
+        _lvCELExerciseList = (ListView) findViewById(R.id.lvCELExerciseList);
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -82,35 +83,47 @@ public class ClientExerciseLibrary extends AppCompatActivity {
             Log.d(TAG, "tempExerciseList: " + _tempExerciseList);
 
             // initialize array adapter and bind exercise list to it
-            _adapter = new ArrayAdapter<Exercise>(this, android.R.layout.simple_selectable_list_item, _tempExerciseList);
+            _adapter1 = new ArrayAdapter<Exercise>(this, android.R.layout.simple_selectable_list_item, _tempExerciseList);
+
+            Log.d(TAG, "after adapter is defined");
 
             // set the adapter to the list view
-            _lvCELExerciseList.setAdapter(_adapter);
+            _lvCELExerciseList.setAdapter(_adapter1);
+
+            Log.d(TAG, "after adapter is set");
+
+            // set on item click listener
+            _lvCELExerciseList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    Log.d(TAG, "on ITEM CLICK listener 1");
+
+                    // get current exercise that is clicked on by user by its position
+                    Exercise currentExercise = _tempExerciseList.get(position);
+
+                    Log.d(TAG, "on ITEM CLICK listener 2");
+
+                    // intent to go to add exercise to client activity
+                    Intent intentAETC = new Intent(ClientExerciseLibrary.this, AddExerciseToClient.class);
+                    intentAETC.putExtra(MSG_USER_EMAIL, _currentUserEmail);
+                    intentAETC.putExtra(MSG_ADD_OR_EDIT, "add");
+                    intentAETC.putExtra(MSG_EXERCISE_NAME, currentExercise.get_exerciseName());
+                    intentAETC.putExtra(MSG_ASSIGNMENT, currentExercise.get_assignment());
+                    intentAETC.putExtra(MSG_DISCIPLINE, currentExercise.get_discipline());
+                    intentAETC.putExtra(MSG_MODALITY, currentExercise.get_modality());
+                    intentAETC.putExtra(MSG_VIDEO_LINK, currentExercise.get_videoLink());
+
+                    Log.d(TAG, "on ITEM CLICK listener 3");
+
+                    // move to add exercise to client activity
+                    startActivity(intentAETC);
+
+                    Log.d(TAG, "on ITEM CLICK listener 4");
+                }
+            });
+
         }
-
-        // set on item click listener
-        _lvCELExerciseList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                // get current exercise that is clicked on by user by its position
-                Exercise currentExercise = _tempExerciseList.get(position);
-
-                // intent to go to add exercise to client activity
-                Intent intentAETC = new Intent(ClientExerciseLibrary.this, AddExerciseToClient.class);
-                intentAETC.putExtra(MSG_USER_EMAIL, _currentUserEmail);
-                intentAETC.putExtra(MSG_EXERCISE_NAME, currentExercise.get_exerciseName());
-                intentAETC.putExtra(MSG_ASSIGNMENT, currentExercise.get_assignment());
-                intentAETC.putExtra(MSG_DISCIPLINE, currentExercise.get_discipline());
-                intentAETC.putExtra(MSG_MODALITY, currentExercise.get_modality());
-                intentAETC.putExtra(MSG_VIDEO_LINK, currentExercise.get_videoLink());
-
-                // move to add exercise to client activity
-                startActivity(intentAETC);
-            }
-        });
-
-
 
     }
 }

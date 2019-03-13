@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -26,12 +27,14 @@ public class ClientExercises extends AppCompatActivity {
 
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
+    public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
     private String _currentUserEmail;
 
     // member variables
     private AssignedExerciseList _assignedExercises;
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
+    private List<AssignedExercise> _tempAssignedExerciseList;
 
     // views
     private ArrayAdapter<AssignedExercise> _adapter; // add custom adapter
@@ -51,7 +54,15 @@ public class ClientExercises extends AppCompatActivity {
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+
+        // temporarily clear out ASSIGNED_EXERCISE_DATA
+//        SharedPreferences.Editor editor = _sharedPreferences.edit();
+//        editor.putString(ASSIGNED_EXERCISE_DATA, "");
+//        editor.apply();
+
         String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
+
+        Log.d(TAG, "jsonAssignedExerciseList: " + jsonAssignedExerciseList);
 
         // initialize GSON object
         _gson = new Gson();
@@ -70,18 +81,47 @@ public class ClientExercises extends AppCompatActivity {
         // assigned exercises and binding to array adapter
         if (_assignedExercises != null) {
 
-            List<AssignedExercise> tempAssignedExerciseList = _assignedExercises.getAssignedExerciseList();
+            _tempAssignedExerciseList = _assignedExercises.getAssignedExerciseList();
 
-            Log.d(TAG, "tempExerciseList: " + tempAssignedExerciseList);
+            // TO DO need to add a filter here to only show those exercises that are assigned to the user email
+
+            Log.d(TAG, "tempExerciseList: " + _tempAssignedExerciseList);
 
             // initialize array adapter and bind exercise list to it
-            _adapter = new ArrayAdapter<AssignedExercise>(this, android.R.layout.simple_selectable_list_item, tempAssignedExerciseList);
+            // the view will need to be different depending upon whether the user type is
+            // a client or a therapist/admin
+            _adapter = new ArrayAdapter<>(this, android.R.layout.simple_selectable_list_item, _tempAssignedExerciseList);
 
             // set the adapter to the list view
             _lvCEAssignedExercises.setAdapter(_adapter);
-        }
 
-        // add an on item click listerner to go to existing exercise to edit
+            // if the user clicks on an existing exercise, we want to take the user to the add/edit
+            // exercise to client activity where they can view and edit the exercise
+            // only issue - we only want the following functionality if the user type is admin
+            // or therapist
+            // if a client clicks on an exercise, then he/she will be taken to the my exercise view
+            // where the client can mark an exercise as complete
+            _lvCEAssignedExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    // get current assigned exercise from position in the list
+                    AssignedExercise assignedExercise = _tempAssignedExerciseList.get(position);
+
+                    // need to add logic that will take the client to view their exercise
+                    // and mark complete - this is the myExercise view
+                    // add if client is account type, go to specific exercise view
+
+                    // the following is for therapists and admin users only
+                    // intent to go to Add(Edit) Exercise to Client
+                    // need to pass an intent that has the user ID as well as the assigned exercise ID
+                    Intent intentAETC = new Intent(ClientExercises.this, AddExerciseToClient.class);
+                    intentAETC.putExtra(MSG_USER_EMAIL, _currentUserEmail);
+                    intentAETC.putExtra(MSG_ASSIGNED_EXERCISE_ID, assignedExercise.get_assignedExerciseID()); // note - this may be an issue - right now passing an Integer, not a String - watch you may have to use toString() method
+                    startActivity(intentAETC);
+                }
+            });
+        }
 
         // add an exercise button - this will pass user email to a Exercises
         _btnCEAddExercise.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +132,6 @@ public class ClientExercises extends AppCompatActivity {
                 Intent intentClientExerciseLibrary = new Intent(ClientExercises.this, ClientExerciseLibrary.class);
                 intentClientExerciseLibrary.putExtra(MSG_USER_EMAIL, _currentUserEmail);
                 startActivity(intentClientExerciseLibrary);
-
             }
         });
 

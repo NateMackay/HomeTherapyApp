@@ -12,15 +12,18 @@ public class AssignedExercise extends Exercise {
     // that would track time and update this to false for each day
     private boolean _completedToday;
 
+    private Integer _assignedExerciseID;
+
     public AssignedExercise(String _exerciseName, String _discipline, String _modality,
                             String _assignment, String _videoLink,
                             String _assignedUserEmail, int _pointValue,
-                            String _status, boolean _completedToday) {
+                            String _status, boolean _completedToday, Integer _assignedExerciseID) {
         super(_exerciseName, _discipline, _modality, _assignment, _videoLink);
         this._assignedUserEmail = _assignedUserEmail;
         this._pointValue = _pointValue;
         this._status = _status;
         this._completedToday = _completedToday;
+        this._assignedExerciseID = _assignedExerciseID;
     }
 
     public String get_assignedUserEmail() {
@@ -55,13 +58,22 @@ public class AssignedExercise extends Exercise {
         this._completedToday = _completedToday;
     }
 
+    public Integer get_assignedExerciseID() {
+        return _assignedExerciseID;
+    }
+
+    public void set_assignedExerciseID(Integer _assignedExerciseID) {
+        this._assignedExerciseID = _assignedExerciseID;
+    }
+
     @Override
     public String toString() {
         return "AssignedExercise{" +
-                "_pointValue=" + _pointValue +
+                "_assignedUserEmail='" + _assignedUserEmail + '\'' +
+                ", _pointValue=" + _pointValue +
                 ", _status='" + _status + '\'' +
                 ", _completedToday=" + _completedToday +
+                ", _assignedExerciseID=" + _assignedExerciseID +
                 '}';
     }
-
 }
