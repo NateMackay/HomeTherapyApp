@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClientExercises extends AppCompatActivity {
 
@@ -28,6 +29,7 @@ public class ClientExercises extends AppCompatActivity {
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
     public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
+    public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
     private String _currentUserEmail;
 
     // member variables
@@ -35,12 +37,15 @@ public class ClientExercises extends AppCompatActivity {
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
     private List<AssignedExercise> _tempAssignedExerciseList;
+    private List<AssignedExercise> _filteredList;
+    private boolean isClient;
 
     // views
     private ArrayAdapter<AssignedExercise> _adapter; // add custom adapter
     private ListView _lvCEAssignedExercises;
     private Button _btnCEAddExercise;
     private TextView _tvCELabel;
+    private Button _btnCEUserLogOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,7 @@ public class ClientExercises extends AppCompatActivity {
         _lvCEAssignedExercises = (ListView) findViewById(R.id.lvCEAssignedExercises);
         _btnCEAddExercise = (Button) findViewById(R.id.btnCEAddExercise);
         _tvCELabel = (TextView) findViewById(R.id.tvCELabel);
+        _btnCEUserLogOut = (Button) findViewById(R.id.btnCEUsersLogOut);
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -83,14 +89,20 @@ public class ClientExercises extends AppCompatActivity {
 
             _tempAssignedExerciseList = _assignedExercises.getAssignedExerciseList();
 
-            // TO DO need to add a filter here to only show those exercises that are assigned to the user email
+            Log.d(TAG, "list before filtering: " + _tempAssignedExerciseList);
 
-            Log.d(TAG, "tempExerciseList: " + _tempAssignedExerciseList);
+            // filter here to only show those exercises that are assigned to the user email
+            // Reference: https://www.javabrahman.com/java-8/java-8-filtering-and-slicing-streams-tutorial-with-examples/
+            _filteredList = _tempAssignedExerciseList.stream()
+                    .filter(assignedExercise -> _currentUserEmail.equals(assignedExercise.get_assignedUserEmail()))
+                    .collect(Collectors.toList());
+
+            Log.d(TAG, "list after filtering: " + _filteredList);
 
             // initialize array adapter and bind exercise list to it
             // the view will need to be different depending upon whether the user type is
             // a client or a therapist/admin
-            _adapter = new ArrayAdapter<>(this, android.R.layout.simple_selectable_list_item, _tempAssignedExerciseList);
+            _adapter = new ArrayAdapter<>(this, android.R.layout.simple_selectable_list_item, _filteredList);
 
             // set the adapter to the list view
             _lvCEAssignedExercises.setAdapter(_adapter);
@@ -106,18 +118,34 @@ public class ClientExercises extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     // get current assigned exercise from position in the list
-                    AssignedExercise assignedExercise = _tempAssignedExerciseList.get(position);
+                    AssignedExercise selectedExercise = _filteredList.get(position);
+
+                    Log.d(TAG, "selected Exercise: " + selectedExercise);
+
+                    Log.d(TAG, "_currentUserEmail: " + _currentUserEmail);
+
+                    Log.d(TAG, "selectedExercise.get_assignedUserEmail(): " + selectedExercise.get_assignedUserEmail());
+
+                    Log.d(TAG, "selectedExercise.get_assignedExerciseID().toString(): " +
+                            selectedExercise.get_assignedExerciseID().toString());
 
                     // need to add logic that will take the client to view their exercise
                     // and mark complete - this is the myExercise view
                     // add if client is account type, go to specific exercise view
+                    // need to wait until you have the therapist view, which is a list of clients
+                    // which will take the therapist to a view of their clients that they can then
+                    // click on and then add / edit exercises
+                    // for now, if you are in the client list of exercises, it is from the standpoint
+                    // of a therapist or admin looking at that client's exercises, with the ability
+                    // to add/edit exercises.
 
                     // the following is for therapists and admin users only
                     // intent to go to Add(Edit) Exercise to Client
                     // need to pass an intent that has the user ID as well as the assigned exercise ID
                     Intent intentAETC = new Intent(ClientExercises.this, AddExerciseToClient.class);
+                    intentAETC.putExtra(MSG_ADD_OR_EDIT, "edit");
                     intentAETC.putExtra(MSG_USER_EMAIL, _currentUserEmail);
-                    intentAETC.putExtra(MSG_ASSIGNED_EXERCISE_ID, assignedExercise.get_assignedExerciseID()); // note - this may be an issue - right now passing an Integer, not a String - watch you may have to use toString() method
+                    intentAETC.putExtra(MSG_ASSIGNED_EXERCISE_ID, selectedExercise.get_assignedExerciseID().toString());
                     startActivity(intentAETC);
                 }
             });
@@ -132,6 +160,16 @@ public class ClientExercises extends AppCompatActivity {
                 Intent intentClientExerciseLibrary = new Intent(ClientExercises.this, ClientExerciseLibrary.class);
                 intentClientExerciseLibrary.putExtra(MSG_USER_EMAIL, _currentUserEmail);
                 startActivity(intentClientExerciseLibrary);
+            }
+        });
+
+        // on click, just go back to signIn screen
+        // for testing purposes
+        _btnCEUserLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentSignIn = new Intent(ClientExercises.this, SignIn.class);
+                startActivity(intentSignIn);
             }
         });
 

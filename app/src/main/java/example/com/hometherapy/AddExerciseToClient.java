@@ -14,7 +14,9 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -54,6 +56,7 @@ public class AddExerciseToClient extends AppCompatActivity {
     private SharedPreferences _sharedPreferences;
     private AssignedExerciseList _currentAssignedExercises;
     private List<AssignedExercise> _tempAssignedExerciseList;
+    private AssignedExercise _currentAssignedExercise;
     private String _assignment;
     private String _exercise;
     private String _discipline;
@@ -104,30 +107,11 @@ public class AddExerciseToClient extends AppCompatActivity {
         // if no list has been created yet, create a new assigned exercise list
         if (_currentAssignedExercises == null) {
             _currentAssignedExercises = new AssignedExerciseList();
-            Log.d(TAG, "tempExerciseList: " + _tempAssignedExerciseList);
         }
 
         // get list of assigned exercises from assigned exercise list object
         _tempAssignedExerciseList = _currentAssignedExercises.getAssignedExerciseList();
         Log.d(TAG, "tempExerciseList: " + _tempAssignedExerciseList);
-
-
-        // if this is add only, then we don't need to filter for both user and assigned exercise title
-        // we can just filter for user
-        // actually you don't need to do that
-        // you don't need to pull data in
-        // you just need to open up the list of assigned exercises
-        // then create an assigned exercise instance of all of the data elements that will go into it
-        // then you just need to add it to the list
-        // and then serialize it using JSON
-        // and then store it in the shared prefs
-        // and then do an intent back to the list of client exercises
-
-        // however, we need to address when and how we're going to edit an existing exercise
-        // if we're going to use this same activity
-        // then we have to figure out how to filter for both user id and for title
-        // can the filter method handle more than one option? maybe - AddEditUser.java lambda expression
-        // used to filter for user email
 
         // get exercise data passed from client exercise library
         Intent thisIntent = getIntent();
@@ -136,7 +120,8 @@ public class AddExerciseToClient extends AppCompatActivity {
         Log.d(TAG, "verify current user: " + _currentUserEmail);
 
         // depending on whether intent is to either add or edit a client exercise
-        if (thisIntent.getStringExtra(MSG_ADD_OR_EDIT) == "add") {
+        // if intent is to add, then get values from intent passed in from client exercise library
+        if (thisIntent.getStringExtra(MSG_ADD_OR_EDIT).equals("add")) {
             _isIntentAdd = true;
             _assignment = thisIntent.getStringExtra(MSG_ASSIGNMENT);
             _exercise = thisIntent.getStringExtra(MSG_EXERCISE_NAME);
@@ -145,20 +130,60 @@ public class AddExerciseToClient extends AppCompatActivity {
             _linkToVideo = thisIntent.getStringExtra(MSG_VIDEO_LINK);
 
             // assign a new exercise ID
-            // build in a function to do this, but for now, build it here
-            _assignedExerciseID = 10;
+            // find maximum value of _assignedExerciseID within the list of assigned exercises
+            // reference: https://stackoverflow.com/questions/19338686/java-getting-max-value-from-an-arraylist-of-objects
+            // reference: https://dzone.com/articles/optional-ispresent-is-bad-for-you
+            // if id is not present, for example if this is the first assigned exercise
+            // then the assigned ID will be the default value of 0 + 1
+            Integer maxID = 0;
+            if (_tempAssignedExerciseList.stream()
+                    .max(Comparator.comparing(AssignedExercise::get_assignedExerciseID)).isPresent()) {
+                AssignedExercise assignedExerciseWithMaxID = _tempAssignedExerciseList.stream()
+                        .max(Comparator.comparing(AssignedExercise::get_assignedExerciseID)).get();
+                maxID = assignedExerciseWithMaxID.get_assignedExerciseID();
+            }
+
+            Log.d(TAG, "Verify max ID: " + maxID);
+
+            // set ID for new assigned exercise to maxID plus one
+            _assignedExerciseID = maxID + 1;
 
         } else {
+            // if intent is to view/edit, not add, then lookup assigned exercise in exercise db
+            // based on assigned exercise ID, and set the text views and spinners accordingly
             _isIntentAdd = false;
             _assignedExerciseID = Integer.parseInt(thisIntent.getStringExtra(MSG_ASSIGNED_EXERCISE_ID));
 
-            // put logic here where we are only needing to look up an exercise ID
-            // we also need to get the values for the text views and spinners, etc. in here
-            // set the spinners here as well, and set the other text values below
+            // get assigned exercise object with exercise ID passed in from intent
+            _currentAssignedExercise = _tempAssignedExerciseList.stream()
+                    .filter(assignedExercise -> _assignedExerciseID.equals(assignedExercise.get_assignedExerciseID()))
+                    .findAny()
+                    .orElse(null);
 
+            // get assigned exercise values
+            if (_currentAssignedExercise != null) {
+                _assignment = _currentAssignedExercise.get_assignment();
+                _exercise = _currentAssignedExercise.get_exerciseName();
+                _discipline = _currentAssignedExercise.get_discipline();
+                _modality = _currentAssignedExercise.get_modality();
+                _linkToVideo = _currentAssignedExercise.get_videoLink();
+            }
+
+            // set status and point value spinners based on what is in assigned exercise
+            // first, get indices of these values
+            int iSpinAETCPointValue = Arrays.asList(_pointValueOptions).indexOf(_currentAssignedExercise.get_pointValue().toString());
+            int iSpinAETCStatus = Arrays.asList(_exerciseStatusNames).indexOf(_currentAssignedExercise.get_status());
+
+            // set spinner values based on current assigned exercise
+            // note that a value of -1 means indexOf() did not find value searching for
+            if (iSpinAETCPointValue >= 0) {
+                _spinAETCPointValue.setSelection(iSpinAETCPointValue);
+            }
+
+            if (iSpinAETCStatus >= 0) {
+                _spinAETCStatus.setSelection(iSpinAETCStatus);
+            }
         }
-
-        // may want to add the set text values differently
 
         // set view text values
         _tvAETCAssignment.setText(_assignment);
@@ -167,16 +192,35 @@ public class AddExerciseToClient extends AppCompatActivity {
         _tvAETCModality.setText(_modality);
         _tvLinkToVideo.setText(_linkToVideo);
 
+        // we could alternatively set the index value for the spinners in the above if/else statement
+        // and then set the spinners here per the index, but I believe the default value is 0
+        // which for a new exercise, would be set anyway by the user.
+
         // listener for save changes button
         _btnAETCSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // add new exercise to the assigned exercise list object
-                _currentAssignedExercises.addAssignedExercise(new AssignedExercise(_exercise, _discipline,
-                        _modality, _assignment, _linkToVideo, _currentUserEmail,
-                        Integer.parseInt(_spinAETCPointValue.getSelectedItem().toString()),
-                        _spinAETCStatus.getSelectedItem().toString(), false, _assignedExerciseID));
+                // if we are here to add a new exercise,
+                // the following adds a new exercise to the list within the AssignedEceriseList object
+                if (_isIntentAdd) {
+                    _currentAssignedExercises.addAssignedExercise(new AssignedExercise(_exercise,
+                            _discipline, _modality, _assignment, _linkToVideo, _currentUserEmail,
+                            Integer.parseInt(_spinAETCPointValue.getSelectedItem().toString()),
+                            _spinAETCStatus.getSelectedItem().toString(), false,
+                            _assignedExerciseID));
+                } else {
+                    // if not adding, we are simply viewing / editing
+                    // update the _currentAssignedExercise, the individual AssignedExercise object
+                    // that we referenced based on assigned exercise ID
+                    _currentAssignedExercise.set_exerciseName(_tvAETCExercise.getText().toString());
+                    _currentAssignedExercise.set_assignment(_tvAETCAssignment.getText().toString());
+                    _currentAssignedExercise.set_discipline(_tvAETCDiscipline.getText().toString());
+                    _currentAssignedExercise.set_modality(_tvAETCModality.getText().toString());
+                    _currentAssignedExercise.set_videoLink(_tvLinkToVideo.getText().toString());
+                    _currentAssignedExercise.set_status(_spinAETCStatus.getSelectedItem().toString());
+                    _currentAssignedExercise.set_pointValue(Integer.parseInt(_spinAETCPointValue.getSelectedItem().toString()));
+                }
 
                 // convert updated assigned exercise list back to JSON format
                 String updatedList = _gson.toJson(_currentAssignedExercises);

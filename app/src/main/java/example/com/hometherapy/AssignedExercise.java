@@ -4,7 +4,7 @@ public class AssignedExercise extends Exercise {
 
     // private member variables
     private String _assignedUserEmail;
-    private int _pointValue;
+    private Integer _pointValue;
     private String _status;
 
     // for future use - idea is to reset this to false at Midnight of each day
@@ -16,7 +16,7 @@ public class AssignedExercise extends Exercise {
 
     public AssignedExercise(String _exerciseName, String _discipline, String _modality,
                             String _assignment, String _videoLink,
-                            String _assignedUserEmail, int _pointValue,
+                            String _assignedUserEmail, Integer _pointValue,
                             String _status, boolean _completedToday, Integer _assignedExerciseID) {
         super(_exerciseName, _discipline, _modality, _assignment, _videoLink);
         this._assignedUserEmail = _assignedUserEmail;
@@ -34,11 +34,11 @@ public class AssignedExercise extends Exercise {
         this._assignedUserEmail = _assignedUserEmail;
     }
 
-    public int get_pointValue() {
+    public Integer get_pointValue() {
         return _pointValue;
     }
 
-    public void set_pointValue(int _pointValue) {
+    public void set_pointValue(Integer _pointValue) {
         this._pointValue = _pointValue;
     }
 
