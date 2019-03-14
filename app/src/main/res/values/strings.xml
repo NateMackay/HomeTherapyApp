@@ -16,5 +16,6 @@
     <string name="my_clients">My Clients</string>
     <string name="title_activity_my_messages">My Messages</string>
     <string name="title_activity_my_profile">My Profile</string>
+    <string name="title_activity_my_rewards">My Rewards</string>
 
 </resources>

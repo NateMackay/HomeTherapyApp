@@ -11,7 +11,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ClientExerciseLibrary"></activity>
+        <activity
+            android:name=".MyRewards"
+            android:label="@string/title_activity_my_rewards"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".ClientExerciseLibrary" />
         <activity android:name=".ClientExercises" />
         <activity
             android:name=".MyProfile"
@@ -31,7 +35,6 @@
             android:label="@string/title_activity_test_navigation"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".AddExerciseToClient" />
-        <activity android:name=".MyRewards" />
         <activity android:name=".UserProfile" />
         <activity android:name=".ClientProfile" />
         <activity android:name=".AddExerciseToLibrary" />

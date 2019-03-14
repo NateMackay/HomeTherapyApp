@@ -101,6 +101,7 @@ public class MyClients extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
         if (id == R.id.nav_myClients) {
             // Handle the camera action
             Intent intentExercises = new Intent(MyClients.this, MyClients.class);
