@@ -83,13 +83,12 @@ public class MyRewards extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_myRewards) {
-            // Handle the actions
-            Intent intentRewards = new Intent(MyRewards.this, MyRewards.class);
-            startActivity(intentRewards);
-        } else if (id == R.id.nav_myExercises) {
-            Intent intentMessage = new Intent(MyRewards.this, MyExercise.class);
+        if (id == R.id.nav_myExercises) {
+            Intent intentMessage = new Intent(MyRewards.this, MyExercises.class);
             startActivity(intentMessage);
+        /* } else if (id == R.id.nav_myRewards) {
+            Intent intentRewards = new Intent(MyExercises.this, MyRewards.class);
+            startActivity(intentRewards); */
         } else if (id == R.id.nav_myMessages) {
             Intent intentRewards = new Intent(MyRewards.this, MyMessages.class);
             startActivity(intentRewards);

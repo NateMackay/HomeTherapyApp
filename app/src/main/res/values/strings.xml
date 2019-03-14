@@ -17,5 +17,6 @@
     <string name="title_activity_my_messages">My Messages</string>
     <string name="title_activity_my_profile">My Profile</string>
     <string name="title_activity_my_rewards">My Rewards</string>
+    <string name="title_activity_my_exercises">My Exercises</string>
 
 </resources>

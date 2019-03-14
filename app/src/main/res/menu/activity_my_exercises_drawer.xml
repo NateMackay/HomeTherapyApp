@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_myExercises"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/my_exercises" />
+        <item
+            android:id="@+id/nav_myRewards"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/my_rewards" />
+        <item
+            android:id="@+id/nav_myMessages"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/my_messages" />
+    </group>
+
+    <item>
+        <menu>
+            <item
+                android:id="@+id/nav_myProfile"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="My Profile" />
+        </menu>
+    </item>
+
+</menu>
