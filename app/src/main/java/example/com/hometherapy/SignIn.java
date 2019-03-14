@@ -28,6 +28,7 @@ public class SignIn extends AppCompatActivity {
 
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
+    public static final String MSG_ACCT_TYPE = "example.com.hometherapy.ACCT_TYPE";
 
     // private member variables
     private EditText _etSignInEmail;
@@ -134,13 +135,19 @@ public class SignIn extends AppCompatActivity {
                         // note temporarily changed to go to Exercises, which will be exercise
                         // library, until view for My Client's exercises is complete
 
+                        // when we pass the therapist over, we can compare the user email, which
+                        // is a therapist, with the assigned therapist to filter out the list
+                        // of clients to view
+
                         Intent intentClients = new Intent(SignIn.this, Exercises.class);
                         intentClients.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
+//                        intentClients.putExtra(MSG_ACCT_TYPE, loginUser.get_accountType()); // not sure if we need this
                         startActivity(intentClients);
                     } else if (accountType.equals("client")) {
                         // intent to go to Exercises screen, passing user via extra message
                         Intent intentExercises = new Intent(SignIn.this, ClientExercises.class);
                         intentExercises.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
+//                        intentExercises.putExtra(MSG_ACCT_TYPE, loginUser.get_accountType()); // not sure if we need this
                         startActivity(intentExercises);
                     } else if (accountType.equals("admin")) {
                         // intent to go to Users screen, passing user via extra message

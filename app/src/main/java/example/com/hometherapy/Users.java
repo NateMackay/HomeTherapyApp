@@ -34,6 +34,7 @@ public class Users extends AppCompatActivity {
     private TextView _tvUsersLabel;
     private ListView _lvUserList;
     private Button _btnUserLogOut;
+    private Button _btnUsersAddNewUser;
     private UserList _currentUsers;
     private User _currentUser;
     private Gson _gson;
@@ -62,6 +63,7 @@ public class Users extends AppCompatActivity {
         // register views
         _tvUsersLabel = (TextView) findViewById(R.id.tvUsersLabel);
         _lvUserList = (ListView) findViewById(R.id.lvUserList);
+        _btnUsersAddNewUser = (Button) findViewById(R.id.btnUsersAddUser);
         _btnUserLogOut = (Button) findViewById(R.id.btnUsersLogOut);
 
         // initialize array adapter and bind user list to it
@@ -83,6 +85,20 @@ public class Users extends AppCompatActivity {
                 Intent intentAEU = new Intent(Users.this, AddEditUser.class);
                 intentAEU.putExtra(MSG_USER_EMAIL, currentUser.getEmail());
                 startActivity(intentAEU);
+            }
+        });
+
+        // add new user from user screen
+        _btnUsersAddNewUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // since adding a new user, we do not have a user email yet
+                // AddEditUser.java is expecting an intent for user email
+                // so we are sending an empty string value
+                Intent intentAddNewUser = new Intent(Users.this, AddEditUser.class);
+                intentAddNewUser.putExtra(MSG_USER_EMAIL, "");
+                startActivity(intentAddNewUser);
             }
         });
 

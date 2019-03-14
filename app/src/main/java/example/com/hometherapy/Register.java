@@ -91,18 +91,17 @@ public class Register extends AppCompatActivity {
                 String status = "pending";
                 String assignedClinic = "pending";
                 String accountType = "pending";
+                String assignedTherapist = "pending";
 
                 // create temporary user object
                 User newUser = new User(email, password, firstName, lastName, phone, userID,
-                        status, assignedClinic, accountType);
+                        status, assignedClinic, accountType, assignedTherapist);
 
                 // pull existing user list from shared preferences into a JSON format "List" of
                 // "User" or rather a UserList object
                 // if nothing is in SHARED_PREFS then default value will be empty string
                 SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
                 String jsonUserList = sharedPreferences.getString(USER_DATA, "");
-//                String jsonExerciseList = sharedPreferences.getString(EXERCISE_DATA, "");
-//                String jsonAssignedExerciseList = sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
 
                 // for adding users
                 UserList currentUsers = new UserList();

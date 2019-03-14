@@ -12,10 +12,12 @@ public class User {
     private String _status;
     private String _assignedClinic;
     private String _accountType;
+    private String _assignedTherapist;
 
-    // constructor
+    // constructors
     public User(String email, String password, String firstName, String lastName, String phone,
-                String userID, String status, String assignedClinic, String accountType) {
+                String userID, String status, String assignedClinic, String accountType,
+                String assignedTherapist) {
         this._email = email;
         this._password = password;
         this._firstName = firstName;
@@ -25,30 +27,33 @@ public class User {
         this._status = status;
         this._assignedClinic = assignedClinic;
         this._accountType = accountType;
+        this._assignedTherapist = assignedTherapist;
+    }
+
+    public User(String userID) {
+        this._email = "";
+        this._password = "";
+        this._firstName = "";
+        this._lastName = "";
+        this._phone = "";
+        this._userID = userID;
+        this._status = "pending";
+        this._assignedClinic = "pending";
+        this._accountType = "pending";
+        this._assignedTherapist = "pending";
     }
 
     // getters
-    public String getEmail() {
-        return _email;
-    }
-    public String getPassword() {
-        return _password;
-    }
-    public String getFirstName() {
-        return _firstName;
-    }
-    public String getLastName() {
-        return _lastName;
-    }
-    public String getPhone() {
-        return _phone;
-    }
-    public String getUserID() {
-        return _userID;
-    }
+    public String getEmail() { return _email; }
+    public String getPassword() { return _password; }
+    public String getFirstName() { return _firstName; }
+    public String getLastName() { return _lastName; }
+    public String getPhone() { return _phone; }
+    public String getUserID() { return _userID; }
     public String get_status() { return _status; }
     public String get_assignedClinic() { return _assignedClinic; }
     public String get_accountType() { return _accountType; }
+    public String get_assignedTherapist() { return _assignedTherapist; }
 
     // setters
     public void setEmail(String email) {
@@ -72,6 +77,9 @@ public class User {
     public void set_status(String _status) { this._status = _status; }
     public void set_assignedClinic(String _assignedClinic) { this._assignedClinic = _assignedClinic; }
     public void set_accountType(String _accountType) { this._accountType = _accountType; }
+    public void set_assignedTherapist (String _assignedTherapist) {
+        this._assignedTherapist = _assignedTherapist;
+    }
 
     // toString
     @Override
@@ -86,6 +94,7 @@ public class User {
                 ", _status='" + _status + '\'' +
                 ", _assignedClinic='" + _assignedClinic + '\'' +
                 ", _accountType='" + _accountType + '\'' +
+                ", _assignedTherapist='" + _assignedTherapist + '\'' +
                 '}';
     }
 }
