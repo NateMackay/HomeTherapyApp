@@ -24,7 +24,7 @@ public class MyRewards extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*
+        /* commenting this out gets rid of the floating email icon
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +68,7 @@ public class MyRewards extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // commenting this out gets rid of the kebab icon
         //noinspection SimplifiableIfStatement
         /*if (id == R.id.action_settings) {
             return true;
@@ -83,7 +84,7 @@ public class MyRewards extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_myRewards) {
-            // Handle the camera action
+            // Handle the actions
             Intent intentRewards = new Intent(MyRewards.this, MyRewards.class);
             startActivity(intentRewards);
         } else if (id == R.id.nav_myExercises) {
