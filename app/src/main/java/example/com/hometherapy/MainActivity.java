@@ -1,6 +1,7 @@
 package example.com.hometherapy;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +16,16 @@ public class MainActivity extends AppCompatActivity {
     private Button _btnGoToMyMessages;
     private Button _btnGoToUsers;
     private Button _btnGoToMyExercises;
+    private Button _btnClearSharedPrefs;
+
+    // name Shared Preferences
+    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
+    public static final String USER_DATA = "userData";
+    public static final String EXERCISE_DATA = "exerciseData";
+
+    // private member variables
+    private SharedPreferences _sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
         _btnTestNavigation = (Button) findViewById(R.id.btnTestNavigation);
         _btnGoToUsers      = (Button) findViewById(R.id.btnGoToUsers);
         _btnGoToMyExercises = (Button) findViewById(R.id.btnGoToMyExercises);
+        _btnClearSharedPrefs = (Button) findViewById(R.id._btnClearSharedPrefs);
+
+        // open up Shared Preferences db
+        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
 
         // Sign in screen
         _btnGoToSignIn.setOnClickListener(new View.OnClickListener() {
@@ -117,6 +132,18 @@ public class MainActivity extends AppCompatActivity {
 
                 // start the new activity
                 startActivity(intentSignInScreen);
+            }
+        });
+
+        // cleared shared preferences
+        _btnClearSharedPrefs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               SharedPreferences.Editor editor = _sharedPreferences.edit();
+               editor.putString(USER_DATA, "");
+               editor.putString(EXERCISE_DATA, "");
+               editor.putString(ASSIGNED_EXERCISE_DATA, "");
+               editor.apply();
             }
         });
 
