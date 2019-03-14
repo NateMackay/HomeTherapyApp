@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // create intent to move to sign in screen
-                Intent intent_My_Exercises_Screen = new Intent(MainActivity.this, Exercises.class);
+                Intent intent_My_Exercises_Screen = new Intent(MainActivity.this, MyExercises.class);
 
                 // start the new activity
                 startActivity(intent_My_Exercises_Screen);

@@ -88,7 +88,7 @@ public class MyRewards extends AppCompatActivity
             Intent intentRewards = new Intent(MyRewards.this, MyRewards.class);
             startActivity(intentRewards);
         } else if (id == R.id.nav_myExercises) {
-            Intent intentMessage = new Intent(MyRewards.this, MyExercise.class);
+            Intent intentMessage = new Intent(MyRewards.this, MyExercises.class);
             startActivity(intentMessage);
         } else if (id == R.id.nav_myMessages) {
             Intent intentRewards = new Intent(MyRewards.this, MyMessages.class);
