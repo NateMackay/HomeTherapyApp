@@ -178,4 +178,10 @@ public class SignIn extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        // don't do anything
+    }
+
 }
