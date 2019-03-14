@@ -242,19 +242,18 @@ public class MyExercises extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_myRewards) {
-            // Handle the actions
-            Intent intentRewards = new Intent(MyExercises.this, MyRewards.class);
-            startActivity(intentRewards);
-        } else if (id == R.id.nav_myExercises) {
+        /*if (id == R.id.nav_myExercises) {
             Intent intentMessage = new Intent(MyExercises.this, MyExercises.class);
             startActivity(intentMessage);
+        } else */
+        if (id == R.id.nav_myRewards) {
+            Intent intentRewards = new Intent(MyExercises.this, MyRewards.class);
+            startActivity(intentRewards);
         } else if (id == R.id.nav_myMessages) {
             Intent intentRewards = new Intent(MyExercises.this, MyMessages.class);
             startActivity(intentRewards);
