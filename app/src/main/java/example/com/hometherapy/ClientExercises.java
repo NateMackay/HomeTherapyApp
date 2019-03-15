@@ -17,6 +17,10 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Therapist view of client's exercises
+ * Intent only comes from MyClients.java
+ */
 public class ClientExercises extends AppCompatActivity {
 
     // for log
@@ -30,7 +34,9 @@ public class ClientExercises extends AppCompatActivity {
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
     public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
     public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
+    public static final String MSG_CLIENT_FIRST_NAME = "example.com.hometherapy.CLIENT_FIRST_NAME";
     private String _currentUserEmail;
+    private String _clientFirstName;
 
     // member variables
     private AssignedExerciseList _assignedExercises;
@@ -71,10 +77,13 @@ public class ClientExercises extends AppCompatActivity {
         // get user email (i.e. account) from extra message
         Intent thisIntent = getIntent();
         _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
+        _clientFirstName = thisIntent.getStringExtra(MSG_CLIENT_FIRST_NAME);
         Log.d(TAG, "verify current user: " + _currentUserEmail);
+        Log.d(TAG, "verify client first name: " + _clientFirstName);
 
-        // note - I need a user account for current therapist user - all I have sent with shared prefs is the user email
-        // i need a User object to send back via shared prefs
+        // set title
+        _clientFirstName += "'s Exercises";
+        _tvCELabel.setText(_clientFirstName);
 
         // deserialize sharedPrefs JSON assigned exercises database into List of Assigned Exercises
         _assignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);

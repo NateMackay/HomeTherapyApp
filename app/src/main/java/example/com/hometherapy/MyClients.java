@@ -38,7 +38,7 @@ public class MyClients extends AppCompatActivity
 
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
-    public static final String MSG_LOGIN_USER_EMAIL = "example.com.hometherapy.LOGINUSEREMAIL";
+    public static final String MSG_CLIENT_FIRST_NAME = "example.com.hometherapy.CLIENT_FIRST_NAME";
 
     // private member variables
     private TextView _tvClientViewTitle;
@@ -115,6 +115,7 @@ public class MyClients extends AppCompatActivity
                 // intent to go to Add(Edit) Exercise to Client
                 // need to pass an intent that has the user ID as well as the assigned exercise ID
                 Intent intentClientExercises = new Intent(MyClients.this, ClientExercises.class);
+                intentClientExercises.putExtra(MSG_CLIENT_FIRST_NAME, selectedClient.getFirstName());
                 intentClientExercises.putExtra(MSG_USER_EMAIL, selectedClient.getEmail());
                 startActivity(intentClientExercises);
             }
