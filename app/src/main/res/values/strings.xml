@@ -18,5 +18,7 @@
     <string name="title_activity_my_profile">My Profile</string>
     <string name="title_activity_my_rewards">My Rewards</string>
     <string name="title_activity_my_exercises">My Exercises</string>
+    <string name="my_profile">My Profile</string>
+    <string name="log_out">Log out</string>
 
 </resources>

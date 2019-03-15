@@ -95,6 +95,9 @@ public class MyRewards extends AppCompatActivity
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(MyRewards.this, MyProfile.class);
             startActivity(intentProfile);
+        } else if (id == R.id.nav_LogOut) {
+            Intent intentLogIn = new Intent(MyRewards.this, SignIn.class);
+            startActivity(intentLogIn);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

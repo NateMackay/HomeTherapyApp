@@ -23,7 +23,11 @@
             <item
                 android:id="@+id/nav_myProfile"
                 android:icon="@drawable/ic_menu_manage"
-                android:title="My Profile" />
+                android:title="@string/my_profile" />
+            <item
+                android:id="@+id/nav_LogOut"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/log_out" />
         </menu>
     </item>
 
