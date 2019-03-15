@@ -145,7 +145,7 @@ public class SignIn extends AppCompatActivity {
                         startActivity(intentClients);
                     } else if (accountType.equals("client")) {
                         // intent to go to Exercises screen, passing user via extra message
-                        Intent intentExercises = new Intent(SignIn.this, ClientExercises.class);
+                        Intent intentExercises = new Intent(SignIn.this, MyExercises.class);
                         intentExercises.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
 //                        intentExercises.putExtra(MSG_ACCT_TYPE, loginUser.get_accountType()); // not sure if we need this
                         startActivity(intentExercises);
