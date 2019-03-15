@@ -46,6 +46,7 @@ public class ClientExercises extends AppCompatActivity {
     private Button _btnCEAddExercise;
     private TextView _tvCELabel;
     private Button _btnCEUserLogOut;
+    private Button _btnCEReturnToMyClients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +58,10 @@ public class ClientExercises extends AppCompatActivity {
         _btnCEAddExercise = (Button) findViewById(R.id.btnCEAddExercise);
         _tvCELabel = (TextView) findViewById(R.id.tvCELabel);
         _btnCEUserLogOut = (Button) findViewById(R.id.btnCEUsersLogOut);
+        _btnCEReturnToMyClients = (Button) findViewById(R.id.btnCEReturnToMyClients);
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-
-        // temporarily clear out ASSIGNED_EXERCISE_DATA
-//        SharedPreferences.Editor editor = _sharedPreferences.edit();
-//        editor.putString(ASSIGNED_EXERCISE_DATA, "");
-//        editor.apply();
-
         String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
 
         Log.d(TAG, "jsonAssignedExerciseList: " + jsonAssignedExerciseList);
@@ -77,6 +73,9 @@ public class ClientExercises extends AppCompatActivity {
         Intent thisIntent = getIntent();
         _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
         Log.d(TAG, "verify current user: " + _currentUserEmail);
+
+        // note - I need a user account for current therapist user - all I have sent with shared prefs is the user email
+        // i need a User object to send back via shared prefs
 
         // deserialize sharedPrefs JSON user database into List of Assigned Exercises
         _assignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);
@@ -120,25 +119,6 @@ public class ClientExercises extends AppCompatActivity {
                     // get current assigned exercise from position in the list
                     AssignedExercise selectedExercise = _filteredList.get(position);
 
-                    Log.d(TAG, "selected Exercise: " + selectedExercise);
-
-                    Log.d(TAG, "_currentUserEmail: " + _currentUserEmail);
-
-                    Log.d(TAG, "selectedExercise.get_assignedUserEmail(): " + selectedExercise.get_assignedUserEmail());
-
-                    Log.d(TAG, "selectedExercise.get_assignedExerciseID().toString(): " +
-                            selectedExercise.get_assignedExerciseID().toString());
-
-                    // need to add logic that will take the client to view their exercise
-                    // and mark complete - this is the myExercise view
-                    // add if client is account type, go to specific exercise view
-                    // need to wait until you have the therapist view, which is a list of clients
-                    // which will take the therapist to a view of their clients that they can then
-                    // click on and then add / edit exercises
-                    // for now, if you are in the client list of exercises, it is from the standpoint
-                    // of a therapist or admin looking at that client's exercises, with the ability
-                    // to add/edit exercises.
-
                     // the following is for therapists and admin users only
                     // intent to go to Add(Edit) Exercise to Client
                     // need to pass an intent that has the user ID as well as the assigned exercise ID
@@ -160,6 +140,16 @@ public class ClientExercises extends AppCompatActivity {
                 Intent intentClientExerciseLibrary = new Intent(ClientExercises.this, ClientExerciseLibrary.class);
                 intentClientExerciseLibrary.putExtra(MSG_USER_EMAIL, _currentUserEmail);
                 startActivity(intentClientExerciseLibrary);
+            }
+        });
+
+        // return to list of my clients button
+        _btnCEReturnToMyClients.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intentMyClients = new Intent(ClientExercises.this, MyClients.class);
+                startActivity(intentMyClients);
             }
         });
 

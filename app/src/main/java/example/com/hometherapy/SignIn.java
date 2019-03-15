@@ -140,15 +140,7 @@ public class SignIn extends AppCompatActivity {
 
                 if (accountType != null) {
                     if (accountType.equals("therapist")) {
-                        // intent to go to Clients screen, passing user via extra message
-
-                        // note temporarily changed to go to Exercises, which will be exercise
-                        // library, until view for My Client's exercises is complete
-
-                        // when we pass the therapist over, we can compare the user email, which
-                        // is a therapist, with the assigned therapist to filter out the list
-                        // of clients to view
-
+                        // intent to go to Therapist's My Clients screen, passing user via extra message
                         Intent intentClients = new Intent(SignIn.this, MyClients.class);
                         intentClients.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
 //                        intentClients.putExtra(MSG_ACCT_TYPE, loginUser.get_accountType()); // not sure if we need this
