@@ -25,6 +25,7 @@ public class ClientExercises extends AppCompatActivity {
     // name shared preferences
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
+    public static final String USER_DATA = "userData";
 
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
@@ -38,7 +39,9 @@ public class ClientExercises extends AppCompatActivity {
     private SharedPreferences _sharedPreferences;
     private List<AssignedExercise> _tempAssignedExerciseList;
     private List<AssignedExercise> _filteredList;
-    private boolean isClient;
+    private List<User> _tempUserList; // all users
+    private UserList _currentUsers;
+    private User _currentUser;
 
     // views
     private ArrayAdapter<AssignedExercise> _adapter; // add custom adapter
@@ -63,6 +66,7 @@ public class ClientExercises extends AppCompatActivity {
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
+        String jsonUserList = _sharedPreferences.getString(USER_DATA, "");
 
         Log.d(TAG, "jsonAssignedExerciseList: " + jsonAssignedExerciseList);
 
@@ -77,8 +81,12 @@ public class ClientExercises extends AppCompatActivity {
         // note - I need a user account for current therapist user - all I have sent with shared prefs is the user email
         // i need a User object to send back via shared prefs
 
-        // deserialize sharedPrefs JSON user database into List of Assigned Exercises
+        // deserialize sharedPrefs JSON assigned exercises database into List of Assigned Exercises
         _assignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);
+
+        // deserialize sharedPrefs JSON user database into a list of users
+
+
 
         Log.d(TAG, "_assignedExercises: " + _assignedExercises);
 

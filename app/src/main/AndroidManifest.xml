@@ -43,10 +43,8 @@
         <activity android:name=".ClientProfile" />
         <activity android:name=".AddExerciseToLibrary" />
         <activity android:name=".MyExercise" />
-        <activity android:name=".AddEditClient" />
         <activity android:name=".AddEditUser" />
         <activity android:name=".Users" />
-        <activity android:name=".Clients" />
         <activity android:name=".Exercises" />
         <activity android:name=".Register" />
         <activity android:name=".SignIn" />
