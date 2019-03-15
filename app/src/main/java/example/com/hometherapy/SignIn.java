@@ -149,7 +149,7 @@ public class SignIn extends AppCompatActivity {
                         // is a therapist, with the assigned therapist to filter out the list
                         // of clients to view
 
-                        Intent intentClients = new Intent(SignIn.this, Exercises.class);
+                        Intent intentClients = new Intent(SignIn.this, MyClients.class);
                         intentClients.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
 //                        intentClients.putExtra(MSG_ACCT_TYPE, loginUser.get_accountType()); // not sure if we need this
                         startActivity(intentClients);

@@ -1,9 +1,11 @@
 package example.com.hometherapy;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,12 +19,41 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class MyClients extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    // for log
+    private static final String TAG = "MyClients_Activity";
+
+    // name shared preferences
+    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String USER_DATA = "userData";
+    public static final String LOGIN_USER = "loginUser";
+
+    // Key for extra message for user email address to pass to activity
+    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
+
+    // private member variables
     private TextView _tvClientViewTitle;
     private ListView _lvClientList;
     private Button _btnAddClient;
+    private Button _btnMyClientsGoToExerciseLibrary;
+    private Button _btnMyClientsLogOut;
+    private UserList _currentUsers;
+    private User _currentUser;
+    private String _currentUserEmail;
+    private Gson _gson;
+    private SharedPreferences _sharedPreferences;
+    private List<User> _tempUserList; // all users
+    private List<User> _filteredUserList; // only those users assigned to therapist
+
+    // array adapter for user list
+    private UserListAdapter _adapterUserList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,29 +62,67 @@ public class MyClients extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-*/
+        // open up user database from shared preferences
+        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        String jsonUserList = _sharedPreferences.getString(USER_DATA, "");
+        String jsonLoginUser = _sharedPreferences.getString(LOGIN_USER, "");
 
+        // initialize GSON object
+        _gson = new Gson();
+
+        // deserialize sharedPrefs JSON user database int list of users
+        _currentUsers = _gson.fromJson(jsonUserList, UserList.class);
+        _tempUserList = _currentUsers.getUserList();
+
+        // deserialize sharedPrefs JSON login user into current user
+        _currentUser = _gson.fromJson(jsonLoginUser, User.class);
+        _currentUserEmail = _currentUser.getEmail();
+
+        // filter list of all users to only those users assigned to therapist
+        _filteredUserList = _tempUserList.stream()
+                .filter(user -> _currentUserEmail.equals(user.get_assignedTherapist()))
+                .collect(Collectors.toList());
+
+        Log.d(TAG, "list after filtering: " + _filteredUserList);
+
+        // register views
         _tvClientViewTitle = (TextView) findViewById(R.id.tvClientViewTitle);
         _lvClientList = (ListView) findViewById(R.id.lvClientList);
-        _btnAddClient = (Button) findViewById(R.id.btnAddClient);
+        _btnMyClientsGoToExerciseLibrary = (Button) findViewById(R.id.btnMyClientsGoToExerciseLibrary);
+        _btnMyClientsLogOut = (Button) findViewById(R.id.btnMyClientsLogOut);
 
-        _btnAddClient.setOnClickListener(new View.OnClickListener() {
+        // initialize array adapter and bind user list to it
+        _adapterUserList = new UserListAdapter(this, _filteredUserList);
+
+        // set adapter
+        _lvClientList.setAdapter(_adapterUserList);
+
+        // add set on item click listener here, to go to the client's view of his/her exercises
+        // need to make sure there is a return to dashboard button on that client's view
+        // to return either to my clients for a therapist or users for an admin staff
+
+
+        // go to exercise library
+        _btnMyClientsGoToExerciseLibrary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentAddClient = new Intent(MyClients.this, AddEditClient.class);
-                startActivity(intentAddClient);
+
+                Intent intentExercises = new Intent(MyClients.this, Exercises.class);
+                startActivity(intentExercises);
             }
         });
 
+        // log out, go back to signIn screen
+        _btnMyClientsLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intentSignIn = new Intent(MyClients.this, SignIn.class);
+                startActivity(intentSignIn);
+            }
+        });
+
+        // for navigation
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);

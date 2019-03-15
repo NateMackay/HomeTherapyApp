@@ -18,7 +18,7 @@ import java.util.List;
 public class Users extends AppCompatActivity {
 
     // for log
-    private static final String TAG = "AEU_Activity";
+    private static final String TAG = "Users_Activity";
 
     // name shared preferences
     public static final String SHARED_PREFS = "sharedPrefs";
