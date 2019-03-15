@@ -35,6 +35,7 @@ public class Users extends AppCompatActivity {
     private ListView _lvUserList;
     private Button _btnUserLogOut;
     private Button _btnUsersAddNewUser;
+    private Button _btnGoToExerciseLibrary;
     private UserList _currentUsers;
     private User _currentUser;
     private Gson _gson;
@@ -65,6 +66,7 @@ public class Users extends AppCompatActivity {
         _lvUserList = (ListView) findViewById(R.id.lvUserList);
         _btnUsersAddNewUser = (Button) findViewById(R.id.btnUsersAddUser);
         _btnUserLogOut = (Button) findViewById(R.id.btnUsersLogOut);
+        _btnGoToExerciseLibrary = (Button) findViewById(R.id.btnUsersGoToExerciseLibrary);
 
         // initialize array adapter and bind user list to it
         _adapterUserList = new UserListAdapter(this, _tempUserList);
@@ -99,6 +101,17 @@ public class Users extends AppCompatActivity {
                 Intent intentAddNewUser = new Intent(Users.this, AddEditUser.class);
                 intentAddNewUser.putExtra(MSG_USER_EMAIL, "");
                 startActivity(intentAddNewUser);
+            }
+        });
+
+        // on click, go to exercise library
+        _btnGoToExerciseLibrary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intentExercises = new Intent(Users.this, Exercises.class);
+                startActivity(intentExercises);
+
             }
         });
 
