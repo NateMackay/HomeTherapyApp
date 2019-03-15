@@ -15,6 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Sign-in screen description
+ * @author Team06
+ * @version beta 1.0
+ * @since   3/15/2019
+ */
 public class SignIn extends AppCompatActivity {
 
     // future feature: add to this class functionality to log to a file anytime someone has logged in
