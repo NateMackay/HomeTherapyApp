@@ -25,6 +25,7 @@ public class SignIn extends AppCompatActivity {
     // name shared preferences
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String USER_DATA = "userData";
+    public static final String LOGIN_USER = "loginUser";
 
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
@@ -127,6 +128,15 @@ public class SignIn extends AppCompatActivity {
                 // get account type of user and log account type
                 String accountType = loginUser.get_accountType();
                 Log.d(TAG, "account type: " + accountType);
+
+                // since login user is not null and the user is a valid user
+                // store user in current user shared prefs
+                // note that this should replace whatever is in SP for LOGIN_USER
+                // so should not need to clear it out
+                String jsonCurrentUser = gson.toJson(loginUser);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(LOGIN_USER, jsonCurrentUser);
+                editor.apply();
 
                 if (accountType != null) {
                     if (accountType.equals("therapist")) {
