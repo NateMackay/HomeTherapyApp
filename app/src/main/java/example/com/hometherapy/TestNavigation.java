@@ -93,7 +93,7 @@ public class TestNavigation extends AppCompatActivity
             Intent intentClients = new Intent(TestNavigation.this, MyRewards.class);
             startActivity(intentClients);
         } else if (id == R.id.nav_manage) {
-            Intent intentClients = new Intent(TestNavigation.this, Clients.class);
+            Intent intentClients = new Intent(TestNavigation.this, MyClients.class);
             startActivity(intentClients);
         } else if (id == R.id.nav_send) {
             Intent intentClients = new Intent(TestNavigation.this, ClientProfile.class);
