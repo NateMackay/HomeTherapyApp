@@ -195,7 +195,7 @@ public class MyClients extends AppCompatActivity
             startActivity(intentExercises);
         } else*/
         if (id == R.id.nav_exercise_library) {
-            Intent intentExerciseLibrary = new Intent(MyClients.this, MyExercise.class);
+            Intent intentExerciseLibrary = new Intent(MyClients.this, Exercises.class);
             startActivity(intentExerciseLibrary);
         } else if (id == R.id.nav_myMessages) {
             Intent intentRewards = new Intent(MyClients.this, MyMessages.class);
