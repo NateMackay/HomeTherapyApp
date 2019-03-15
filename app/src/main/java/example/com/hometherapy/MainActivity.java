@@ -4,10 +4,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
+
+    // for log
+    private static final String TAG = "Main_Activity";
 
     private Button _btnGoToSignIn;
     private Button _btnGoToExercises;
@@ -17,6 +21,10 @@ public class MainActivity extends AppCompatActivity {
     private Button _btnGoToUsers;
     private Button _btnGoToMyExercises;
     private Button _btnClearSharedPrefs;
+
+    private String _userData;
+    private String _exerciseData;
+    private String _assignedExerciseData;
 
     // name Shared Preferences
     public static final String SHARED_PREFS = "sharedPrefs";
@@ -43,6 +51,14 @@ public class MainActivity extends AppCompatActivity {
 
         // open up Shared Preferences db
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        _userData = _sharedPreferences.getString(USER_DATA, "");
+        _exerciseData = _sharedPreferences.getString(EXERCISE_DATA, "");
+        _assignedExerciseData = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
+
+        // log shared preference data
+        Log.d(TAG, "user data: " + _userData);
+        Log.d(TAG, "exercise data: " + _exerciseData);
+        Log.d(TAG, "assigned exercise data: " + _assignedExerciseData);
 
         // Sign in screen
         _btnGoToSignIn.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
                editor.putString(ASSIGNED_EXERCISE_DATA, "");
                editor.apply();
             }
+
         });
 
     }
