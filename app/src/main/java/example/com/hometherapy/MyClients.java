@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -100,7 +101,23 @@ public class MyClients extends AppCompatActivity
         // add set on item click listener here, to go to the client's view of his/her exercises
         // need to make sure there is a return to dashboard button on that client's view
         // to return either to my clients for a therapist or users for an admin staff
+        // set on item click listener so we move to the add edit user activity when
+        // a user is clicked, moving to that specific user's account
+        _lvClientList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                // get current assigned exercise from position in the list
+                User selectedUser = _filteredUserList.get(position);
+
+                // the following is for therapists and admin users only
+                // intent to go to Add(Edit) Exercise to Client
+                // need to pass an intent that has the user ID as well as the assigned exercise ID
+                Intent intentClientExercises = new Intent(MyClients.this, ClientExercises.class);
+                intentClientExercises.putExtra(MSG_USER_EMAIL, selectedUser.getEmail());
+                startActivity(intentClientExercises);
+            }
+        });
 
         // go to exercise library
         _btnMyClientsGoToExerciseLibrary.setOnClickListener(new View.OnClickListener() {
