@@ -9,29 +9,21 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/my_clients" />
         <item
-            android:id="@+id/nav_myExercises"
+            android:id="@+id/nav_exercise_library"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/my_exercises" />
+            android:title="Exercise Library" />
         <item
             android:id="@+id/nav_myMessages"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/my_messages" />
-        <item
-            android:id="@+id/nav_myProfile"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="My Profile" />
     </group>
 
-    <item android:title="Communicate">
+    <item>
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_myProfile"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="My Profile" />
         </menu>
     </item>
 

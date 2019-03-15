@@ -102,21 +102,19 @@ public class MyClients extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_myClients) {
+/*        if (id == R.id.nav_myClients) {
             // Handle the camera action
             Intent intentExercises = new Intent(MyClients.this, MyClients.class);
             startActivity(intentExercises);
-        } else if (id == R.id.nav_myExercises) {
-            Intent intentMessage = new Intent(MyClients.this, MyExercise.class);
-            startActivity(intentMessage);
+        } else*/
+        if (id == R.id.nav_exercise_library) {
+            Intent intentExerciseLibrary = new Intent(MyClients.this, MyExercise.class);
+            startActivity(intentExerciseLibrary);
         } else if (id == R.id.nav_myMessages) {
             Intent intentRewards = new Intent(MyClients.this, MyMessages.class);
             startActivity(intentRewards);
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(MyClients.this, MyProfile.class);
-            startActivity(intentProfile);
-        } else if (id == R.id.nav_send) {
-            Intent intentProfile = new Intent(MyClients.this, ClientProfile.class);
             startActivity(intentProfile);
         }
 
