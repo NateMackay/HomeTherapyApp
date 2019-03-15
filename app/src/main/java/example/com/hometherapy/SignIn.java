@@ -133,9 +133,9 @@ public class SignIn extends AppCompatActivity {
                 // store user in current user shared prefs
                 // note that this should replace whatever is in SP for LOGIN_USER
                 // so should not need to clear it out
-                String jsonCurrentUser = gson.toJson(loginUser);
+                String jsonLoginUser = gson.toJson(loginUser);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(LOGIN_USER, jsonCurrentUser);
+                editor.putString(LOGIN_USER, jsonLoginUser);
                 editor.apply();
 
                 if (accountType != null) {
