@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -27,6 +28,7 @@ public class Exercises extends AppCompatActivity {
     // name shared preferences
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String EXERCISE_DATA = "exerciseData";
+    public static final String LOGIN_USER = "loginUser";
 
     // Key for extra message for exercise name to pass to activity
     public static final String MSG_EXERCISE_NAME = "example.com.hometherapy.EXERCISENAME";
@@ -37,10 +39,12 @@ public class Exercises extends AppCompatActivity {
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
     private List<Exercise> tempExerciseList;
+    private User _loginUser;
 
     // views
     private ListView _lvExerciseList;
     private Button _btnAddExercise;
+    private Button _btnExercisesReturnDashboard;
 
     // array adapter for exercise list
     private ExerciseListAdapter _adapterExerciseList;
@@ -53,16 +57,19 @@ public class Exercises extends AppCompatActivity {
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         String jsonExerciseList = _sharedPreferences.getString(EXERCISE_DATA, "");
+        String jsonLoginUser = _sharedPreferences.getString(LOGIN_USER, "");
 
         // initialize GSON object
         _gson = new Gson();
 
         // deserialize sharedPrefs JSON user database into List of Exercises
         _currentExercises = _gson.fromJson(jsonExerciseList, ExerciseList.class);
+        _loginUser = _gson.fromJson(jsonLoginUser, User.class);
 
         // register view widgets
         _lvExerciseList = (ListView) findViewById(R.id.lvExerciseList);
         _btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
+        _btnExercisesReturnDashboard = (Button) findViewById(R.id.btnExercisesReturnDashboard);
 
         // if current exercise database is not empty, then proceed with getting list of exercises
         // and binding to array adapter
@@ -91,6 +98,36 @@ public class Exercises extends AppCompatActivity {
                 Intent intentEV = new Intent(Exercises.this, ExerciseView.class);
                 intentEV.putExtra(MSG_EXERCISE_NAME, currentExercise.get_exerciseName());
                 startActivity(intentEV);
+            }
+        });
+
+        _btnExercisesReturnDashboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (_loginUser != null) {
+
+                    if (_loginUser.get_accountType().equals("therapist")) {
+
+                        Intent intentReturnDashboard = new Intent(Exercises.this, MyClients.class);
+                        startActivity(intentReturnDashboard);
+
+                    } else if (_loginUser.get_accountType().equals("admin")){
+                        // go to users
+                        Intent intentReturnDashboard = new Intent(Exercises.this, Users.class);
+                        startActivity(intentReturnDashboard);
+                    } else {
+                        // only therapist and admin users should have had access to the exercise
+                        // library, so if this is happening, then there is a problem with the
+                        // login user SP or somehow a client was able to see this screen
+                        Toast.makeText(Exercises.this, "Unable to return to dashboard: " +
+                                "user not therapist or admin", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    // Check Shared Prefs Login User logic if you get this message
+                    Toast.makeText(Exercises.this, "Unable to return to dashboard: " +
+                            "error with user login", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Users"
+        android:text="Users (Admin Dashboard)"
         android:textAlignment="center"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -53,6 +53,19 @@
         app:layout_constraintTop_toBottomOf="@+id/lvUserList" />
 
     <Button
+        android:id="@+id/btnUsersGoToExerciseLibrary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:text="Open Exercise Library"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnUsersAddUser" />
+
+    <Button
         android:id="@+id/btnUsersLogOut"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -63,7 +76,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnUsersAddUser" />
+        app:layout_constraintTop_toBottomOf="@+id/btnUsersGoToExerciseLibrary" />
 </android.support.constraint.ConstraintLayout>
 
 </ScrollView>
