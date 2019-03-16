@@ -31,7 +31,7 @@ public class ExerciseListAdapter extends ArrayAdapter<Exercise> {
         Exercise currentExercise = _exerciseList.get(position);
 
         TextView name = (TextView) listItem.findViewById(R.id.tvRowExerciseName);
-        name.setText(String.format("Name:, %s",currentExercise.get_exerciseName()));
+        name.setText(String.format("Name: %s",currentExercise.get_exerciseName()));
 
         TextView discipline = (TextView) listItem.findViewById(R.id.tvRowDiscipline);
         discipline.setText(String.format("Dsc: %s", currentExercise.get_discipline()));
