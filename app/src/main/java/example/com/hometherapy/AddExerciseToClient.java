@@ -21,6 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * Therapist adds an exercise to a client.
+ */
 public class AddExerciseToClient extends AppCompatActivity {
 
     // for log

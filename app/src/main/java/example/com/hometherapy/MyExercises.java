@@ -30,7 +30,7 @@ public class MyExercises extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     // for log
-    private static final String TAG = "Client_Exercises_Activity";
+    private static final String TAG = "My_Exercises_Activity";
 
     // name shared preferences
     public static final String SHARED_PREFS = "sharedPrefs";
@@ -51,11 +51,12 @@ public class MyExercises extends AppCompatActivity
     private boolean isClient;
 
     // views
-    private ArrayAdapter<AssignedExercise> _adapter; // add custom adapter
-    private ListView _lvCEAssignedExercises;
-    private Button _btnCEAddExercise;
-    private TextView _tvCELabel;
-    private Button _btnCEUserLogOut;
+    //private ArrayAdapter<AssignedExercise> _adapter; // add custom adapter
+    private ListView _lvMEAssignedExercises;
+    private TextView _tvMELabel;
+
+    // array adapter for exercise list
+    private AssignedExerciseListAdapter _adapterAssignedExerciseList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +77,8 @@ public class MyExercises extends AppCompatActivity
         */
 
         // register views
-        _lvCEAssignedExercises = (ListView) findViewById(R.id.lvCEAssignedExercises);
-        //_btnCEAddExercise = (Button) findViewById(R.id.btnCEAddExercise);
-        _tvCELabel = (TextView) findViewById(R.id.tvCELabel);
-        //_btnCEUserLogOut = (Button) findViewById(R.id.btnCEUsersLogOut);
+        _lvMEAssignedExercises = (ListView) findViewById(R.id.lvMEAssignedExercises);
+        _tvMELabel = (TextView) findViewById(R.id.tvMELabel);
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -125,10 +124,10 @@ public class MyExercises extends AppCompatActivity
             // initialize array adapter and bind exercise list to it
             // the view will need to be different depending upon whether the user type is
             // a client or a therapist/admin
-            _adapter = new ArrayAdapter<>(this, android.R.layout.simple_selectable_list_item, _filteredList);
+            _adapterAssignedExerciseList = new AssignedExerciseListAdapter(this, _filteredList);
 
             // set the adapter to the list view
-            _lvCEAssignedExercises.setAdapter(_adapter);
+            _lvMEAssignedExercises.setAdapter(_adapterAssignedExerciseList);
 
             // if the user clicks on an existing exercise, we want to take the user to the add/edit
             // exercise to client activity where they can view and edit the exercise
@@ -136,7 +135,7 @@ public class MyExercises extends AppCompatActivity
             // or therapist
             // if a client clicks on an exercise, then he/she will be taken to the my exercise view
             // where the client can mark an exercise as complete
-            _lvCEAssignedExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            _lvMEAssignedExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -165,7 +164,7 @@ public class MyExercises extends AppCompatActivity
                     // the following is for therapists and admin users only
                     // intent to go to Add(Edit) Exercise to Client
                     // need to pass an intent that has the user ID as well as the assigned exercise ID
-                    Intent intentAETC = new Intent(MyExercises.this, AddExerciseToClient.class);
+                    Intent intentAETC = new Intent(MyExercises.this, MyExercise.class);
                     intentAETC.putExtra(MSG_ADD_OR_EDIT, "edit");
                     intentAETC.putExtra(MSG_USER_EMAIL, _currentUserEmail);
                     intentAETC.putExtra(MSG_ASSIGNED_EXERCISE_ID, selectedExercise.get_assignedExerciseID().toString());
