@@ -105,30 +105,34 @@ public class AddExerciseToLibrary extends AppCompatActivity {
                         .findAny()
                         .orElse(null);
 
-                // set views to exercise data
-                String discipline = _currentExercise.get_discipline();
-                String modality = _currentExercise.get_modality();
-                String assignment = _currentExercise.get_assignment();
-                String videoLink = _currentExercise.get_videoLink();
+                if (_currentExercise != null) {
 
-                _etATLExerciseTitle.setText(_exerciseName);
-                _etATLAssignment.setText(assignment);
-                _etATLVideoLink.setText(videoLink);
+                    // set views to exercise data
+                    String discipline = _currentExercise.get_discipline();
+                    String modality = _currentExercise.get_modality();
+                    String assignment = _currentExercise.get_assignment();
+                    String videoLink = _currentExercise.get_videoLink();
 
-                // get indices of discipline and modality for setting each value to the spinner
-                int iDiscipline = Arrays.asList(_discipline).indexOf(discipline);
-                int iModality = Arrays.asList(_modality).indexOf(modality);
+                    _etATLExerciseTitle.setText(_exerciseName);
+                    _etATLAssignment.setText(assignment);
+                    _etATLVideoLink.setText(videoLink);
 
-                // set spinner values - note a value of -1 means indexOf() did not find value searching for
-                if (iDiscipline >= 0) {
-                    _spinATLDiscipline.setSelection(iDiscipline);
+                    // get indices of discipline and modality for setting each value to the spinner
+                    int iDiscipline = Arrays.asList(_discipline).indexOf(discipline);
+                    int iModality = Arrays.asList(_modality).indexOf(modality);
+
+                    // set spinner values - note a value of -1 means indexOf() did not find value searching for
+                    if (iDiscipline >= 0) {
+                        _spinATLDiscipline.setSelection(iDiscipline);
+                    }
+
+                    if (iModality >= 0) {
+                        _spinATLModality.setSelection(iModality);
+                    }
+                }  else {
+                    Log.e(TAG, "error: _currentExercise is NULL");
                 }
-
-                if (iModality >= 0) {
-                    _spinATLModality.setSelection(iModality);
-                }
-
-            } // check if exercise is new
+            }
 
         } else {
             // instantiate a new exercise library (i.e. ExerciseList class object)
@@ -153,7 +157,9 @@ public class AddExerciseToLibrary extends AppCompatActivity {
                         }
                     }
                     // if exercise exists in library, return focus to the exercise name edit text
-                    if (exerciseExists) {
+                    // however, if we simply matched our own exercise in the library, no need
+                    // to go back as we can save/update our existing exercise
+                    if (exerciseExists && !exerciseTitle.equals(_exerciseName)) {
                         _etATLExerciseTitle.setError("Exercise name already exists. Try a different name.");
                         _etATLExerciseTitle.requestFocus();
                         return;
