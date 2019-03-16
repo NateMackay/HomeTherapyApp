@@ -94,10 +94,10 @@ public class Exercises extends AppCompatActivity {
                 // get current exercise from position in list
                 Exercise currentExercise = tempExerciseList.get(position);
 
-                // intent to go to Exercise View screen, passing exercise via extra message
-                Intent intentEV = new Intent(Exercises.this, ExerciseView.class);
-                intentEV.putExtra(MSG_EXERCISE_NAME, currentExercise.get_exerciseName());
-                startActivity(intentEV);
+                // intent to go to Add/Edit Exercise to Library screen, passing exercise via extra message
+                Intent intentAddExerciseToLibrary = new Intent(Exercises.this, AddExerciseToLibrary.class);
+                intentAddExerciseToLibrary.putExtra(MSG_EXERCISE_NAME, currentExercise.get_exerciseName());
+                startActivity(intentAddExerciseToLibrary);
             }
         });
 
@@ -135,12 +135,11 @@ public class Exercises extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intentAddExercise = new Intent(Exercises.this, AddExerciseToLibrary.class);
+                intentAddExercise.putExtra(MSG_EXERCISE_NAME, "***new_exercise***");
                 startActivity(intentAddExercise);
             }
         });
     }
-
-
 
 
 

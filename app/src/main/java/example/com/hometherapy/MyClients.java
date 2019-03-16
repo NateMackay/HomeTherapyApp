@@ -55,7 +55,7 @@ public class MyClients extends AppCompatActivity
     private List<User> _filteredUserList; // only those users assigned to therapist
 
     // array adapter for user list
-    private UserListAdapter _adapterUserList;
+    private MyClientsAdapter _adapterUserList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +94,7 @@ public class MyClients extends AppCompatActivity
         _btnMyClientsLogOut = (Button) findViewById(R.id.btnMyClientsLogOut);
 
         // initialize array adapter and bind user list to it
-        _adapterUserList = new UserListAdapter(this, _filteredUserList);
+        _adapterUserList = new MyClientsAdapter(this, _filteredUserList);
 
         // set adapter
         _lvClientList.setAdapter(_adapterUserList);

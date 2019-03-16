@@ -1,6 +1,7 @@
 package example.com.hometherapy;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,10 @@ import android.widget.TextView;
 import java.util.List;
 
 public class ExerciseListAdapter extends ArrayAdapter<Exercise> {
+
+    // for log
+    private static final String TAG = "ExerciseListAdapter";
+
     private Context _context;
     private List<Exercise> _exerciseList;
 
@@ -30,14 +35,14 @@ public class ExerciseListAdapter extends ArrayAdapter<Exercise> {
 
         Exercise currentExercise = _exerciseList.get(position);
 
-        TextView name = (TextView) listItem.findViewById(R.id.tvRowExerciseName);
-        name.setText(String.format("Name:, %s",currentExercise.get_exerciseName()));
+        TextView name = (TextView) listItem.findViewById(R.id.tvRowELExerciseName);
+        name.setText(String.format("Name: %s",currentExercise.get_exerciseName()));
 
-        TextView discipline = (TextView) listItem.findViewById(R.id.tvRowDiscipline);
-        discipline.setText(String.format("Dsc: %s", currentExercise.get_discipline()));
+        TextView discipline = (TextView) listItem.findViewById(R.id.tvRowELDiscipline);
+        discipline.setText(String.format("Discipline: %s",currentExercise.get_discipline()));
 
-        TextView modality = (TextView) listItem.findViewById(R.id.tvRowModality);
-        modality.setText(String.format("Mod: %s", currentExercise.get_modality()));
+        TextView modality = (TextView) listItem.findViewById(R.id.tvRowELModality);
+        modality.setText(String.format("Modality: %s",currentExercise.get_modality()));
 
         return listItem;
     }

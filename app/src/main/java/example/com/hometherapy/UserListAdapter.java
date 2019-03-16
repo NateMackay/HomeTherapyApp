@@ -34,13 +34,13 @@ public class UserListAdapter extends ArrayAdapter<User> {
         TextView name = (TextView) listItem.findViewById(R.id.tvRowUserName);
         name.setText(String.format("%s, %s", currentUser.getLastName(), currentUser.getFirstName()));
 
-        TextView email = (TextView) listItem.findViewById(R.id.tvRowEmail);
+        TextView email = (TextView) listItem.findViewById(R.id.tvRowUserEmail);
         email.setText(currentUser.getEmail());
 
-        TextView accountType = (TextView) listItem.findViewById(R.id.tvRowAccountType);
+        TextView accountType = (TextView) listItem.findViewById(R.id.tvRowUserAccountType);
         accountType.setText(String.format("Acct Type: %s", currentUser.get_accountType()));
 
-        TextView status = (TextView) listItem.findViewById(R.id.tvRowStatus);
+        TextView status = (TextView) listItem.findViewById(R.id.tvRowUserStatus);
         status.setText(String.format("Status: %s", currentUser.get_status()));
 
         return listItem;
