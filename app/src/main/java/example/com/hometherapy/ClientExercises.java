@@ -82,7 +82,8 @@ public class ClientExercises extends AppCompatActivity {
         Log.d(TAG, "verify client first name: " + _clientFirstName);
 
         // set title
-        String nameTitle = _clientFirstName += "'s Exercises";
+
+        String nameTitle = _clientFirstName + "'s Exercises";
         _tvCELabel.setText(nameTitle);
 
         // deserialize sharedPrefs JSON assigned exercises database into List of Assigned Exercises
