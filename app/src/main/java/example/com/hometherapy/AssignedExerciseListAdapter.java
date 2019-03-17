@@ -1,7 +1,6 @@
 package example.com.hometherapy;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -10,11 +9,9 @@ import android.widget.TextView;
 import java.util.List;
 
 import static android.view.LayoutInflater.from;
-import static example.com.hometherapy.R.id;
-import static example.com.hometherapy.R.id.tvRowStatus;
-import static example.com.hometherapy.R.id.tvRowAssignedExerciseName;
-//import static example.com.hometherapy.R.id.tvRowRewards;
-import static example.com.hometherapy.R.layout;
+import static example.com.hometherapy.R.id.tvRowAE1ExerciseName;
+import static example.com.hometherapy.R.id.tvRowAE1PointValue;
+import static example.com.hometherapy.R.id.tvRowAE1Status;
 import static example.com.hometherapy.R.layout.listview_row_design_assigned_exercise_1;
 import static java.lang.String.format;
 
@@ -42,14 +39,14 @@ public class AssignedExerciseListAdapter extends ArrayAdapter<AssignedExercise> 
 
         AssignedExercise currentExercise = _aExerciseList.get(position);
 
-        TextView name = (TextView) listItem.findViewById(tvRowAssignedExerciseName);
+        TextView name = (TextView) listItem.findViewById(tvRowAE1ExerciseName);
         name.setText(format("%s", currentExercise.get_exerciseName()));
 
-        TextView discipline = (TextView) listItem.findViewById(tvRowStatus);
-        discipline.setText(format("%s", currentExercise.get_status()));
+        TextView discipline = (TextView) listItem.findViewById(tvRowAE1Status);
+        discipline.setText(format("Status: %s", currentExercise.get_status()));
 
-        //TextView modality = (TextView) listItem.findViewById(tvRowRewards);
-        //modality.setText(format("Mod: %s", currentExercise.get_rewards()));
+        TextView pointValue = (TextView) listItem.findViewById(tvRowAE1PointValue);
+        pointValue.setText(format("Point Value: %s", "25")); // "25" value is dummy value until points are implemented
 
         return listItem;
     }

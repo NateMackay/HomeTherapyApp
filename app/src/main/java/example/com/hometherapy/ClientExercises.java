@@ -46,7 +46,8 @@ public class ClientExercises extends AppCompatActivity {
     private List<AssignedExercise> _filteredList;
 
     // views
-    private ArrayAdapter<AssignedExercise> _adapter; // add custom adapter
+//    private ArrayAdapter<AssignedExercise> _adapter;
+    private AssignedExerciseListAdapter _adapterAssignedExercises;
     private ListView _lvCEAssignedExercises;
     private Button _btnCEAddExercise;
     private TextView _tvCELabel;
@@ -109,10 +110,11 @@ public class ClientExercises extends AppCompatActivity {
             // initialize array adapter and bind exercise list to it
             // the view will need to be different depending upon whether the user type is
             // a client or a therapist/admin
-            _adapter = new ArrayAdapter<>(this, android.R.layout.simple_selectable_list_item, _filteredList);
+            _adapterAssignedExercises = new AssignedExerciseListAdapter(this, _filteredList);
+//            _adapter = new ArrayAdapter<>(this, android.R.layout.simple_selectable_list_item, _filteredList);
 
             // set the adapter to the list view
-            _lvCEAssignedExercises.setAdapter(_adapter);
+            _lvCEAssignedExercises.setAdapter(_adapterAssignedExercises);
 
             // if the user clicks on an existing exercise, we want to take the user to the add/edit
             // exercise to client activity where they can view and edit the exercise
