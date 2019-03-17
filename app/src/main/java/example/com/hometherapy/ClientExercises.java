@@ -46,7 +46,6 @@ public class ClientExercises extends AppCompatActivity {
     private List<AssignedExercise> _filteredList;
 
     // views
-//    private ArrayAdapter<AssignedExercise> _adapter;
     private AssignedExerciseListAdapter _adapterAssignedExercises;
     private ListView _lvCEAssignedExercises;
     private Button _btnCEAddExercise;
@@ -83,8 +82,8 @@ public class ClientExercises extends AppCompatActivity {
         Log.d(TAG, "verify client first name: " + _clientFirstName);
 
         // set title
-        _clientFirstName += "'s Exercises";
-        _tvCELabel.setText(_clientFirstName);
+        String nameTitle = _clientFirstName += "'s Exercises";
+        _tvCELabel.setText(nameTitle);
 
         // deserialize sharedPrefs JSON assigned exercises database into List of Assigned Exercises
         _assignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);
@@ -111,7 +110,6 @@ public class ClientExercises extends AppCompatActivity {
             // the view will need to be different depending upon whether the user type is
             // a client or a therapist/admin
             _adapterAssignedExercises = new AssignedExerciseListAdapter(this, _filteredList);
-//            _adapter = new ArrayAdapter<>(this, android.R.layout.simple_selectable_list_item, _filteredList);
 
             // set the adapter to the list view
             _lvCEAssignedExercises.setAdapter(_adapterAssignedExercises);
@@ -136,6 +134,7 @@ public class ClientExercises extends AppCompatActivity {
                     intentAETC.putExtra(MSG_ADD_OR_EDIT, "edit");
                     intentAETC.putExtra(MSG_USER_EMAIL, _currentUserEmail);
                     intentAETC.putExtra(MSG_ASSIGNED_EXERCISE_ID, selectedExercise.get_assignedExerciseID().toString());
+                    intentAETC.putExtra(MSG_CLIENT_FIRST_NAME, _clientFirstName);
                     startActivity(intentAETC);
                 }
             });
@@ -149,6 +148,7 @@ public class ClientExercises extends AppCompatActivity {
                 // intent to go to Exercises screen, passing user via extra message
                 Intent intentClientExerciseLibrary = new Intent(ClientExercises.this, ClientExerciseLibrary.class);
                 intentClientExerciseLibrary.putExtra(MSG_USER_EMAIL, _currentUserEmail);
+                intentClientExerciseLibrary.putExtra(MSG_CLIENT_FIRST_NAME, _clientFirstName);
                 startActivity(intentClientExerciseLibrary);
             }
         });

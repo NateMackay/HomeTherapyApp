@@ -33,9 +33,12 @@ public class AddExerciseToClient extends AppCompatActivity {
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
 
+
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
+    public static final String MSG_CLIENT_FIRST_NAME = "example.com.hometherapy.CLIENT_FIRST_NAME";
     private String _currentUserEmail;
+    private String _clientFirstName;
 
     // Keys for extra message to pass elements of exercise from library to add library
     public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
@@ -119,6 +122,7 @@ public class AddExerciseToClient extends AppCompatActivity {
         // get exercise data passed from client exercise library
         Intent thisIntent = getIntent();
         _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
+        _clientFirstName = thisIntent.getStringExtra(MSG_CLIENT_FIRST_NAME);
 
         Log.d(TAG, "verify current user: " + _currentUserEmail);
 
@@ -239,6 +243,7 @@ public class AddExerciseToClient extends AppCompatActivity {
 
                 Intent intentClientExercises = new Intent(AddExerciseToClient.this, ClientExercises.class);
                 intentClientExercises.putExtra(MSG_USER_EMAIL, _currentUserEmail);
+                intentClientExercises.putExtra(MSG_CLIENT_FIRST_NAME, _clientFirstName);
                 startActivity(intentClientExercises);
 
             }

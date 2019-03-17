@@ -27,6 +27,7 @@ public class ClientExerciseLibrary extends AppCompatActivity {
 
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
+    public static final String MSG_CLIENT_FIRST_NAME = "example.com.hometherapy.CLIENT_FIRST_NAME";
 
     // Keys for extra message to pass elements of exercise from library to add library
     public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
@@ -38,14 +39,14 @@ public class ClientExerciseLibrary extends AppCompatActivity {
 
     // member variables
     private ExerciseList _currentExercises;
-    private Exercise _exercise;
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
     private List<Exercise> _tempExerciseList;
     private String _currentUserEmail;
+    private String _clientFirstName;
 
     // views
-    private ArrayAdapter<Exercise> _adapter1; // implement a custom adapter
+    private ExerciseListAdapter _adapterExerciseList;
     private TextView _tvCELLabel;
     private ListView _lvCELExerciseList;
 
@@ -64,6 +65,7 @@ public class ClientExerciseLibrary extends AppCompatActivity {
         // get user email (i.e. account) from extra message
         Intent thisIntent = getIntent();
         _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
+        _clientFirstName = thisIntent.getStringExtra(MSG_CLIENT_FIRST_NAME);
         Log.d(TAG, "verify current user: " + _currentUserEmail);
 
         // initialize GSON object
@@ -83,12 +85,12 @@ public class ClientExerciseLibrary extends AppCompatActivity {
             Log.d(TAG, "tempExerciseList: " + _tempExerciseList);
 
             // initialize array adapter and bind exercise list to it
-            _adapter1 = new ArrayAdapter<Exercise>(this, android.R.layout.simple_selectable_list_item, _tempExerciseList);
+            _adapterExerciseList = new ExerciseListAdapter(this, _tempExerciseList);
 
             Log.d(TAG, "after adapter is defined");
 
             // set the adapter to the list view
-            _lvCELExerciseList.setAdapter(_adapter1);
+            _lvCELExerciseList.setAdapter(_adapterExerciseList);
 
             Log.d(TAG, "after adapter is set");
 
@@ -107,6 +109,7 @@ public class ClientExerciseLibrary extends AppCompatActivity {
                     // intent to go to add exercise to client activity
                     Intent intentAETC = new Intent(ClientExerciseLibrary.this, AddExerciseToClient.class);
                     intentAETC.putExtra(MSG_USER_EMAIL, _currentUserEmail);
+                    intentAETC.putExtra(MSG_CLIENT_FIRST_NAME, _clientFirstName);
                     intentAETC.putExtra(MSG_ADD_OR_EDIT, "add");
                     intentAETC.putExtra(MSG_EXERCISE_NAME, currentExercise.get_exerciseName());
                     intentAETC.putExtra(MSG_ASSIGNMENT, currentExercise.get_assignment());
