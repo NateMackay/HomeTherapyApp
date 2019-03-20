@@ -40,7 +40,7 @@ public class MyExercises extends AppCompatActivity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
     public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
     public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
-    private String _currentUserEmail;
+    private String _currentUserEmail; // user email of the client
 
     // member variables
     private AssignedExerciseList _assignedExercises;
@@ -65,28 +65,12 @@ public class MyExercises extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /* commenting this out gets rid of the floating email icon
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        */
-
         // register views
         _lvMEAssignedExercises = (ListView) findViewById(R.id.lvMEAssignedExercises);
         _tvMELabel = (TextView) findViewById(R.id.tvMELabel);
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-
-        // temporarily clear out ASSIGNED_EXERCISE_DATA
-//        SharedPreferences.Editor editor = _sharedPreferences.edit();
-//        editor.putString(ASSIGNED_EXERCISE_DATA, "");
-//        editor.apply();
 
         String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
 
@@ -173,18 +157,7 @@ public class MyExercises extends AppCompatActivity
             });
         }
 
-        // add an exercise button - this will pass user email to a Exercises
-        /*_btnCEAddExercise.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // intent to go to Exercises screen, passing user via extra message
-                Intent intentClientExerciseLibrary = new Intent(MyExercises.this, ClientExerciseLibrary.class);
-                intentClientExerciseLibrary.putExtra(MSG_USER_EMAIL, _currentUserEmail);
-                startActivity(intentClientExerciseLibrary);
-            }
-        });
-
+        /*
         // on click, just go back to signIn screen
         // for testing purposes
         _btnCEUserLogOut.setOnClickListener(new View.OnClickListener() {
@@ -229,15 +202,6 @@ public class MyExercises extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        // commenting this out gets rid of the kebab icon
-        //noinspection SimplifiableIfStatement
-/*
-        if (id == R.id.action_settings) {
-            return true;
-        }
-*/
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -258,6 +222,7 @@ public class MyExercises extends AppCompatActivity
             startActivity(intentRewards);
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(MyExercises.this, MyProfile.class);
+            intentProfile.putExtra(MSG_USER_EMAIL, _currentUserEmail);
             startActivity(intentProfile);
         }
 
