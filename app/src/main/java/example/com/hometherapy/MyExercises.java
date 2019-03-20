@@ -62,7 +62,6 @@ public class MyExercises extends AppCompatActivity
     private boolean isClient;
 
     // views
-    //private ArrayAdapter<AssignedExercise> _adapter; // add custom adapter
     private ListView _lvMEAssignedExercises;
     private TextView _tvMELabel;
 
@@ -82,7 +81,6 @@ public class MyExercises extends AppCompatActivity
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-
         String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
 
         Log.d(TAG, "jsonAssignedExerciseList: " + jsonAssignedExerciseList);
