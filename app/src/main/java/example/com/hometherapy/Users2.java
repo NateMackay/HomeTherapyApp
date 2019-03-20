@@ -2,19 +2,11 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.os.Bundle;
+import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,9 +14,8 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.util.List;
-
 /**
- * The Users activity description:
+ * Users screen description:
  * Admins can see a list of all of the users.
  * From here, the admin can add a new user, click on an existing user to edit
  * their account, or open up the library of exercises.
@@ -32,8 +23,7 @@ import java.util.List;
  * @version 1.0
  * @since 2019-03-19
  */
-public class Users extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class Users2 extends AppCompatActivity {
 
     // for log
     private static final String TAG = "Users_Activity";
@@ -66,9 +56,7 @@ public class Users extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_users3);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_users);
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -104,7 +92,7 @@ public class Users extends AppCompatActivity
                 User currentUser = _tempUserList.get(position);
 
                 // intent to go to Add Edit User screen, passing user via extra message
-                Intent intentAEU = new Intent(Users.this, AddEditUser.class);
+                Intent intentAEU = new Intent(Users2.this, AddEditUser.class);
                 intentAEU.putExtra(MSG_USER_EMAIL, currentUser.getEmail());
                 startActivity(intentAEU);
             }
@@ -118,7 +106,7 @@ public class Users extends AppCompatActivity
                 // since adding a new user, we do not have a user email yet
                 // AddEditUser.java is expecting an intent for user email
                 // so we are sending an empty string value
-                Intent intentAddNewUser = new Intent(Users.this, AddEditUser.class);
+                Intent intentAddNewUser = new Intent(Users2.this, AddEditUser.class);
                 intentAddNewUser.putExtra(MSG_USER_EMAIL, "");
                 startActivity(intentAddNewUser);
             }
@@ -129,7 +117,7 @@ public class Users extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-                Intent intentExercises = new Intent(Users.this, Exercises.class);
+                Intent intentExercises = new Intent(Users2.this, Exercises.class);
                 startActivity(intentExercises);
 
             }
@@ -140,81 +128,12 @@ public class Users extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-                Intent intentSignIn = new Intent(Users.this, SignIn.class);
+                Intent intentSignIn = new Intent(Users2.this, SignIn.class);
                 startActivity(intentSignIn);
 
             }
         });
 
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.users, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-/*
-        if (id == R.id.action_settings) {
-            return true;
-        }
-*/
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_users) {
-            Intent intentMessage = new Intent(Users.this, Users.class);
-            startActivity(intentMessage);
-        /* } else if (id == R.id.nav_myRewards) {
-            Intent intentRewards = new Intent(MyExercises.this, MyRewards.class);
-            startActivity(intentRewards); */
-        } else if (id == R.id.nav_exercise_library) {
-            Intent intentRewards = new Intent(Users.this, Exercises.class);
-            startActivity(intentRewards);
-        } else if (id == R.id.nav_myProfile) {
-            Intent intentProfile = new Intent(Users.this, MyProfile.class);
-            startActivity(intentProfile);
-        } else if (id == R.id.nav_LogOut) {
-            Intent intentLogIn = new Intent(Users.this, SignIn.class);
-            startActivity(intentLogIn);
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 }

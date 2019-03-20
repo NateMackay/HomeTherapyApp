@@ -12,9 +12,13 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".Users"
+            android:label="@string/title_activity_users"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".MyExercises"
             android:label="@string/title_activity_my_exercises"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MyRewards"
             android:label="@string/title_activity_my_rewards"
@@ -44,7 +48,6 @@
         <activity android:name=".AddExerciseToLibrary" />
         <activity android:name=".MyExercise" />
         <activity android:name=".AddEditUser" />
-        <activity android:name=".Users" />
         <activity android:name=".Exercises" />
         <activity android:name=".Register" />
         <activity android:name=".SignIn" />
