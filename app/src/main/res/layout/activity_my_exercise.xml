@@ -1,202 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MyExercise">
+    android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/tvMyELabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="My Exercise"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.04" />
+<android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".MyExercise">
 
     <TextView
         android:id="@+id/tvMyExerciseLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="24dp"
         android:text="Exercise: "
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/tvMyEDisciplineLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyELabel"
-        app:layout_constraintVertical_bias="0.025" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvMyEDisciplineLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:text="Discipline: "
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/tvMyEModalityLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyExerciseLabel"
-        app:layout_constraintVertical_bias="0.01" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMyExerciseLabel" />
 
     <TextView
         android:id="@+id/tvMyEModalityLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:text="Modality: "
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/tvMyEAssignmentLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyEDisciplineLabel"
-        app:layout_constraintVertical_bias="0.018" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMyEDisciplineLabel" />
 
     <TextView
         android:id="@+id/tvMyEAssignmentLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:text="Assignment: "
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.087"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyEModalityLabel"
-        app:layout_constraintVertical_bias="0.018" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMyEModalityLabel" />
 
     <TextView
         android:id="@+id/tvMyEAssignment"
-        android:layout_width="327dp"
-        android:layout_height="192dp"
+        android:layout_width="363dp"
+        android:layout_height="155dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.355"
+        app:layout_constraintHorizontal_bias="0.675"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyEAssignmentLabel"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMyEAssignmentLabel" />
 
     <TextView
         android:id="@+id/tvVideoLinkLabel"
         android:layout_width="wrap_content"
-        android:layout_height="31dp"
-        android:layout_marginTop="8dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Video Link: "
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.084"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyEAssignment"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMyEAssignment" />
 
     <TextView
         android:id="@+id/tvPointValueLabel"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:text="Point Value: "
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.064"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvVideoLinkLabel"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/tvVideoLinkLabel" />
 
     <TextView
         android:id="@+id/tvStatusLabel"
         android:layout_width="wrap_content"
-        android:layout_height="33dp"
-        android:layout_marginTop="9dp"
-        android:layout_marginBottom="164dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Status: "
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.076"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPointValueLabel"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/tvPointValueLabel" />
 
     <Button
         android:id="@+id/btnGoToExercises"
-        android:layout_width="126dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="8dp"
-        android:text="My Exercises"
+        android:layout_marginBottom="24dp"
+        android:text="Back To My Exercises"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.898"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvWellDoneMsg"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/tvMyEPointValue"
-        android:layout_width="187dp"
-        android:layout_height="33dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="pointstext"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.022"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/tvPointValueLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvVideoLinkLabel"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/tvLinkToVideo" />
 
     <TextView
         android:id="@+id/tvMyEStatus"
-        android:layout_width="187dp"
-        android:layout_height="33dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="statustext"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.317"
+        app:layout_constraintHorizontal_bias="0.121"
         app:layout_constraintStart_toEndOf="@+id/tvStatusLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyEPointValue"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMyEPointValue" />
 
     <TextView
         android:id="@+id/tvMyExercise"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:textAlignment="viewStart"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.344"
+        app:layout_constraintHorizontal_bias="0.073"
         app:layout_constraintStart_toEndOf="@+id/tvMyExerciseLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyELabel"
-        app:layout_constraintVertical_bias="0.025" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvMyDiscipline"
@@ -205,15 +164,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:textAlignment="viewStart"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.292"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/tvMyEDisciplineLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyExercise"
-        app:layout_constraintVertical_bias="0.01" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMyExercise" />
 
     <TextView
         android:id="@+id/tvMyModality"
@@ -222,54 +178,47 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:textAlignment="viewStart"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.338"
+        app:layout_constraintHorizontal_bias="0.066"
         app:layout_constraintStart_toEndOf="@+id/tvMyEModalityLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyDiscipline"
-        app:layout_constraintVertical_bias="0.018" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMyDiscipline" />
 
     <TextView
         android:id="@+id/tvLinkToVideo"
-        android:layout_width="184dp"
-        android:layout_height="33dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:text="videolinktext"
+        android:textAlignment="viewStart"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.107"
+        app:layout_constraintHorizontal_bias="0.023"
         app:layout_constraintStart_toEndOf="@+id/tvVideoLinkLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyEAssignment"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMyEAssignment" />
 
     <Button
         android:id="@+id/btnComplete"
         android:layout_width="93dp"
         android:layout_height="93dp"
-        android:layout_marginStart="27dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/round_button"
         android:text="Press to Complete"
         android:textAlignment="center"
         android:textColor="#000"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tvWellDoneMsg"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStatusLabel" />
 
     <TextView
         android:id="@+id/tvWellDoneMsg"
-        android:layout_width="221dp"
-        android:layout_height="65dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="24dp"
         android:fontFamily="@font/eczar_bold"
         android:text="Well Done!"
@@ -277,7 +226,11 @@
         android:textSize="40sp"
         android:textStyle="italic"
         android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/btnComplete"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMyEStatus" />
+        app:layout_constraintStart_toEndOf="@+id/btnComplete"
+        app:layout_constraintTop_toTopOf="@+id/btnComplete" />
 
 </android.support.constraint.ConstraintLayout>
+
+</ScrollView>
