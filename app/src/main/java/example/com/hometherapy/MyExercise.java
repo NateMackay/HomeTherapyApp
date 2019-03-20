@@ -242,6 +242,12 @@ public class MyExercise extends AppCompatActivity {
      * If assigned exercise is already completed, then make the below changes to the view when called.
      */
     public void hasCompleted() {
+        // set text and enabled status so that round_button.xml file, where shape properties are set
+        // can be applied accordingly
+        // references:
+        // https://developer.android.com/guide/topics/ui/controls/button
+        // https://www.journaldev.com/19850/android-button-design-custom-round-color (view in Chrome)
+        // https://developer.android.com/guide/topics/resources/drawable-resource#Shape
         _btnMyComplete.setText("Completed");
         _btnMyComplete.setEnabled(false);
     }
