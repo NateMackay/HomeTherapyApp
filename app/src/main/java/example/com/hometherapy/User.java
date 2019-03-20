@@ -13,6 +13,7 @@ public class User {
     private String _assignedClinic;
     private String _accountType;
     private String _assignedTherapist;
+    private Integer _myPoints;
 
     // constructors
     public User(String email, String password, String firstName, String lastName, String phone,
@@ -28,6 +29,7 @@ public class User {
         this._assignedClinic = assignedClinic;
         this._accountType = accountType;
         this._assignedTherapist = assignedTherapist;
+        this._myPoints = 0;
     }
 
     public User(String userID) {
@@ -41,6 +43,7 @@ public class User {
         this._assignedClinic = "pending";
         this._accountType = "pending";
         this._assignedTherapist = "pending";
+        this._myPoints = 0;
     }
 
     // getters
@@ -54,6 +57,7 @@ public class User {
     public String get_assignedClinic() { return _assignedClinic; }
     public String get_accountType() { return _accountType; }
     public String get_assignedTherapist() { return _assignedTherapist; }
+    public Integer get_myPoints() { return _myPoints; }
 
     // setters
     public void setEmail(String email) {
@@ -80,6 +84,7 @@ public class User {
     public void set_assignedTherapist (String _assignedTherapist) {
         this._assignedTherapist = _assignedTherapist;
     }
+    public void set_myPoints (Integer _myPoints) { this._myPoints = _myPoints; }
 
     // toString
     @Override
@@ -95,6 +100,7 @@ public class User {
                 ", _assignedClinic='" + _assignedClinic + '\'' +
                 ", _accountType='" + _accountType + '\'' +
                 ", _assignedTherapist='" + _assignedTherapist + '\'' +
+                ", _myPoints=" + _myPoints +
                 '}';
     }
 }
