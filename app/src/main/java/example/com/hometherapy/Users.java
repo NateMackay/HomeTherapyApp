@@ -14,7 +14,15 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.util.List;
-
+/**
+ * Users screen description:
+ * Admins can see a list of all of the users.
+ * From here, the admin can add a new user, click on an existing user to edit
+ * their account, or open up the library of exercises.
+ * @author Team06
+ * @version beta 1.0
+ * @since   3/19/2019
+ */
 public class Users extends AppCompatActivity {
 
     // for log
