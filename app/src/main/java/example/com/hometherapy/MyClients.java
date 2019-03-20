@@ -48,7 +48,7 @@ public class MyClients extends AppCompatActivity
     private Button _btnMyClientsLogOut;
     private UserList _currentUsers;
     private User _currentUser;
-    private String _currentUserEmail;
+    private String _currentUserEmail; // email of the therapist, also the current login user
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
     private List<User> _tempUserList; // all users
@@ -203,6 +203,7 @@ public class MyClients extends AppCompatActivity
             startActivity(intentRewards);
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(MyClients.this, MyProfile.class);
+            intentProfile.putExtra(MSG_USER_EMAIL, _currentUserEmail);
             startActivity(intentProfile);
         }
 
