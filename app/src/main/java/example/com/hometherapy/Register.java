@@ -15,6 +15,13 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Registration page for new users. Users click on register button
+ * from sign-in view {@link SignIn} to register as a new user.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class Register extends AppCompatActivity {
 
     // for log

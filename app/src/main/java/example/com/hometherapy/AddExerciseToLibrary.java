@@ -18,6 +18,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Used to add an exercise to the general exercise library. This has
+ * no connection with any client. It is a general reusable library.
+ * This should be accessed via the Exercises.Java / exercises.xml screen,
+ * which is the general exercise library. A link in the menu in the
+ * Exercises.Java / exercises.xml screen should be to
+ * “Add exercise to library” which takes the user to this
+ * AddExerciseToLibrary.java / add_exercise_to_library screen.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class AddExerciseToLibrary extends AppCompatActivity {
 
     // for log

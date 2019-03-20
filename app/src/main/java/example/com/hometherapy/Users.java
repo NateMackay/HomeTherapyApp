@@ -20,8 +20,8 @@ import java.util.List;
  * From here, the admin can add a new user, click on an existing user to edit
  * their account, or open up the library of exercises.
  * @author Team06
- * @version beta 1.0
- * @since   3/19/2019
+ * @version 1.0
+ * @since 2019-03-19
  */
 public class Users extends AppCompatActivity {
 

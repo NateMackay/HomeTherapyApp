@@ -16,6 +16,20 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+/**
+ * View of library of exercises for therapist to select from to assign
+ * an exercise to the client. From therapist's view of client's assigned exercises
+ * {@link ClientExercises}, if a therapist clicks on the assign new
+ * exercise to client button, it takes the therapist to this view,
+ * which shows all of the exercises in the library for the therapist
+ * to select from. This then takes the therapist to the Add Exercise
+ * To Client view {@link AddExerciseToClient}.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ * {@link ClientExercises } therapist view of assigned exercises
+ * {@link AddExerciseToClient} add/edit view of assigned exercise to client
+ */
 public class ClientExerciseLibrary extends AppCompatActivity {
 
     // for log

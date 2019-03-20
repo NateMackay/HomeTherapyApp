@@ -24,7 +24,13 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * Client view of the selected assigned exercise.
+ * Client's view of a given assigned exercise. Clients navigate to this
+ * view when they click on an assigned exercise from their dashboard,
+ * MyExercises {@link MyExercises}.
+ * This view is where the client can mark the exercise as complete.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
  */
 public class MyExercise extends AppCompatActivity {
 

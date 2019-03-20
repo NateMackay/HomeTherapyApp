@@ -14,6 +14,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * for testing navigation
+ */
 public class TestNavigation extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 

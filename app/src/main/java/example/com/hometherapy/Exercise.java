@@ -1,5 +1,11 @@
 package example.com.hometherapy;
 
+/**
+ * Model class data structure for exercise object.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class Exercise {
 
     // private member variables

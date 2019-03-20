@@ -20,6 +20,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This screen is used to add a new user or edit an existing user.
+ * It is accessed only from the Users.java / users.xml view.
+ * If the user clicks “Add New User” from the users view,
+ * it will open up a blank Add Edit User screen. If the user
+ * clicks on an existing user, it will feed that user information
+ * into the same Add Edit User screen, allowing the admin user
+ * to edit the user information, including changing the password.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class AddEditUser extends AppCompatActivity {
 
     // for log

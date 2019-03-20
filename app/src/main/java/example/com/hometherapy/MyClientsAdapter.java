@@ -9,6 +9,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
+/**
+ * Custom array adapter for displaying list of clients.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ * {@link MyClients}
+ */
 public class MyClientsAdapter extends ArrayAdapter<User> {
 
     private Context _context;

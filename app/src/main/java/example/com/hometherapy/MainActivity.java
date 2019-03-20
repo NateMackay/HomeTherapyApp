@@ -8,6 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+/**
+ * Splash screen.
+ * Temporary landing page for testing app.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class MainActivity extends AppCompatActivity {
 
     // for log

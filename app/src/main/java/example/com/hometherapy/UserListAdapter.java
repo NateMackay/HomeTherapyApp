@@ -9,6 +9,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
+/**
+ * Custom array adapter for displaying list of users.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ * {@link Users}
+ */
 public class UserListAdapter extends ArrayAdapter<User> {
 
     private Context _context;

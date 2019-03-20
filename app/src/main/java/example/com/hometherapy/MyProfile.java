@@ -24,6 +24,16 @@ import org.w3c.dom.Text;
 
 import java.util.List;
 
+/**
+ * View of user's profile for all user types.
+ * This view enables a user to view/edit their profile
+ * information. It also enables the user to change their password.
+ * If they leave the password field blank, their existing
+ * password will not be overwritten.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class MyProfile extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 

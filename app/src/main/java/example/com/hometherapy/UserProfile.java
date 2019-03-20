@@ -3,6 +3,9 @@ package example.com.hometherapy;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+/**
+ * not needed - can be safely deleted
+ */
 public class UserProfile extends AppCompatActivity {
 
     @Override

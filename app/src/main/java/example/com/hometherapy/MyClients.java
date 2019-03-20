@@ -25,6 +25,14 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Therapist dashboard.
+ * Allows therapist to see a list of their clients.
+ * Therapist can click on a client to go view of client’s exercises.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19 *
+ */
 public class MyClients extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 

@@ -18,7 +18,10 @@ import java.util.List;
 
 /**
  * This is the class that is for the exercise library view
- * linked to activity_exercises.xml *
+ * linked to activity_exercises.xml.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
  */
 public class Exercises extends AppCompatActivity {
 

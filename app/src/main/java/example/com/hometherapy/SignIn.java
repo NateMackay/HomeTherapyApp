@@ -16,10 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Sign-in screen description
+ * Sign-in screen. This is the first view after the splash screen. From here, users
+ * can either sign in or click on the register {@link Register} button to register
+ * as a new user.
  * @author Team06
- * @version beta 1.0
- * @since   3/15/2019
+ * @version 1.0
+ * @since 2019-03-19
  */
 public class SignIn extends AppCompatActivity {
 

@@ -1,5 +1,17 @@
 package example.com.hometherapy;
 
+/**
+ * This is the class / data structure for a user.
+ * It applies to all user types. It includes a placeholder
+ * for userID, which may be used by FireBase, potentially.
+ * It contains the user email, name, password, phone, status,
+ * assigned clinic, account type, assigned therapist (only
+ * relevant to client user), and accumulated rewards points
+ * (only relevant to a client user).
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class User {
 
     // private member variables

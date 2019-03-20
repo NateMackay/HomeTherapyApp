@@ -22,7 +22,16 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * Therapist adds an exercise to a client.
+ * From the therapist dashboard (ClientExercises.Java/client_exercises.xml), the therapist
+ * can click a button to assign an exercise to a client. This takes the user to
+ * ClientExerciseLibrary.java/client_exercise_library.xml, where the therapist can select
+ * from a list of exercises to assign to the client. Upon selection of an exercise,
+ * the AddExerciseToClient.java/add_exercise_to_client.xml (this) opens up, allowing the
+ * therapist to select additional details specific to the activity, including the
+ * point value the therapist wants to assign to the exercise and the status.
+ * @author Team06
+ * @version 1.0
+ * @since   2019-03-19
  */
 public class AddExerciseToClient extends AppCompatActivity {
 

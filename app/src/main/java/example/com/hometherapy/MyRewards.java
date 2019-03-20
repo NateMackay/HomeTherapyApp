@@ -14,6 +14,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * Client's view of their current number of accumulated points. It
+ * is also where the client goes to redeem points for a reward.
+ * The client navigates to this view from the menu in the client
+ * dashboard {@link MyExercises}.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class MyRewards extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 

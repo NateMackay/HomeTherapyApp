@@ -16,7 +16,11 @@ import static example.com.hometherapy.R.layout.listview_row_design_assigned_exer
 import static java.lang.String.format;
 
 /**
- * An AssignedExerciseListAdapter class.
+ * This is a custom array adapter for displaying the list of exercises assigned
+ * to a given client.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
  */
 public class AssignedExerciseListAdapter extends ArrayAdapter<AssignedExercise> {
     private Context _context;

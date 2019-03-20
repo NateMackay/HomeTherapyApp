@@ -5,6 +5,12 @@ import android.text.TextWatcher;
 
 import java.util.regex.Pattern;
 
+/**
+ * Class used to validate email format.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class EmailValidator implements TextWatcher {
 
     public static final Pattern EMAIL_PATTERN = Pattern.compile(

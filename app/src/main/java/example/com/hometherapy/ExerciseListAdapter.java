@@ -10,6 +10,15 @@ import android.widget.TextView;
 
 import java.util.List;
 
+/**
+ * This is a custom array adapter for displaying the list of exercises
+ * in a pretty format.
+ * It is used by both the Exercises activity {@link Exercises} and the
+ * Client Exercise Library activity {@link ClientExerciseLibrary}.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class ExerciseListAdapter extends ArrayAdapter<Exercise> {
 
     // for log

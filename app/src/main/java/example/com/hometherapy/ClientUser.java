@@ -1,5 +1,8 @@
 package example.com.hometherapy;
 
+/**
+ * not needed - to be safe deleted
+ */
 public class ClientUser extends User {
 
     // constructor

@@ -11,6 +11,12 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+/**
+ * A read-only version of an exercise.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class ExerciseView extends AppCompatActivity {
 
     // for log

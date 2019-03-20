@@ -26,6 +26,17 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Client Dashboard.
+ * This is the first view that the client sees when they log in.
+ * From here, they can click on an existing exercise {@link MyExercise}
+ * to see it and mark it complete. From here, they can also use the
+ * menu to see their profile {@link MyProfile}, go to messaging
+ * {@link MyMessaging}, or view their rewards {@link MyRewards}.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ */
 public class MyExercises extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 

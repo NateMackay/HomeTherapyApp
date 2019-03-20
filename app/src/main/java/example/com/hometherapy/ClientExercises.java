@@ -18,8 +18,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Therapist view of client's exercises
- * Intent only comes from MyClients.java
+ * Therapist view of client's assigned exercises. Intent only comes
+ * from MyClients {@link MyClients}, which is the therapist's view
+ * of their clients. When therapist selects a client from MyClients,
+ * it takes you to this view.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-19
+ * {@link MyClients}
  */
 public class ClientExercises extends AppCompatActivity {
 
