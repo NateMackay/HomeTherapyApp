@@ -50,7 +50,7 @@ public class AssignedExerciseListAdapter extends ArrayAdapter<AssignedExercise> 
         discipline.setText(format("Status: %s", currentExercise.get_status()));
 
         TextView pointValue = (TextView) listItem.findViewById(tvRowAE1PointValue);
-        pointValue.setText(format("Point Value: %s", "25")); // "25" value is dummy value until points are implemented
+        pointValue.setText(format("Point Value: %s", currentExercise.get_pointValue()));
 
         return listItem;
     }
