@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:font="@font/eczar_regular" />
+    <font
+        android:font="@font/eczar_medium" />
+    <font
+        android:font="@font/eczar_semi_bold" />
+    <font
+        android:font="@font/eczar_bold" />
+    <font
+        android:font="@font/eczar_extra_bold" />
+</font-family>
