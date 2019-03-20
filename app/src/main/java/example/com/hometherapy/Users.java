@@ -82,11 +82,11 @@ public class Users extends AppCompatActivity
         _tempUserList = _currentUsers.getUserList();
 
         // register views
-        _tvUsersLabel = (TextView) findViewById(R.id.tvUsersLabel);
+        // _tvUsersLabel = (TextView) findViewById(R.id.tvUsersLabel);
         _lvUserList = (ListView) findViewById(R.id.lvUserList);
         _btnUsersAddNewUser = (Button) findViewById(R.id.btnUsersAddUser);
-        _btnUserLogOut = (Button) findViewById(R.id.btnUsersLogOut);
-        _btnGoToExerciseLibrary = (Button) findViewById(R.id.btnUsersGoToExerciseLibrary);
+        //_btnUserLogOut = (Button) findViewById(R.id.btnUsersLogOut);
+        // _btnGoToExerciseLibrary = (Button) findViewById(R.id.btnUsersGoToExerciseLibrary);
 
         // initialize array adapter and bind user list to it
         _adapterUserList = new UserListAdapter(this, _tempUserList);
@@ -125,7 +125,7 @@ public class Users extends AppCompatActivity
         });
 
         // on click, go to exercise library
-        _btnGoToExerciseLibrary.setOnClickListener(new View.OnClickListener() {
+        /*_btnGoToExerciseLibrary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -133,10 +133,10 @@ public class Users extends AppCompatActivity
                 startActivity(intentExercises);
 
             }
-        });
+        });*/
 
         // on click, just go back to signIn screen
-        _btnUserLogOut.setOnClickListener(new View.OnClickListener() {
+        /*_btnUserLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -144,7 +144,7 @@ public class Users extends AppCompatActivity
                 startActivity(intentSignIn);
 
             }
-        });
+        });*/
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -174,37 +174,19 @@ public class Users extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-/*
-        if (id == R.id.action_settings) {
-            return true;
-        }
-*/
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_users) {
-            Intent intentMessage = new Intent(Users.this, Users.class);
-            startActivity(intentMessage);
-        /* } else if (id == R.id.nav_myRewards) {
-            Intent intentRewards = new Intent(MyExercises.this, MyRewards.class);
-            startActivity(intentRewards); */
-        } else if (id == R.id.nav_exercise_library) {
-            Intent intentRewards = new Intent(Users.this, Exercises.class);
-            startActivity(intentRewards);
+        /* if (id == R.id.nav_users) {
+            Intent intentUsers = new Intent(Users.this, Users.class);
+            startActivity(intentUsers);
+        } else */
+            if (id == R.id.nav_exercise_library) {
+            Intent intentExerciseLibrary = new Intent(Users.this, Exercises.class);
+            startActivity(intentExerciseLibrary);
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(Users.this, MyProfile.class);
             startActivity(intentProfile);
