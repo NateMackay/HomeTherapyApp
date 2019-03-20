@@ -50,7 +50,6 @@ public class MyExercises extends AppCompatActivity
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
     public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
-    public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
     private String _currentUserEmail; // user email of the client
 
     // member variables
@@ -59,7 +58,6 @@ public class MyExercises extends AppCompatActivity
     private SharedPreferences _sharedPreferences;
     private List<AssignedExercise> _tempAssignedExerciseList;
     private List<AssignedExercise> _filteredList;
-    private boolean isClient;
 
     // views
     private ListView _lvMEAssignedExercises;
@@ -122,10 +120,6 @@ public class MyExercises extends AppCompatActivity
             // set the adapter to the list view
             _lvMEAssignedExercises.setAdapter(_adapterAssignedExerciseList);
 
-            // if the user clicks on an existing exercise, we want to take the user to the add/edit
-            // exercise to client activity where they can view and edit the exercise
-            // only issue - we only want the following functionality if the user type is admin
-            // or therapist
             // if a client clicks on an exercise, then he/she will be taken to the my exercise view
             // where the client can mark an exercise as complete
             _lvMEAssignedExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -137,31 +131,11 @@ public class MyExercises extends AppCompatActivity
 
                     Log.d(TAG, "selected Exercise: " + selectedExercise);
 
-                    Log.d(TAG, "_currentUserEmail: " + _currentUserEmail);
-
-                    Log.d(TAG, "selectedExercise.get_assignedUserEmail(): " + selectedExercise.get_assignedUserEmail());
-
-                    Log.d(TAG, "selectedExercise.get_assignedExerciseID().toString(): " +
-                            selectedExercise.get_assignedExerciseID().toString());
-
-                    // need to add logic that will take the client to view their exercise
-                    // and mark complete - this is the myExercise view
-                    // add if client is account type, go to specific exercise view
-                    // need to wait until you have the therapist view, which is a list of clients
-                    // which will take the therapist to a view of their clients that they can then
-                    // click on and then add / edit exercises
-                    // for now, if you are in the client list of exercises, it is from the standpoint
-                    // of a therapist or admin looking at that client's exercises, with the ability
-                    // to add/edit exercises.
-
-                    // the following is for therapists and admin users only
-                    // intent to go to Add(Edit) Exercise to Client
-                    // need to pass an intent that has the user ID as well as the assigned exercise ID
-                    Intent intentAETC = new Intent(MyExercises.this, MyExercise.class);
-                    intentAETC.putExtra(MSG_ADD_OR_EDIT, "edit");
-                    intentAETC.putExtra(MSG_USER_EMAIL, _currentUserEmail);
-                    intentAETC.putExtra(MSG_ASSIGNED_EXERCISE_ID, selectedExercise.get_assignedExerciseID().toString());
-                    startActivity(intentAETC);
+                    // intent to open up client's view of their own exercise
+                    Intent intentMyExercise = new Intent(MyExercises.this, MyExercise.class);
+                    intentMyExercise.putExtra(MSG_USER_EMAIL, _currentUserEmail);
+                    intentMyExercise.putExtra(MSG_ASSIGNED_EXERCISE_ID, selectedExercise.get_assignedExerciseID().toString());
+                    startActivity(intentMyExercise);
                 }
             });
         }

@@ -32,24 +32,15 @@ public class MyExercise extends AppCompatActivity {
     public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
     public static final String USER_DATA = "userData";
 
-    // Key for extra message for user email address to pass to activity
+    // Keys for extra messages
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
-    private String _currentUserEmail;
-
-    // Keys for extra message to pass elements of exercise from library to add library
-    public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
     public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
-    public static final String MSG_EXERCISE_NAME = "example.com.hometherapy.EXERCISE_NAME";
-    public static final String MSG_MODALITY = "example.com.hometherapy.MODALITY";
-    public static final String MSG_DISCIPLINE = "example.com.hometherapy.DISCIPLINE";
-    public static final String MSG_ASSIGNMENT = "example.com.hometherapy.ASSIGNMENT";
-    public static final String MSG_VIDEO_LINK = "example.com.hometherapy.VIDEO_LINK";
-    public static final String MSG_MY_POINTS = "example.com.hometherapy.MY_POINTS";
 
     // constant for setting status to complete when button is clicked
     private static final String COMPLETED = "complete";
 
     // member variables
+    private String _currentUserEmail;
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
     private AssignedExerciseList _currentAssignedExercises;
@@ -76,7 +67,7 @@ public class MyExercise extends AppCompatActivity {
     private TextView _tvLinkToVideo;
     private Button _btnMyComplete;
     private Button _btnMyExercises;
-    private TextView _myEPointValue;
+    private TextView _tvMyEPointValue;
     private TextView _tvMyEStatus;
     private TextView _tvWellDoneMSG;
 
@@ -93,96 +84,111 @@ public class MyExercise extends AppCompatActivity {
         _tvLinkToVideo = (TextView) findViewById(R.id.tvLinkToVideo);
         _btnMyComplete = (Button) findViewById(R.id.btnComplete);
         _btnMyExercises = (Button) findViewById(R.id.btnGoToExercises);
-        _myEPointValue = (TextView) findViewById(R.id.tvMyEPointValue);
+        _tvMyEPointValue = (TextView) findViewById(R.id.tvMyEPointValue);
         _tvMyEStatus = (TextView) findViewById(R.id.tvMyEStatus);
         _tvWellDoneMSG = (TextView) findViewById(R.id.tvWellDoneMsg);
+
+        // set default value for myPoints
+        _myPoints = 0;
 
         // open up database for given assigned exercise, and current user. (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
         String jsonUserList = _sharedPreferences.getString(USER_DATA, "");
 
+        // get assigned exercise ID and user email/ID passed from MyExercises.java
+        Intent thisIntent = getIntent();
+        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
+        _assignedExerciseID = Integer.parseInt(thisIntent.getStringExtra(MSG_ASSIGNED_EXERCISE_ID));
+
+        // verify intent messages
+        Log.d(TAG, "verify current user: " + _currentUserEmail);
+        Log.d(TAG, "verify current assigned exercise ID: " + _assignedExerciseID);
+
         // initialize GSON object
         _gson = new Gson();
 
-        // deserialize sharedPrefs JSON assigned exercise database into List of Assigned Exercises
+        // deserialize sharedPrefs JSON assigned exercise and users databases
         _currentAssignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);
-
-        // if no list has been created yet, create a new assigned exercise list
-        if (_currentAssignedExercises == null) {
-            _currentAssignedExercises = new AssignedExerciseList();
-        }
-
-        // get list of assigned exercises from assigned exercise list object
-        _tempAssignedExerciseList = _currentAssignedExercises.getAssignedExerciseList();
-        Log.d(TAG, "tempExerciseList: " + _tempAssignedExerciseList);
-
-        // get exercise data passed from client exercise library
-        Intent thisIntent = getIntent();
-        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
-
-        Log.d(TAG, "verify current user: " + _currentUserEmail);
-
-        // Get User account to update user rewards, by,
-        // deserializing sharedPrefs JSON user database into List of Users
         _currentUsers = _gson.fromJson(jsonUserList, UserList.class);
 
+        // if assigned exercise database is empty, then log error and return to sign-in screen
+        if (_currentAssignedExercises == null) {
+
+            Log.e(TAG, "error: _currentAssignedExercises is null");
+            Intent signInIntent = new Intent(MyExercise.this, SignIn.class);
+            startActivity(signInIntent);
+        }
+
+        // if user database is empty, then log error and return to sign-in screen
+        if (_currentUsers == null) {
+
+            Log.e(TAG, "error: _currentUsers is null");
+            Intent signInIntent = new Intent(MyExercise.this, SignIn.class);
+            startActivity(signInIntent);
+        }
+
+        // pull user list from UserList object and get current user object based on user account
+        // passed in via intent
         if (_currentUsers != null) {
             List<User> tempUserList = _currentUsers.getUserList();
 
-            // find matching user account by email
+            // find matching user account by email account
             // reference: section 3.5 on this page https://www.baeldung.com/find-list-element-java
             _currentUser = tempUserList.stream()
                     .filter(user -> _currentUserEmail.equals(user.getEmail()))
                     .findAny()
                     .orElse(null);
 
-            // Pull myPoints from current User account
-            _myPoints = _currentUser.get_myPoints();
-            if (_myPoints == null) {
-                _myPoints = 0;
-            }
+            if (_currentUser != null) {
 
-            Log.d(TAG, "User: " + _currentUser.getFirstName()
-                    + " has current rewards total of " + _currentUser.get_myPoints() + ".");
-        }
+                // get current point value of user
+                _myPoints = _currentUser.get_myPoints();
 
-        // get ID of assigned exercise from intent
-        _assignedExerciseID = Integer.parseInt(thisIntent.getStringExtra(MSG_ASSIGNED_EXERCISE_ID));
-
-        // get assigned exercise object with exercise ID passed in from intent
-        _currentAssignedExercise = _tempAssignedExerciseList.stream()
-                .filter(assignedExercise -> _assignedExerciseID.equals(assignedExercise.get_assignedExerciseID()))
-                .findAny()
-                .orElse(null);
-
-        // get assigned exercise values
-        if (_currentAssignedExercise != null) {
-            _assignment = _currentAssignedExercise.get_assignment();
-            _exercise = _currentAssignedExercise.get_exerciseName();
-            _discipline = _currentAssignedExercise.get_discipline();
-            _modality = _currentAssignedExercise.get_modality();
-            _linkToVideo = _currentAssignedExercise.get_videoLink();
-            _pointValue = _currentAssignedExercise.get_pointValue();
-            _status = _currentAssignedExercise.get_status();
-
-            // if assignment has been completed already, mark complete
-            if (_status.equals(COMPLETED)) {
-                hasCompleted();
+                Log.d(TAG, "User: " + _currentUser.getFirstName()
+                        + " has current rewards total of " + _myPoints + ".");
             }
         }
 
-        Log.d(TAG, "User: " + _currentUser.getFirstName()
-                + " point value of current exercise is " + _pointValue + ".");
+        // get assigned exercise information from database given assigned exercise ID passed
+        // in via intent
+        if (_currentAssignedExercises != null) {
 
-        // set view text values
-        _tvMyAssignment.setText(_assignment);
-        _tvMyExercise.setText(_exercise);
-        _tvMyDiscipline.setText(_discipline);
-        _tvMyModality.setText(_modality);
-        _tvLinkToVideo.setText(_linkToVideo);
-        _myEPointValue.setText(Integer.toString(_pointValue));
-        _tvMyEStatus.setText(_status);
+            // get list of assigned exercises from assigned exercise list object
+            _tempAssignedExerciseList = _currentAssignedExercises.getAssignedExerciseList();
+            Log.d(TAG, "tempExerciseList: " + _tempAssignedExerciseList);
+
+            // get assigned exercise object with exercise ID passed in from intent
+            _currentAssignedExercise = _tempAssignedExerciseList.stream()
+                    .filter(assignedExercise -> _assignedExerciseID.equals(assignedExercise.get_assignedExerciseID()))
+                    .findAny()
+                    .orElse(null);
+
+            // get assigned exercise values and set views to those values
+            if (_currentAssignedExercise != null) {
+                _assignment = _currentAssignedExercise.get_assignment();
+                _exercise = _currentAssignedExercise.get_exerciseName();
+                _discipline = _currentAssignedExercise.get_discipline();
+                _modality = _currentAssignedExercise.get_modality();
+                _linkToVideo = _currentAssignedExercise.get_videoLink();
+                _pointValue = _currentAssignedExercise.get_pointValue();
+                _status = _currentAssignedExercise.get_status();
+
+                // set text view values
+                _tvMyAssignment.setText(_assignment);
+                _tvMyExercise.setText(_exercise);
+                _tvMyDiscipline.setText(_discipline);
+                _tvMyModality.setText(_modality);
+                _tvLinkToVideo.setText(_linkToVideo);
+                _tvMyEPointValue.setText(Integer.toString(_pointValue));
+                _tvMyEStatus.setText(_status);
+
+                // if assignment has been completed already, mark complete
+                if (_status.equals(COMPLETED)) {
+                    hasCompleted();
+                }
+            }
+        }
 
         // listener for Completed Exercises button
         _btnMyComplete.setOnClickListener(new View.OnClickListener() {
@@ -190,40 +196,41 @@ public class MyExercise extends AppCompatActivity {
             public void onClick(View v) {
 
                 // Complete button was clicked so update rewards
-                _currentUser.set_myPoints(_myPoints + _pointValue);
-                Log.d(TAG, "User: " + _currentUser.getFirstName()
-                        + " Rewards after completion is " + _currentUser.get_myPoints() + ".");
+                if (_currentUser != null && _currentAssignedExercise != null) {
 
-                // Update user assigned exercise status
-                _currentAssignedExercise.set_status(COMPLETED);
-                Log.d(TAG, "User: " + _currentUser.getFirstName()
-                        + " Exercise status is " + _currentAssignedExercise.get_status() + ".");
+                    // update rewards / point value in user account
+                    _currentUser.set_myPoints(_myPoints + _pointValue);
+                    Log.d(TAG, "User: " + _currentUser.getFirstName()
+                            + " Rewards after completion is " + _currentUser.get_myPoints() + ".");
 
-                // convert updated assigned exercise list back to JSON format
-                String updatedAssignedExerciseList = _gson.toJson(_currentAssignedExercises);
+                    // Update user assigned exercise status
+                    _currentAssignedExercise.set_status(COMPLETED);
+                    Log.d(TAG, "User: " + _currentUser.getFirstName()
+                            + " Exercise status is " + _currentAssignedExercise.get_status() + ".");
 
-                // convert updated UserList object back to JSON format
-                String updatedUserList = _gson.toJson(_currentUsers);
+                    // convert updated assigned exercise list back to JSON format
+                    String updatedAssignedExerciseList = _gson.toJson(_currentAssignedExercises);
 
-                _currentUser.set_status(COMPLETED);
-                Log.d(TAG, "2nd time, User: " + _currentUser.getFirstName()
-                        + " Exercise status is " + _currentUser.get_status() + ".");
+                    // convert updated UserList object back to JSON format
+                    String updatedUserList = _gson.toJson(_currentUsers);
 
-                // update Shared Prefs
-                SharedPreferences.Editor editor = _sharedPreferences.edit();
-                editor.putString(ASSIGNED_EXERCISE_DATA, updatedAssignedExerciseList);
-                editor.putString(USER_DATA, updatedUserList);
-                editor.apply();
+                    // update Shared Prefs
+                    SharedPreferences.Editor editor = _sharedPreferences.edit();
+                    editor.putString(ASSIGNED_EXERCISE_DATA, updatedAssignedExerciseList);
+                    editor.putString(USER_DATA, updatedUserList);
+                    editor.apply();
 
-                // display contents for testing purposes
-                String fromAEDSharedPrefs = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
-                Log.d(TAG, "fromSharedPrefs (Assigned Exercises): " + fromAEDSharedPrefs);
-                // display contents for testing purposes
-                String fromUSharedPrefs = _sharedPreferences.getString(USER_DATA, "");
-                Log.d(TAG, "fromSharedPrefs (Users): " + fromUSharedPrefs);
+                    // display contents for testing purposes
+                    String fromAEDSharedPrefs = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
+                    Log.d(TAG, "fromSharedPrefs (Assigned Exercises): " + fromAEDSharedPrefs);
+                    // display contents for testing purposes
+                    String fromUSharedPrefs = _sharedPreferences.getString(USER_DATA, "");
+                    Log.d(TAG, "fromSharedPrefs (Users): " + fromUSharedPrefs);
 
-                // set the status to complete
-                hasCompleted();
+                    // set the status to complete
+                    hasCompleted();
+
+                }
             }
         });
 
