@@ -206,11 +206,12 @@
         android:layout_height="93dp"
         android:layout_marginStart="28dp"
         android:layout_marginTop="24dp"
+        android:padding="10dp"
         android:background="@drawable/round_button"
         android:text="Press to Complete"
         android:textAlignment="center"
         android:textColor="#000"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvStatusLabel" />
 

@@ -2,7 +2,6 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,9 +46,8 @@ public class MyExercise extends AppCompatActivity {
     public static final String MSG_VIDEO_LINK = "example.com.hometherapy.VIDEO_LINK";
     public static final String MSG_MY_POINTS = "example.com.hometherapy.MY_POINTS";
 
-    //
+    // constant for setting status to complete when button is clicked
     private static final String COMPLETED = "complete";
-
 
     // member variables
     private Gson _gson;
@@ -68,8 +66,6 @@ public class MyExercise extends AppCompatActivity {
     private Integer _pointValue;
     private String _status;
     private Integer _myPoints;
-
-    private boolean _isIntentAdd;
     private Integer _assignedExerciseID;
 
     // views
@@ -83,12 +79,6 @@ public class MyExercise extends AppCompatActivity {
     private TextView _myEPointValue;
     private TextView _tvMyEStatus;
     private TextView _tvWellDoneMSG;
-
-    // array adapter for spinner views
-    //private String _exerciseStatusNames[] = {"Status", "not started", "started", "complete", "on hold", "inactive"};
-    //private String _pointValueOptions[] = {"5", "10", "15", "20", "25"};
-    //private ArrayAdapter<String> _adapterStatus;
-    //private ArrayAdapter<String> _adapterPointValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,14 +96,6 @@ public class MyExercise extends AppCompatActivity {
         _myEPointValue = (TextView) findViewById(R.id.tvMyEPointValue);
         _tvMyEStatus = (TextView) findViewById(R.id.tvMyEStatus);
         _tvWellDoneMSG = (TextView) findViewById(R.id.tvWellDoneMsg);
-
-        // adapters
-        //_adapterPointValue = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _pointValueOptions);
-        //_adapterStatus = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _exerciseStatusNames);
-
-        // set adapters
-        //_myEPointValue.setAdapter(_adapterPointValue);
-        //_spinMyEStatus.setAdapter(_adapterStatus);
 
         // open up database for given assigned exercise, and current user. (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -165,82 +147,33 @@ public class MyExercise extends AppCompatActivity {
                     + " has current rewards total of " + _currentUser.get_myPoints() + ".");
         }
 
-        /**
-        // depending on whether intent is to either add or edit a client exercise
-        // if intent is to add, then get values from intent passed in from client exercise library
-        if (thisIntent.getStringExtra(MSG_ADD_OR_EDIT).equals("add")) {
-            _isIntentAdd = true;
-            _assignment = thisIntent.getStringExtra(MSG_ASSIGNMENT);
-            _exercise = thisIntent.getStringExtra(MSG_EXERCISE_NAME);
-            _discipline = thisIntent.getStringExtra(MSG_DISCIPLINE);
-            _modality = thisIntent.getStringExtra(MSG_MODALITY);
-            _linkToVideo = thisIntent.getStringExtra(MSG_VIDEO_LINK);
+        // get ID of assigned exercise from intent
+        _assignedExerciseID = Integer.parseInt(thisIntent.getStringExtra(MSG_ASSIGNED_EXERCISE_ID));
 
-            // assign a new exercise ID
-            // find maximum value of _assignedExerciseID within the list of assigned exercises
-            // reference: https://stackoverflow.com/questions/19338686/java-getting-max-value-from-an-arraylist-of-objects
-            // reference: https://dzone.com/articles/optional-ispresent-is-bad-for-you
-            // if id is not present, for example if this is the first assigned exercise
-            // then the assigned ID will be the default value of 0 + 1
-            Integer maxID = 0;
-            if (_tempAssignedExerciseList.stream()
-                    .max(Comparator.comparing(AssignedExercise::get_assignedExerciseID)).isPresent()) {
-                AssignedExercise assignedExerciseWithMaxID = _tempAssignedExerciseList.stream()
-                        .max(Comparator.comparing(AssignedExercise::get_assignedExerciseID)).get();
-                maxID = assignedExerciseWithMaxID.get_assignedExerciseID();
+        // get assigned exercise object with exercise ID passed in from intent
+        _currentAssignedExercise = _tempAssignedExerciseList.stream()
+                .filter(assignedExercise -> _assignedExerciseID.equals(assignedExercise.get_assignedExerciseID()))
+                .findAny()
+                .orElse(null);
+
+        // get assigned exercise values
+        if (_currentAssignedExercise != null) {
+            _assignment = _currentAssignedExercise.get_assignment();
+            _exercise = _currentAssignedExercise.get_exerciseName();
+            _discipline = _currentAssignedExercise.get_discipline();
+            _modality = _currentAssignedExercise.get_modality();
+            _linkToVideo = _currentAssignedExercise.get_videoLink();
+            _pointValue = _currentAssignedExercise.get_pointValue();
+            _status = _currentAssignedExercise.get_status();
+
+            // if assignment has been completed already, mark complete
+            if (_status.equals(COMPLETED)) {
+                hasCompleted();
             }
-
-            Log.d(TAG, "Verify max ID: " + maxID);
-
-            // set ID for new assigned exercise to maxID plus one
-            _assignedExerciseID = maxID + 1;
-
-        } else { **/
-            // if intent is to view/edit, not add, then lookup assigned exercise in exercise db
-            // based on assigned exercise ID, and set the text views and spinners accordingly
-            _isIntentAdd = false;
-            _assignedExerciseID = Integer.parseInt(thisIntent.getStringExtra(MSG_ASSIGNED_EXERCISE_ID));
-
-            // get assigned exercise object with exercise ID passed in from intent
-            _currentAssignedExercise = _tempAssignedExerciseList.stream()
-                    .filter(assignedExercise -> _assignedExerciseID.equals(assignedExercise.get_assignedExerciseID()))
-                    .findAny()
-                    .orElse(null);
-
-            // get assigned exercise values
-            if (_currentAssignedExercise != null) {
-                _assignment = _currentAssignedExercise.get_assignment();
-                _exercise = _currentAssignedExercise.get_exerciseName();
-                _discipline = _currentAssignedExercise.get_discipline();
-                _modality = _currentAssignedExercise.get_modality();
-                _linkToVideo = _currentAssignedExercise.get_videoLink();
-                _pointValue = _currentAssignedExercise.get_pointValue();
-                _status = _currentAssignedExercise.get_status();
-
-                //
-                if (_status.equals(COMPLETED)) {
-                    hasCompleted();
-                }
-            }
+        }
 
         Log.d(TAG, "User: " + _currentUser.getFirstName()
                 + " point value of current exercise is " + _pointValue + ".");
-
-            // set status and point value spinners based on what is in assigned exercise
-            // first, get indices of these values
-            //int iSpinAETCPointValue = Arrays.asList(_pointValueOptions).indexOf(_currentAssignedExercise.get_pointValue().toString());
-            //int iSpinAETCStatus = Arrays.asList(_exerciseStatusNames).indexOf(_currentAssignedExercise.get_status());
-
-            // set spinner values based on current assigned exercise
-            // note that a value of -1 means indexOf() did not find value searching for
-            //if (iSpinAETCPointValue >= 0) {
-            //    _myEPointValue.setSelection(iSpinAETCPointValue);
-            //}
-
-            //if (iSpinAETCStatus >= 0) {
-            //    _spinMyEStatus.setSelection(iSpinAETCStatus);
-            //}
-        //}
 
         // set view text values
         _tvMyAssignment.setText(_assignment);
@@ -251,53 +184,10 @@ public class MyExercise extends AppCompatActivity {
         _myEPointValue.setText(Integer.toString(_pointValue));
         _tvMyEStatus.setText(_status);
 
-        /**
-        _spinMyEStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-            {
-                String selectedItem = parent.getItemAtPosition(position).toString(); //this is your selected item
-
-                if (selectedItem == _exerciseStatusNames[3]) {
-                    Toast.makeText(MyExercise.this, "Well Done.", Toast.LENGTH_SHORT).show();
-                }
-            }
-            public void onNothingSelected(AdapterView<?> parent)
-            {
-
-            }
-        });**/
-
-        // we could alternatively set the index value for the spinners in the above if/else statement
-        // and then set the spinners here per the index, but I believe the default value is 0
-        // which for a new exercise, would be set anyway by the user.
-
         // listener for Completed Exercises button
         _btnMyComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // if we are here to add a new exercise,
-                // the following adds a new exercise to the list within the AssignedEceriseList object
-                //if (_isIntentAdd) {
-                //    _currentAssignedExercises.addAssignedExercise(new AssignedExercise(_exercise,
-                //            _discipline, _modality, _assignment, _linkToVideo, _currentUserEmail,
-                //            Integer.parseInt(_myEPointValue.getSelectedItem().toString()),
-                //            _spinMyEStatus.getSelectedItem().toString(), false,
-                //            _assignedExerciseID));
-                //} else {
-                    // if not adding, we are simply viewing / editing
-                    // update the _currentAssignedExercise, the individual AssignedExercise object
-                    // that we referenced based on assigned exercise ID
-                //    _currentAssignedExercise.set_exerciseName(_tvMyExercise.getText().toString());
-                //    _currentAssignedExercise.set_assignment(_tvMyAssignment.getText().toString());
-                //    _currentAssignedExercise.set_discipline(_tvMyDiscipline.getText().toString());
-                //    _currentAssignedExercise.set_modality(_tvMyModality.getText().toString());
-                //   _currentAssignedExercise.set_videoLink(_tvLinkToVideo.getText().toString());
-                //    _currentAssignedExercise.set_status(_spinMyEStatus.getSelectedItem().toString());
-                //    _currentAssignedExercise.set_pointValue(Integer.parseInt(_myEPointValue.getSelectedItem().toString()));
-                //}
-
-
 
                 // Complete button was clicked so update rewards
                 _currentUser.set_myPoints(_myPoints + _pointValue);
@@ -332,16 +222,12 @@ public class MyExercise extends AppCompatActivity {
                 String fromUSharedPrefs = _sharedPreferences.getString(USER_DATA, "");
                 Log.d(TAG, "fromSharedPrefs (Users): " + fromUSharedPrefs);
 
-                //Intent intentUpdate = new Intent();
-                //intentUpdate.putExtra(MSG_USER_EMAIL, _currentUserEmail);
-                //startActivity(intentUpdate);
-
-                //
+                // set the status to complete
                 hasCompleted();
             }
         });
 
-        // listener for Completed Exercises button
+        // listener for Back to My Exercises button
         _btnMyExercises.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -350,7 +236,6 @@ public class MyExercise extends AppCompatActivity {
                 startActivity(intentClientExercises);
             }
         });
-
     }
 
     /**
@@ -358,12 +243,7 @@ public class MyExercise extends AppCompatActivity {
      */
     public void hasCompleted() {
         _btnMyComplete.setText("Completed");
-        _btnMyComplete.setBackgroundColor(Color.parseColor("#BA8BC34A"));
-        _tvWellDoneMSG.setVisibility(View.VISIBLE);
         _btnMyComplete.setEnabled(false);
-
-        // Trying to work out how to change the button to a circle??
-        // _btnMyComplete.
     }
 
 }
