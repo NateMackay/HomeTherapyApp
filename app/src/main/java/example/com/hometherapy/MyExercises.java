@@ -166,18 +166,6 @@ public class MyExercises extends AppCompatActivity
             });
         }
 
-        /*
-        // on click, just go back to signIn screen
-        // for testing purposes
-        _btnCEUserLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentSignIn = new Intent(MyExercises.this, SignIn.class);
-                startActivity(intentSignIn);
-            }
-        });
-        */
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -219,10 +207,6 @@ public class MyExercises extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        /*if (id == R.id.nav_myExercises) {
-            Intent intentMessage = new Intent(MyExercises.this, MyExercises.class);
-            startActivity(intentMessage);
-        } else */
         if (id == R.id.nav_myRewards) {
             Intent intentRewards = new Intent(MyExercises.this, MyRewards.class);
             startActivity(intentRewards);
@@ -233,6 +217,9 @@ public class MyExercises extends AppCompatActivity
             Intent intentProfile = new Intent(MyExercises.this, MyProfile.class);
             intentProfile.putExtra(MSG_USER_EMAIL, _currentUserEmail);
             startActivity(intentProfile);
+        } else if (id == R.id.nav_MELogOut) {
+            Intent intentSignIn = new Intent(MyExercises.this, SignIn.class);
+            startActivity(intentSignIn);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
