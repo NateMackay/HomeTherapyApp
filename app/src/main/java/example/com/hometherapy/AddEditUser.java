@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * This screen is used to add a new user or edit an existing user.
- * It is accessed only from the Users.java / users.xml view.
+ * It is accessed only from the Users2.java / users.xml view.
  * If the user clicks “Add New User” from the users view,
  * it will open up a blank Add Edit User screen. If the user
  * clicks on an existing user, it will feed that user information
