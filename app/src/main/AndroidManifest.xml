@@ -20,6 +20,10 @@
             android:label="@string/title_activity_my_exercises"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".Exercises"
+            android:label="Exercises"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".MyRewards"
             android:label="@string/title_activity_my_rewards"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -48,7 +52,7 @@
         <activity android:name=".AddExerciseToLibrary" />
         <activity android:name=".MyExercise" />
         <activity android:name=".AddEditUser" />
-        <activity android:name=".Exercises" />
+<!--        <activity android:name=".Exercises" />-->
         <activity android:name=".Register" />
         <activity android:name=".SignIn" />
         <activity android:name=".Messaging" />

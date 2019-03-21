@@ -4,35 +4,54 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+        <!--for Therapists-->
         <item
             android:id="@+id/nav_myClients"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/my_clients" />
         <item
-            android:id="@+id/nav_myExercises"
+            android:id="@+id/nav_exercise_library"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/my_exercises" />
+            android:title="@string/exercise_library" />
         <item
             android:id="@+id/nav_myMessages"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/my_messages" />
+
+        <!--for Clients-->
         <item
-            android:id="@+id/nav_myProfile"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="My Profile" />
+            android:id="@+id/nav_myExercises"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/my_exercises" />
+        <item
+            android:id="@+id/nav_myRewards"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/my_rewards" />
+        <item
+            android:id="@+id/nav_myMessages1"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/my_messages" />
+
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Settings">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/nav_myProfile"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="My Profile" />
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_MELogOut"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="Log Out" />
         </menu>
     </item>
+
+
+
+
+
+
+
 
 </menu>

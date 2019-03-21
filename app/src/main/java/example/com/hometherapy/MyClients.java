@@ -3,8 +3,6 @@ package example.com.hometherapy;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -213,6 +211,9 @@ public class MyClients extends AppCompatActivity
             Intent intentProfile = new Intent(MyClients.this, MyProfile.class);
             intentProfile.putExtra(MSG_USER_EMAIL, _currentUserEmail);
             startActivity(intentProfile);
+        } else if (id == R.id.nav_LogOut) {
+            Intent intentLogOut = new Intent(MyClients.this, SignIn.class);
+            startActivity(intentLogOut);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

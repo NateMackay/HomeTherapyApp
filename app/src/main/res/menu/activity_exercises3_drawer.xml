@@ -10,7 +10,7 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/my_clients" />
         <item
-            android:id="@+id/nav_exercise_library"
+            android:id="@+id/nav_exercise_library1"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/exercise_library" />
         <item
@@ -19,30 +19,16 @@
             android:title="@string/my_messages" />
 
         <!-- for admin -->
-        <item
-            android:id="@+id/nav_users"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Users" />
-        <item
-            android:id="@+id/nav_exercise_library1"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/exercise_library" />
+            <item
+                android:id="@+id/nav_users"
+                android:icon="@drawable/ic_menu_gallery"
+                android:title="Users" />
+            <item
+                android:id="@+id/nav_exercise_library"
+                android:icon="@drawable/ic_menu_gallery"
+                android:title="@string/exercise_library" />
 
-        <!--for Clients-->
-        <item
-            android:id="@+id/nav_myExercises"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/my_exercises" />
-        <item
-            android:id="@+id/nav_myRewards"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/my_rewards" />
-        <item
-            android:id="@+id/nav_myMessages1"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/my_messages" />
-
-    </group>
+        </group>
 
     <item android:title="Settings">
         <menu>
