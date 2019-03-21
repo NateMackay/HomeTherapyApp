@@ -183,6 +183,7 @@ public class MyExercises extends AppCompatActivity
 
         if (id == R.id.nav_myRewards) {
             Intent intentRewards = new Intent(MyExercises.this, MyRewards.class);
+            intentRewards.putExtra(MSG_USER_EMAIL, _currentUserEmail);
             startActivity(intentRewards);
         } else if (id == R.id.nav_myMessages) {
             Intent intentRewards = new Intent(MyExercises.this, MyMessages.class);

@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
     public static final String USER_DATA = "userData";
     public static final String EXERCISE_DATA = "exerciseData";
+    public static final String LOGIN_USER = "loginUser";
 
     // private member variables
     private SharedPreferences _sharedPreferences;
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
                editor.putString(USER_DATA, "");
                editor.putString(EXERCISE_DATA, "");
                editor.putString(ASSIGNED_EXERCISE_DATA, "");
+               editor.putString(LOGIN_USER, "");
                editor.apply();
             }
 

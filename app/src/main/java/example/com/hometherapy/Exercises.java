@@ -112,13 +112,13 @@ public class Exercises extends AppCompatActivity {
 
                     if (_loginUser.get_accountType().equals("therapist")) {
 
-                        Intent intentReturnDashboard = new Intent(Exercises.this, MyClients.class);
-                        startActivity(intentReturnDashboard);
+                        Intent intentReturnTherapistDashboard = new Intent(Exercises.this, MyClients.class);
+                        startActivity(intentReturnTherapistDashboard);
 
                     } else if (_loginUser.get_accountType().equals("admin")){
                         // go to users
-                        Intent intentReturnDashboard = new Intent(Exercises.this, Users.class);
-                        startActivity(intentReturnDashboard);
+                        Intent intentReturnAdminDashboard = new Intent(Exercises.this, Users.class);
+                        startActivity(intentReturnAdminDashboard);
                     } else {
                         // only therapist and admin users should have had access to the exercise
                         // library, so if this is happening, then there is a problem with the
