@@ -2,9 +2,6 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -25,7 +22,7 @@ public class TestNavigation extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setTitle("My Exercises");
+        setTitle("My Testing");
         setSupportActionBar(toolbar);
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

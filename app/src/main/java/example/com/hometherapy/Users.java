@@ -3,8 +3,6 @@ package example.com.hometherapy;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -129,7 +127,7 @@ public class Users extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-                Intent intentExercises = new Intent(Users.this, Exercises.class);
+                Intent intentExercises = new Intent(Users.this, .class);
                 startActivity(intentExercises);
 
             }

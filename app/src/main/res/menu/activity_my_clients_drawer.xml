@@ -24,6 +24,10 @@
                 android:id="@+id/nav_myProfile"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="My Profile" />
+            <item
+                android:id="@+id/nav_MELogOut"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="Log Out" />
         </menu>
     </item>
 
