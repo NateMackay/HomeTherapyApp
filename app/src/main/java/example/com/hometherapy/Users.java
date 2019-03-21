@@ -3,6 +3,7 @@ package example.com.hometherapy;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -42,6 +43,7 @@ public class Users extends AppCompatActivity
 
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
+    public static final String MSG_AEU_EMAIL = "example.com.hometherapy.AEU_EMAIL";
     // note - we should put all of these constants into a constants class, and then
     // refer to that class whenever they are used throughout the program
     // this was a suggestion of Brother Falin at one point
@@ -57,6 +59,8 @@ public class Users extends AppCompatActivity
     private Gson _gson;
     private SharedPreferences _sharedPreferences;
     private List<User> _tempUserList;
+    private String _adminUserEmail;
+    private String _addEditUserEmail;
 
     // array adapter for user list
     private UserListAdapter _adapterUserList;
@@ -67,6 +71,11 @@ public class Users extends AppCompatActivity
         setContentView(R.layout.activity_users3);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // get admin login user email passed through intent
+        Intent thisIntent = getIntent();
+        _adminUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
+        Log.d(TAG, "verify current user: " + _adminUserEmail);
 
         // open up database for given user (shared preferences)
         _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -103,7 +112,8 @@ public class Users extends AppCompatActivity
 
                 // intent to go to Add Edit User screen, passing user via extra message
                 Intent intentAEU = new Intent(Users.this, AddEditUser.class);
-                intentAEU.putExtra(MSG_USER_EMAIL, currentUser.getEmail());
+                intentAEU.putExtra(MSG_AEU_EMAIL, currentUser.getEmail());
+                intentAEU.putExtra(MSG_USER_EMAIL, _adminUserEmail);  // sent to AEU activity for myProfile access
                 startActivity(intentAEU);
             }
         });
@@ -117,7 +127,8 @@ public class Users extends AppCompatActivity
                 // AddEditUser.java is expecting an intent for user email
                 // so we are sending an empty string value
                 Intent intentAddNewUser = new Intent(Users.this, AddEditUser.class);
-                intentAddNewUser.putExtra(MSG_USER_EMAIL, "");
+                intentAddNewUser.putExtra(MSG_AEU_EMAIL, "");
+                intentAddNewUser.putExtra(MSG_USER_EMAIL, _adminUserEmail); // sent to AEU activity for myProfile access
                 startActivity(intentAddNewUser);
             }
         });
@@ -187,6 +198,7 @@ public class Users extends AppCompatActivity
             startActivity(intentExerciseLibrary);
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(Users.this, MyProfile.class);
+            intentProfile.putExtra(MSG_USER_EMAIL, _adminUserEmail);
             startActivity(intentProfile);
         } else if (id == R.id.nav_LogOut) {
             Intent intentLogIn = new Intent(Users.this, SignIn.class);

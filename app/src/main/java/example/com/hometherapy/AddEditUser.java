@@ -43,7 +43,9 @@ public class AddEditUser extends AppCompatActivity {
 
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
-    private String _currentUserEmail;
+    public static final String MSG_AEU_EMAIL = "example.com.hometherapy.AEU_EMAIL";
+    private String _adminUserEmail;
+    private String _addEditUserEmail;
 
     // validator for email input field
     private EmailValidator _emailValidator;
@@ -129,10 +131,12 @@ public class AddEditUser extends AppCompatActivity {
         // initialize GSON object
         _gson = new Gson();
 
-        // get user email (i.e. account) from extra message
+        // get user email (i.e. account) from extra message of user to edit or if null, then new user
         Intent thisIntent = getIntent();
-        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
-        Log.d(TAG, "verify current user: " + _currentUserEmail);
+        _addEditUserEmail = thisIntent.getStringExtra(MSG_AEU_EMAIL);
+        _adminUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
+        Log.d(TAG, "verify add_edit user: " + _addEditUserEmail);
+        Log.d(TAG, "verify admin user: " + _adminUserEmail);
 
         // deserialize sharedPrefs JSON user database into List of Users
         _currentUsers = _gson.fromJson(jsonUserList, UserList.class);
@@ -143,17 +147,13 @@ public class AddEditUser extends AppCompatActivity {
             // find matching user account by email
             // reference: section 3.5 on this page https://www.baeldung.com/find-list-element-java
             _currentUser = tempUserList.stream()
-                    .filter(user -> _currentUserEmail.equals(user.getEmail()))
+                    .filter(user -> _addEditUserEmail.equals(user.getEmail()))
                     .findAny()
                     .orElse(null);
-
-            Log.d(TAG, "onCreate: 1");
 
             List<User> therapistUserList = tempUserList.stream()
                     .filter(user -> user.get_accountType().equals("therapist"))
                     .collect(Collectors.toList());
-
-            Log.d(TAG, "onCreate: 2");
 
             for (int i = 0; i < therapistUserList.size(); i++) {
 
@@ -182,13 +182,9 @@ public class AddEditUser extends AppCompatActivity {
         // check current user
         Log.d(TAG, "currentUser: " + _currentUser);
 
-        Log.d(TAG, "onCreate: 3");
-
         // set initial views of EditText values based on current user
         // only if _currentUser is not null
         if (_currentUser != null) {
-
-            Log.d(TAG, "onCreate: 4");
 
             _etUserFirstName.setText(_currentUser.getFirstName());
             _etUserLastName.setText(_currentUser.getLastName());
@@ -202,8 +198,6 @@ public class AddEditUser extends AppCompatActivity {
             int iUserAssignedClinic = Arrays.asList(_userClinicNames).indexOf(_currentUser.get_assignedClinic());
             int iUserStatus = Arrays.asList(_userStatusNames).indexOf(_currentUser.get_status());
 
-            Log.d(TAG, "onCreate: 5");
-
             String assignedTherapistEmail = _currentUser.get_assignedTherapist();
             int iAssignedTherapist;
             if (_therapistEmailNameMap.containsKey(assignedTherapistEmail)) {
@@ -211,8 +205,6 @@ public class AddEditUser extends AppCompatActivity {
             } else {
                 iAssignedTherapist = -1;
             }
-
-            Log.d(TAG, "onCreate: 7");
 
             // set spinner values based on current user
             // note that a value of -1 means indexOf() did not find value searching for
@@ -228,15 +220,11 @@ public class AddEditUser extends AppCompatActivity {
                 _spinUserStatus.setSelection(iUserStatus);
             }
 
-            Log.d(TAG, "onCreate: 8");
-
             if (iAssignedTherapist >= 0) {
                 _spinAssignedTherapist.setSelection(iAssignedTherapist);
             } else {
                 _spinAssignedTherapist.setSelection(0);
             }
-
-            Log.d(TAG, "onCreate: 9");
         } else {
             // create a new current user object to store stuff in so that it can be saved to the db
             // temporarily use this until fire base is implemented
@@ -268,8 +256,6 @@ public class AddEditUser extends AppCompatActivity {
                     return;
                 }
 
-                Log.d(TAG, "onCreate: 10");
-
                 // set views to variables
                 String etUserFirstName = _etUserFirstName.getText().toString();
                 String etUserLastName = _etUserLastName.getText().toString();
@@ -282,11 +268,7 @@ public class AddEditUser extends AppCompatActivity {
 
                 String assignedTherapistEmail;
 
-                Log.d(TAG, "onCreate: 10.1");
-
                 if (!_therapists.isEmpty()) {
-
-                    Log.d(TAG, "onCreate: 10.2");
 
                     // get string name from spinner
 
@@ -295,21 +277,16 @@ public class AddEditUser extends AppCompatActivity {
                     String spinAssignedTherapist = _therapists.get(_spinAssignedTherapist.getSelectedItemPosition());
 
                     Log.d(TAG, "spinAssignedTherapist: " + spinAssignedTherapist);
-                    Log.d(TAG, "onCreate: 10.3");
 
                     if (_therapistNameEmailMap.containsKey(spinAssignedTherapist)) {
                         assignedTherapistEmail = _therapistNameEmailMap.get(spinAssignedTherapist);
                     } else {
                         assignedTherapistEmail = "";
                     }
-                    Log.d(TAG, "onCreate: 10.4");
 
                 } else {
-                    Log.d(TAG, "onCreate: 10.5");
                     assignedTherapistEmail = "";
                 }
-
-                Log.d(TAG, "onCreate: 11");
 
                 Log.d(TAG, "spin values: " + spinUserAccountType + ", " + spinUserAssignedClinic +
                         ", " + spinUserStatus);
@@ -324,14 +301,10 @@ public class AddEditUser extends AppCompatActivity {
                 _currentUser.set_status(spinUserStatus);
                 _currentUser.set_assignedTherapist(assignedTherapistEmail);
 
-                Log.d(TAG, "onCreate: 12");
-
                 // update password only if password has been updated
                 if (etUserPassword.length() > 0) {
                     _currentUser.setPassword(etUserPassword);
                 }
-
-                Log.d(TAG, "onCreate: 13");
 
                 // convert updated UserList object back to JSON format
                 String updatedList = _gson.toJson(_currentUsers);
@@ -341,18 +314,12 @@ public class AddEditUser extends AppCompatActivity {
                 editor.putString(USER_DATA, updatedList);
                 editor.apply();
 
-                Log.d(TAG, "onCreate: 14");
-
                 // display contents for testing purposes
                 String fromSharedPrefs = _sharedPreferences.getString(USER_DATA, "");
                 Log.d(TAG, "fromSharedPrefs: " + fromSharedPrefs);
 
-                Log.d(TAG, "onCreate: 15");
-
                 Intent intentUsers = new Intent(AddEditUser.this, Users.class);
                 startActivity(intentUsers);
-
-                Log.d(TAG, "onCreate: 16");
             }
         });
 
