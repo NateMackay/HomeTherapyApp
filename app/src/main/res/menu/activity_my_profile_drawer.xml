@@ -12,7 +12,7 @@
         <item
             android:id="@+id/nav_exercise_library"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Exercise Library" />
+            android:title="@string/exercise_library" />
         <item
             android:id="@+id/nav_myMessages"
             android:icon="@drawable/ic_menu_gallery"
@@ -26,7 +26,7 @@
         <item
             android:id="@+id/nav_exercise_library1"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Exercise Library" />
+            android:title="@string/exercise_library" />
 
         <!--for Clients-->
         <item

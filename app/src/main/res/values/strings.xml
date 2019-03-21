@@ -22,5 +22,6 @@
     <string name="log_out">Log out</string>
     <string name="title_activity_users">Users</string>
     <string name="title_activity_exercises">Exercises</string>
+    <string name="exercise_library">Exercise Library</string>
 
 </resources>

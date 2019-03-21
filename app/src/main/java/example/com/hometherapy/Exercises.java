@@ -76,7 +76,7 @@ public class Exercises extends AppCompatActivity
         // initialize GSON object
         _gson = new Gson();
 
-        // deserialize sharedPrefs JSON user database into List of Exercises2
+        // deserialize sharedPrefs JSON user database into List of Exercises
         _currentExercises = _gson.fromJson(jsonExerciseList, ExerciseList.class);
         _loginUser = _gson.fromJson(jsonLoginUser, User.class);
 
@@ -218,7 +218,7 @@ public class Exercises extends AppCompatActivity
 //        @Override
 //        protected Void doInBackground(Void... voids) {
 //
-//            // add some Exercises2 to the list
+//            // add some Exercises to the list
 //            //_ExercisesList.add("TH Sound");
 //            //_ExercisesList.add("R Sound");
 //            //_ExercisesList.add("S Sound");

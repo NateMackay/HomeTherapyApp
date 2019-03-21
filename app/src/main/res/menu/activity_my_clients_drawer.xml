@@ -11,7 +11,7 @@
         <item
             android:id="@+id/nav_exercise_library"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Exercise Library" />
+            android:title="@string/exercise_library" />
         <item
             android:id="@+id/nav_myMessages"
             android:icon="@drawable/ic_menu_gallery"
@@ -23,11 +23,11 @@
             <item
                 android:id="@+id/nav_myProfile"
                 android:icon="@drawable/ic_menu_manage"
-                android:title="My Profile" />
+                android:title="@string/my_profile" />
             <item
                 android:id="@+id/nav_MELogOut"
                 android:icon="@drawable/ic_menu_manage"
-                android:title="Log Out" />
+                android:title="@string/log_out" />
         </menu>
     </item>
 
