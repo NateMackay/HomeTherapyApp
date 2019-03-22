@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "1009502633872-9l3drj4qejvljshibv22p2l5fr0230c1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "example.com.hometherapy",
+            "certificate_hash": "6e4bd08863877127ffbbce1686fd9fd005d63285"
+          }
+        },
+        {
           "client_id": "1009502633872-lc7udmdb3r11k5h90fnc19sgtmt33s31.apps.googleusercontent.com",
           "client_type": 3
         }

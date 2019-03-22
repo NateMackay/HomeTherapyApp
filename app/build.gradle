@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 28
@@ -30,6 +29,8 @@ dependencies {
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:support-v13:28.0.0'
     implementation 'com.android.support:design:28.0.0'
+    // firebase core
+    implementation 'com.google.firebase:firebase-core:16.0.8'
     // Firestore
     implementation 'com.google.firebase:firebase-firestore:18.1.0'
     // Authentication
@@ -41,3 +42,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.code.gson:gson:2.8.5'
 }
+apply plugin: 'com.google.gms.google-services'
