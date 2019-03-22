@@ -49,7 +49,7 @@ public class MyRewards extends AppCompatActivity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
 
     // views
-    TextView _tvRewardsLabel;
+    // TextView _tvRewardsLabel;
     TextView _tvRewardsPoints;
     Spinner _spinRewardsPointValue;
     Button _btnRedeemPoints;
@@ -74,7 +74,7 @@ public class MyRewards extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // register views
-        _tvRewardsLabel = (TextView) findViewById(R.id.tvRewardsLabel);
+        // _tvRewardsLabel = (TextView) findViewById(R.id.tvRewardsLabel);
         _tvRewardsPoints = (TextView) findViewById(R.id.tvRewardsPoints);
         _spinRewardsPointValue = (Spinner) findViewById(R.id.spinRewardsPointValue);
         _btnRedeemPoints = (Button) findViewById(R.id.btnRedeemPoints);
