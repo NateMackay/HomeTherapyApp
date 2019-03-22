@@ -11,7 +11,11 @@ buildscript {
         classpath 'com.google.gms:google-services:4.2.0'
         // Add this line
         // https://console.firebase.google.com/project/hometherapy-b2e8d/overview
-        classpath 'com.google.gms:google-services:4.0.1'
+        // eb - this was added below - warning in my android studio said
+        // to use latest version, which is represented above - 4.2.0
+        // commented this out - but wasn't sure if Nate/Emile's version requires
+        // 4.0.1 for some reason
+//        classpath 'com.google.gms:google-services:4.0.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
