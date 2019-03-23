@@ -50,8 +50,10 @@ public class Register extends AppCompatActivity {
 //    public static final String SHARED_PREFS = "sharedPrefs";
 //    public static final String USER_DATA = "userData";
 
-    // validator for email input field
+    // validators for email, password, and phone number input fields
     private EmailValidator _emailValidator;
+    private PasswordValidator _passwordValidator;
+    private PhoneNumberValidator _phoneNumberValidator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +73,15 @@ public class Register extends AppCompatActivity {
         _etPasswordConfirm = (EditText) findViewById(R.id.etRegPasswordConfirm);
 
         // setup field validators
+        // email
         _emailValidator = new EmailValidator();
         _etEmail.addTextChangedListener(_emailValidator);
+        // password
+        _passwordValidator = new PasswordValidator();
+        _etPassword.addTextChangedListener(_passwordValidator);
+        // phone number
+        _phoneNumberValidator = new PhoneNumberValidator();
+        _etPhone.addTextChangedListener(_phoneNumberValidator);
 
         _btnCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,12 +98,36 @@ public class Register extends AppCompatActivity {
                 }
                 Log.d(TAG, "Email Validated");
 
-                // set up a password validator before passing to createAccount method
+                // validate password
+                if (!_passwordValidator.isValid()) {
+                    _etPassword.setError("Invalid Password");
+                    Toast.makeText(Register.this, "Password must,\n" +
+                            "contain at least one digit,\n" +
+                            "contain at least one lower case character,\n" +
+                            "contain at least one upper case character,\n" +
+                            "contain at least one special character, and" +
+                            "be between 8 and 40 characters long", Toast.LENGTH_LONG).show();
+                    _etPassword.requestFocus();
+                    return;
+                }
 
                 // verify password confirmation matches password
                 if (!_etPassword.getText().toString().equals(_etPasswordConfirm.getText().toString())) {
                     _etPasswordConfirm.setError("Password does not match");
                     _etPasswordConfirm.requestFocus();
+                    return;
+                }
+
+                // validate phone number
+                if (!_phoneNumberValidator.isValid()) {
+                    _etPhone.setError("Invalid phone number.");
+                    Toast.makeText(Register.this,
+                            "Phone number must be of the form," +
+                                    "1234567890,.\n" +
+                                    "123-456-7890,\n" +
+                                    "(123)456-7890, or\n" +
+                                    "(123)4567890", Toast.LENGTH_LONG).show();
+                    _etPhone.requestFocus();
                     return;
                 }
 
