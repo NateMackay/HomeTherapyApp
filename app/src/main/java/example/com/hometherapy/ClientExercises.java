@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Therapist view of client's assigned exercises. Intent only comes
+ * example.com.hometherapy.Therapist view of client's assigned exercises. Intent only comes
  * from MyClients {@link MyClients}, which is the therapist's view
  * of their clients. When therapist selects a client from MyClients,
  * it takes you to this view.

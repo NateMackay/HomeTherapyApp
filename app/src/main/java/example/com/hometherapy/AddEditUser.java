@@ -2,22 +2,38 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,18 +50,17 @@ import java.util.stream.Collectors;
  */
 public class AddEditUser extends AppCompatActivity {
 
+    // Firebase instances
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mUsersDatabaseReference;
+
     // for log
     private static final String TAG = "AEU_Activity";
 
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String USER_DATA = "userData";
-
     // Key for extra message for user email address to pass to activity
-    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
-    public static final String MSG_AEU_EMAIL = "example.com.hometherapy.AEU_EMAIL";
-    private String _adminUserEmail;
-    private String _addEditUserEmail;
+    public static final String MSG_PASSED_UID = "example.com.hometherapy.PASSED_UID";
 
     // validator for email input field
     private EmailValidator _emailValidator;
@@ -63,18 +78,16 @@ public class AddEditUser extends AppCompatActivity {
     private Spinner _spinUserStatus;
     private Spinner _spinAssignedTherapist;
     private Button _btnUserSave;
-    private UserList _currentUsers;
-    private User _currentUser;
-    private Gson _gson;
-    private SharedPreferences _sharedPreferences;
+    private List<Therapist> _therapistList;
+    private String _passedUID;
+    private boolean _isNewUser;
+
+    private List<Therapist> _therapistListTest;
 
     // array adapters for spinner views
     private String _userAccountTypes[] = {"Account Type", "pending", "client", "therapist", "admin"};
     private String _userClinicNames[] = {"Location", "pending", "wenatchee", "spokane", "moses lake", "kennewick"};
     private String _userStatusNames[] = {"Status", "pending", "active", "inactive"};
-    private List<String> _therapists;
-    private HashMap<String, String> _therapistNameEmailMap;
-    private HashMap<String, String> _therapistEmailNameMap;
     // convert these arrays to resources
     // see reference: https://developer.android.com/guide/topics/ui/controls/spinner
     // follow the example to set the layout of the drop down list when it appears
@@ -82,12 +95,20 @@ public class AddEditUser extends AppCompatActivity {
     private ArrayAdapter<String> _adapterAccountTypes;
     private ArrayAdapter<String> _adapterClinics;
     private ArrayAdapter<String> _adapterStatus;
-    private ArrayAdapter<String> _adapterTherapists;
+    private ArrayAdapter<Therapist> _adapterTherapists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_user);
+
+        // initialize firebase auth
+        mAuth = FirebaseAuth.getInstance();
+
+        // add listener to database reference
+        // instantiate Firebase RTDB and DBREF
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users");
 
         // register views
         _tvAddEditUser = (TextView) findViewById(R.id.tvAEULabel);
@@ -108,131 +129,44 @@ public class AddEditUser extends AppCompatActivity {
         _etUserEmail.addTextChangedListener(_emailValidator);
 
         // create list of therapists
-        _therapists = new ArrayList<>(); // do I need to fill the list before setting the adapter? Right now it's null
-        _therapistEmailNameMap = new HashMap<>(); // used to store Integer reference to email based on position of therapist in list
-        _therapistNameEmailMap = new HashMap<>();
+        _therapistList = new ArrayList<>();
 
         // adapters
         _adapterAccountTypes = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _userAccountTypes);
         _adapterClinics = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _userClinicNames);
         _adapterStatus = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _userStatusNames);
-        _adapterTherapists = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _therapists);
+        _adapterTherapists = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, _therapistList);
+        _adapterTherapists.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // set adapters
         _spinUserAccountType.setAdapter(_adapterAccountTypes);
         _spinUserAssignedClinic.setAdapter(_adapterClinics);
         _spinUserStatus.setAdapter(_adapterStatus);
-//        _spinAssignedTherapist.setAdapter(_adapterTherapists);
-
-        // open up database for given user (shared preferences)
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonUserList = _sharedPreferences.getString(USER_DATA, "");
-
-        // initialize GSON object
-        _gson = new Gson();
-
-        // get user email (i.e. account) from extra message of user to edit or if null, then new user
-        Intent thisIntent = getIntent();
-        _addEditUserEmail = thisIntent.getStringExtra(MSG_AEU_EMAIL);
-        _adminUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
-        Log.d(TAG, "verify add_edit user: " + _addEditUserEmail);
-        Log.d(TAG, "verify admin user: " + _adminUserEmail);
-
-        // deserialize sharedPrefs JSON user database into List of Users
-        _currentUsers = _gson.fromJson(jsonUserList, UserList.class);
-
-        if (_currentUsers != null) {
-            List<User> tempUserList = _currentUsers.getUserList();
-
-            // find matching user account by email
-            // reference: section 3.5 on this page https://www.baeldung.com/find-list-element-java
-            _currentUser = tempUserList.stream()
-                    .filter(user -> _addEditUserEmail.equals(user.getEmail()))
-                    .findAny()
-                    .orElse(null);
-
-            List<User> therapistUserList = tempUserList.stream()
-                    .filter(user -> user.get_accountType().equals("therapist"))
-                    .collect(Collectors.toList());
-
-            for (int i = 0; i < therapistUserList.size(); i++) {
-
-                String fullName = (therapistUserList.get(i).getFirstName() + " " +
-                        therapistUserList.get(i).getLastName());
-
-                String therapistEmail = therapistUserList.get(i).getEmail();
-
-                _therapists.add(fullName);
-
-                _therapistEmailNameMap.put(therapistEmail, fullName);
-
-                _therapistNameEmailMap.put(fullName, therapistEmail);
-
-            }
-        } else {
-            // create a new user list if none is created and add a user to it
-            _currentUsers = new UserList();
-            _currentUser = new User("pending");
-            _currentUsers.addUser(_currentUser);
-        }
-
-        // set adapter for therapists after list of therapists has been created
         _spinAssignedTherapist.setAdapter(_adapterTherapists);
 
-        // check current user
-        Log.d(TAG, "currentUser: " + _currentUser);
+        // get userID of user to edit from extra message
+        // if null, then new user
+        Intent thisIntent = getIntent();
+        _passedUID = thisIntent.getStringExtra(MSG_PASSED_UID);
 
-        // set initial views of EditText values based on current user
-        // only if _currentUser is not null
-        if (_currentUser != null) {
-
-            _etUserFirstName.setText(_currentUser.getFirstName());
-            _etUserLastName.setText(_currentUser.getLastName());
-            _etUserEmail.setText(_currentUser.getEmail());
-            _etUserPhone.setText(_currentUser.getPhone());
-
-            // get indices of _currentUser's account type, assigned clinic, and status
-            // this is for setting the value for each spinner
-            // ref: https://stackoverflow.com/questions/23160832/how-to-find-index-of-string-array-in-java-from-a-given-value
-            int iUserAccountType = Arrays.asList(_userAccountTypes).indexOf(_currentUser.get_accountType());
-            int iUserAssignedClinic = Arrays.asList(_userClinicNames).indexOf(_currentUser.get_assignedClinic());
-            int iUserStatus = Arrays.asList(_userStatusNames).indexOf(_currentUser.get_status());
-
-            String assignedTherapistEmail = _currentUser.get_assignedTherapist();
-            int iAssignedTherapist;
-            if (_therapistEmailNameMap.containsKey(assignedTherapistEmail)) {
-                iAssignedTherapist = _therapists.indexOf(_therapistEmailNameMap.get(assignedTherapistEmail));
-            } else {
-                iAssignedTherapist = -1;
-            }
-
-            // set spinner values based on current user
-            // note that a value of -1 means indexOf() did not find value searching for
-            if (iUserAccountType >= 0) {
-                _spinUserAccountType.setSelection(iUserAccountType);
-            }
-
-            if (iUserAssignedClinic >= 0) {
-                _spinUserAssignedClinic.setSelection(iUserAssignedClinic);
-            }
-
-            if (iUserStatus >= 0) {
-                _spinUserStatus.setSelection(iUserStatus);
-            }
-
-            if (iAssignedTherapist >= 0) {
-                _spinAssignedTherapist.setSelection(iAssignedTherapist);
-            } else {
-                _spinAssignedTherapist.setSelection(0);
-            }
+        if (_passedUID.equals("")) {
+            _isNewUser = true;
         } else {
-            // create a new current user object to store stuff in so that it can be saved to the db
-            // temporarily use this until fire base is implemented
-            // may need to create a new fire base user
-            // userID used here with the assumption that a user ID would be minimally required
-            _currentUser = new User("pending");
-            _currentUsers.addUser(_currentUser);
+            _isNewUser = false;
         }
+
+        Log.d(TAG, "verify passed UserID: " + _passedUID);
+
+        // query user database based on therapist
+        Query queryTherapistList = FirebaseDatabase.getInstance().getReference("users")
+                .orderByChild("_accountType")
+                .equalTo("therapist");
+        Log.d(TAG, "onCreate: therapist list 2" + _therapistList);
+        queryTherapistList.addListenerForSingleValueEvent(valueEventListener);
+
+        // query user database based on passed in UID
+        Query query = mUsersDatabaseReference.orderByChild("userID").equalTo(_passedUID);
+        query.addListenerForSingleValueEvent(valueEventListenerUser);
 
         // listeners
         _btnUserSave.setOnClickListener(new View.OnClickListener() {
@@ -266,63 +200,259 @@ public class AddEditUser extends AppCompatActivity {
                 String spinUserAssignedClinic = _spinUserAssignedClinic.getSelectedItem().toString();
                 String spinUserStatus = _spinUserStatus.getSelectedItem().toString();
 
-                String assignedTherapistEmail;
+                Therapist selectedTherapist = (Therapist) _spinAssignedTherapist.getSelectedItem();
+                String assignedTherapistUID = selectedTherapist.get_userID();
+                String assignedTherapistName = selectedTherapist.get_firstName() + selectedTherapist.get_lastName();
 
-                if (!_therapists.isEmpty()) {
-
-                    // get string name from spinner
-
-                    Log.d(TAG, "therapists: " + _therapists);
-
-                    String spinAssignedTherapist = _therapists.get(_spinAssignedTherapist.getSelectedItemPosition());
-
-                    Log.d(TAG, "spinAssignedTherapist: " + spinAssignedTherapist);
-
-                    if (_therapistNameEmailMap.containsKey(spinAssignedTherapist)) {
-                        assignedTherapistEmail = _therapistNameEmailMap.get(spinAssignedTherapist);
-                    } else {
-                        assignedTherapistEmail = "";
-                    }
+                if (_isNewUser) {
+                    // create a new user object from values on screen
+                    createAccount(etUserEmail, etUserPassword);
 
                 } else {
-                    assignedTherapistEmail = "";
+                    // update existing user
+
+                    // note, because you cannot update a password or user without the recent
+                    // authentication (i.e. on myProfile page), the functionality is removed
+                    // to update the password or email address from the admin portal
+                    // instead, a link to reset password can be sent or they can do it from
+                    // the portal if they have their current login credentials
+                    // for now, just ignore email addresses when the function is to update
+                    // email is still left in for new users
+                    // reference: https://firebase.google.com/docs/auth/android/manage-users
+                    // see Send password reset email, re-authenticate user, set a user's password
+                    // set a users email address, update user's profile
+                    // note, [my first name]'s Exercises on that activity will be
+                    // based on displayname, a property of the UID, not the Users database
+                    // have the user update it on myProfile if they want to change that value
+
+                    // update data
+                    // reference: https://firebase.google.com/docs/database/admin/save-data
+                    DatabaseReference userRef = mUsersDatabaseReference.child(_passedUID);
+
+                    Map<String, Object> userUpdates = new HashMap<>();
+                    userUpdates.put("_accountType", spinUserAccountType);
+                    userUpdates.put("_assignedClinic", spinUserAssignedClinic);
+                    userUpdates.put("_assignedTherapistName", assignedTherapistName);
+                    userUpdates.put("_assignedTherapistUID", assignedTherapistUID);
+                    userUpdates.put("_status", spinUserStatus);
+                    userUpdates.put("firstName", etUserFirstName);
+                    userUpdates.put("lastName", etUserLastName);
+                    userUpdates.put("phone", etUserPhone);
+
+                    // note, this is an async update
+                    // ref: https://github.com/firebase/quickstart-android/issues/821
+                    userRef.updateChildren(userUpdates);
+
+                    // updateChildren has an add on complete listener
+                    // consider adding this and only going back to users upon successful
+                    // completion
+
+                    // go back to Users activity after update
+                    Intent intentUsers = new Intent(AddEditUser.this, Users.class);
+                    startActivity(intentUsers);
+
                 }
-
-                Log.d(TAG, "spin values: " + spinUserAccountType + ", " + spinUserAssignedClinic +
-                        ", " + spinUserStatus);
-
-                // update current user with any changes
-                _currentUser.setFirstName(etUserFirstName);
-                _currentUser.setLastName(etUserLastName);
-                _currentUser.setEmail(etUserEmail);
-                _currentUser.setPhone(etUserPhone);
-                _currentUser.set_accountType(spinUserAccountType);
-                _currentUser.set_assignedClinic(spinUserAssignedClinic);
-                _currentUser.set_status(spinUserStatus);
-                _currentUser.set_assignedTherapist(assignedTherapistEmail);
-
-                // update password only if password has been updated
-                if (etUserPassword.length() > 0) {
-                    _currentUser.setPassword(etUserPassword);
-                }
-
-                // convert updated UserList object back to JSON format
-                String updatedList = _gson.toJson(_currentUsers);
-
-                // update Shared Prefs with updated data
-                SharedPreferences.Editor editor = _sharedPreferences.edit();
-                editor.putString(USER_DATA, updatedList);
-                editor.apply();
-
-                // display contents for testing purposes
-                String fromSharedPrefs = _sharedPreferences.getString(USER_DATA, "");
-                Log.d(TAG, "fromSharedPrefs: " + fromSharedPrefs);
-
-                Intent intentUsers = new Intent(AddEditUser.this, Users.class);
-                startActivity(intentUsers);
             }
         });
 
+    } // END onCreate()
+
+    // listener for user data
+    ValueEventListener valueEventListenerUser = new ValueEventListener() {
+        @Override
+        public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
+                User user = new User();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    user = snapshot.getValue(User.class);
+                }
+                Log.d(TAG, "onDataChange: user = " + user);
+
+                if (user != null) {
+
+                    _etUserFirstName.setText(user.getFirstName());
+                    _etUserLastName.setText(user.getLastName());
+                    _etUserEmail.setText(user.getEmail());
+                    _etUserPhone.setText(user.getPhone());
+
+                    // get indices of user's account type, assigned clinic, and status
+                    // this is for setting the value for each spinner
+                    // ref: https://stackoverflow.com/questions/23160832/how-to-find-index-of-string-array-in-java-from-a-given-value
+                    int iUserAccountType = Arrays.asList(_userAccountTypes).indexOf(user.get_accountType());
+                    int iUserAssignedClinic = Arrays.asList(_userClinicNames).indexOf(user.get_assignedClinic());
+                    int iUserStatus = Arrays.asList(_userStatusNames).indexOf(user.get_status());
+
+                    String assignedTherapistUserID = user.get_assignedTherapistUID();
+                    int iAssignedTherapist;
+                    if (assignedTherapistUserID != null && _therapistList != null) {
+                        iAssignedTherapist = _therapistList.indexOf(assignedTherapistUserID);
+                        Log.d(TAG, "_therapistList: " + _therapistList);
+                    } else {
+                        iAssignedTherapist = -1;
+                    }
+
+                    // set spinner values based on current user
+                    // note that a value of -1 means indexOf() did not find value searching for
+                    if (iUserAccountType >= 0) {
+                        _spinUserAccountType.setSelection(iUserAccountType);
+                    }
+
+                    if (iUserAssignedClinic >= 0) {
+                        _spinUserAssignedClinic.setSelection(iUserAssignedClinic);
+                    }
+
+                    if (iUserStatus >= 0) {
+                        _spinUserStatus.setSelection(iUserStatus);
+                    }
+
+                    if (iAssignedTherapist >= 0) {
+                        _spinAssignedTherapist.setSelection(iAssignedTherapist);
+                    } else {
+                        _spinAssignedTherapist.setSelection(0);
+                    }
+                }
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+
+    // listener for user data to generate a filtered list of therapists
+    ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
+            _therapistList.clear();
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    User user = snapshot.getValue(User.class);
+                    if (user != null) {
+                        _therapistList.add(new Therapist(user.getUserID(), user.getFirstName(), user.getLastName()));
+                    }
+                }
+            }
+            // update adapter
+            _adapterTherapists.notifyDataSetChanged();
+
+            Log.d(TAG, "onDataChange: therapistList = " + _therapistList);
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+
+    // for therapist spinner - to get value
+    public void getSelectedTherapist (View v) {
+        Therapist therapist = (Therapist) _spinAssignedTherapist.getSelectedItem();
     }
+
+    // [START on_start_check_user]
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+        // Check if user is signed in (non-null), and update UI accordingly
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
+    } // [END on_start_check_user]
+
+    // update user interface - if user is not authenticated, go back to sign-in screen
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            // continue with loading app
+            Log.d(TAG, "updateUI: NOT NULL - means authorized ");
+        } else {
+            Log.d(TAG, "updateUI: Firebase user is null. Move to Sign-in Activity");
+            // move to sign-in screen if current user is not authenticated
+            Intent intentLogIn = new Intent(getApplicationContext(), SignIn.class);
+            startActivity(intentLogIn);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    // create new user function
+    public void createAccount(String email, String password) {
+
+        // put in email validator here, or keep above in onclick function
+
+        // Firebase auth method call to create user with email and password
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@example.com.hometherapy.NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+//                            updateUI(user); - probably not going to need this but keep until know for sure
+
+                            if (user != null) {
+
+                                // get values from activity for creating a new User object and updating Firebase User object
+                                // change Register screen to capture a "display name" that we can user for any user
+                                // for now, just make displayName the same as the users first name
+                                String userID = user.getUid(); // store UID in User object
+                                String firstName = _etUserFirstName.getText().toString();
+                                String lastName = _etUserLastName.getText().toString();
+                                String phone = _etUserPhone.getText().toString();
+                                String status = _spinUserStatus.getSelectedItem().toString();
+                                String assignedClinic = _spinUserAssignedClinic.getSelectedItem().toString();
+                                String accountType = _spinUserAccountType.getSelectedItem().toString();
+
+                                Therapist selectedTherapist = (Therapist) _spinAssignedTherapist.getSelectedItem();
+                                String assignedTherapistUID = selectedTherapist.get_userID();
+                                String assignedTherapistName = selectedTherapist.get_firstName() + selectedTherapist.get_lastName();
+
+                                // set displayName directly linked to Firebase UID - not part of User class
+                                // NOTE: may want to add a separate display name value to the users database
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(firstName)
+                                        .build();
+                                user.updateProfile(profileUpdates);
+
+                                // confirm user ID matches what is in Firebase authentication console - for testing
+                                Log.d(TAG, "user ID: " + user.getUid());
+
+                                // send verification email upon successful creation of user
+                                // NOTE: change custom NonNull to add the support annotation instead throughout app where used
+                                user.sendEmailVerification()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "Verification email sent.");
+                                                }
+                                            }
+                                        });
+
+                                // create a new user object from values on screen
+                                User newUser = new User(userID, email, firstName, lastName, phone,
+                                        status, assignedClinic, accountType,
+                                        assignedTherapistUID, assignedTherapistName);
+
+                                // FIREBASE - not sure why, but this doesn't work unless
+                                // database is open to writing w/o authentication - NEED TO FIX
+
+                                // save to users database with a key of userID
+                                mUsersDatabaseReference.child(userID).setValue(newUser);
+                            }
+
+                            // upon successful completion, go back to sign-in page
+                            Intent intentSignIn = new Intent(AddEditUser.this, SignIn.class);
+                            startActivity(intentSignIn);
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(AddEditUser.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+//                            updateUI(null);
+                        }
+                    }
+                });
+    } // end createAccount()
 
 }

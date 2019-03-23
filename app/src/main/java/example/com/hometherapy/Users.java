@@ -3,6 +3,7 @@ package example.com.hometherapy;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -18,8 +19,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,33 +43,22 @@ import java.util.List;
 public class Users extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    // Firebase instances
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mUsersDatabaseReference;
+
     // for log
     private static final String TAG = "Users_Activity";
 
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String USER_DATA = "userData";
-
     // Key for extra message for user email address to pass to activity
-    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
-    public static final String MSG_AEU_EMAIL = "example.com.hometherapy.AEU_EMAIL";
-    // note - we should put all of these constants into a constants class, and then
-    // refer to that class whenever they are used throughout the program
-    // this was a suggestion of Brother Falin at one point
+    public static final String MSG_PASSED_UID = "example.com.hometherapy.PASSED_UID";
 
     // private member variables
-    private TextView _tvUsersLabel;
     private ListView _lvUserList;
-    private Button _btnUserLogOut;
     private Button _btnUsersAddNewUser;
-    private Button _btnGoToExerciseLibrary;
-    private UserList _currentUsers;
-    private User _currentUser;
-    private Gson _gson;
-    private SharedPreferences _sharedPreferences;
     private List<User> _tempUserList;
-    private String _adminUserEmail;
-    private String _addEditUserEmail;
 
     // array adapter for user list
     private UserListAdapter _adapterUserList;
@@ -72,90 +70,26 @@ public class Users extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // get admin login user email passed through intent
-        Intent thisIntent = getIntent();
-        _adminUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
-        Log.d(TAG, "verify current user: " + _adminUserEmail);
-
-        // open up database for given user (shared preferences)
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonUserList = _sharedPreferences.getString(USER_DATA, "");
-
-        // initialize GSON object
-        _gson = new Gson();
-
-        // deserialize sharedPrefs JSON user database into List of Users
-        _currentUsers = _gson.fromJson(jsonUserList, UserList.class);
-        _tempUserList = _currentUsers.getUserList();
-
         // register views
-        // _tvUsersLabel = (TextView) findViewById(R.id.tvUsersLabel);
         _lvUserList = (ListView) findViewById(R.id.lvUserList);
         _btnUsersAddNewUser = (Button) findViewById(R.id.btnUsersAddUser);
-        //_btnUserLogOut = (Button) findViewById(R.id.btnUsersLogOut);
-        // _btnGoToExerciseLibrary = (Button) findViewById(R.id.btnUsersGoToExerciseLibrary);
+
+        // initialize firebase auth
+        mAuth = FirebaseAuth.getInstance();
 
         // initialize array adapter and bind user list to it
+        _tempUserList = new ArrayList<>();
         _adapterUserList = new UserListAdapter(this, _tempUserList);
 
-        // set adapter
-        _lvUserList.setAdapter(_adapterUserList);
+        // add listener to database reference
+        // instantiate Firebase RTDB and DBREF
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users");
+        mUsersDatabaseReference.addListenerForSingleValueEvent(valueEventListener);
 
-        // set on item click listener so we move to the add edit user activity when
-        // a user is clicked, moving to that specific user's account
-        _lvUserList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(TAG, "onCreate: after value listener: " + _tempUserList);
 
-                // get current user from position in list
-                User currentUser = _tempUserList.get(position);
-
-                // intent to go to Add Edit User screen, passing user via extra message
-                Intent intentAEU = new Intent(Users.this, AddEditUser.class);
-                intentAEU.putExtra(MSG_AEU_EMAIL, currentUser.getEmail());
-                intentAEU.putExtra(MSG_USER_EMAIL, _adminUserEmail);  // sent to AEU activity for myProfile access
-                startActivity(intentAEU);
-            }
-        });
-
-        // add new user from user screen
-        _btnUsersAddNewUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // since adding a new user, we do not have a user email yet
-                // AddEditUser.java is expecting an intent for user email
-                // so we are sending an empty string value
-                Intent intentAddNewUser = new Intent(Users.this, AddEditUser.class);
-                intentAddNewUser.putExtra(MSG_AEU_EMAIL, "");
-                intentAddNewUser.putExtra(MSG_USER_EMAIL, _adminUserEmail); // sent to AEU activity for myProfile access
-                startActivity(intentAddNewUser);
-            }
-        });
-
-        // on click, go to exercise library
-        /*_btnGoToExerciseLibrary.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intentExercises = new Intent(Users.this, .class);
-                startActivity(intentExercises);
-
-            }
-        });*/
-
-        // on click, just go back to signIn screen
-        /*_btnUserLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intentSignIn = new Intent(Users.this, SignIn.class);
-                startActivity(intentSignIn);
-
-            }
-        });*/
-
-
+        // navigation
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -164,6 +98,84 @@ public class Users extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+    } // END onCreate()
+
+    // listener for user data
+    ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            _tempUserList.clear();
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    User user = snapshot.getValue(User.class);
+                    _tempUserList.add(user);
+                }
+            }
+
+            // set the adapter after the list has been updated
+            _lvUserList.setAdapter(_adapterUserList);
+
+            // set on item click listener so we move to the add edit user activity when
+            // a user is clicked, moving to that specific user's account
+            _lvUserList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    // get current user from position in list
+                    User currentUser = _tempUserList.get(position);
+
+                    Log.d(TAG, "onItemClick: Current User.Name" + currentUser.getFirstName());
+                    Log.d(TAG, "onItemClick: Current User.UserID" + currentUser.getUserID());
+
+                    // intent to go to Add Edit User screen, passing user via extra message
+                    Intent intentAEU = new Intent(Users.this, AddEditUser.class);
+                    intentAEU.putExtra(MSG_PASSED_UID, currentUser.getUserID());
+                    startActivity(intentAEU);
+                }
+            });
+
+            // add new user from user screen
+            _btnUsersAddNewUser.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    // since adding a new user, we do not have a user email yet
+                    // AddEditUser.java is expecting an intent for user email
+                    // so we are sending an empty string value
+                    Intent intentAEU = new Intent(Users.this, AddEditUser.class);
+                    intentAEU.putExtra(MSG_PASSED_UID, "");
+                    startActivity(intentAEU);
+                }
+            });
+
+            Log.d(TAG, "onDataChange: tempUserList = " + _tempUserList);
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+
+    // [START on_start_check_user]
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null), and update UI accordingly
+        Log.d(TAG, "onStart: tempUserList = " + _tempUserList);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
+
+    } // [END on_start_check_user]
+
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            Log.d(TAG, "updateUI: tempUserList = " + _tempUserList);
+
+        } else {
+            Log.d(TAG, "updateUI: Firebase user is null. Move to Sign-in Activity");
+            // move to sign-in screen if current user is not authenticated
+            Intent intentLogIn = new Intent(getApplicationContext(), SignIn.class);
+            startActivity(intentLogIn);
+        }
     }
 
     @Override
@@ -198,7 +210,7 @@ public class Users extends AppCompatActivity
             startActivity(intentExerciseLibrary);
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(Users.this, MyProfile.class);
-            intentProfile.putExtra(MSG_USER_EMAIL, _adminUserEmail);
+//            intentProfile.putExtra(MSG_USER_EMAIL, _adminUserEmail);
             startActivity(intentProfile);
         } else if (id == R.id.nav_LogOut) {
             Intent intentLogIn = new Intent(Users.this, SignIn.class);

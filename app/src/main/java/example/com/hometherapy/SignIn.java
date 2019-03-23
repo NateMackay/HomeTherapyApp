@@ -2,6 +2,8 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.renderscript.Sampler;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,12 +11,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
@@ -33,6 +43,13 @@ public class SignIn extends AppCompatActivity {
 
     // firebase authentication instance
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+
+    // FIREBASE RTDB instances
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mUsersDatabaseReference;
+    private DatabaseReference mUserDatabaseReference;
+    private ChildEventListener mChildEventListener;
 
     // for log
     private static final String TAG = "SignIn_Activity";
@@ -51,6 +68,11 @@ public class SignIn extends AppCompatActivity {
     private EditText _etSignInPassword;
     private Button _btnLogin;
     private Button _btnRegister;
+    private String _accountType;
+    private User _loginUser;
+
+    // value event listeners
+    ValueEventListener _userValueEventListener; // for user object
 
     // validator for email input field
     private EmailValidator _emailValidator;
@@ -60,8 +82,29 @@ public class SignIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
 
+        // instantiate Firebase RTDB and DBREF
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users");
+
         // initialize firebase auth
         mAuth = FirebaseAuth.getInstance();
+
+        // Value Event Listener for User object
+//        _userValueEventListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//                    User tempUser = dataSnapshot.getValue(User.class);
+//                    if (tempUser != null) {
+//                        _accountType = tempUser.get_accountType();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//            }
+//        };
 
         // initialize view elements
         _btnLogin = (Button) findViewById(R.id.btnLogin);
@@ -72,8 +115,6 @@ public class SignIn extends AppCompatActivity {
         // setup field validators
         _emailValidator = new EmailValidator();
         _etSignInEmail.addTextChangedListener(_emailValidator);
-
-
 
 
         // FIREBASE: login button just needs to get email and password and call signin function
@@ -107,7 +148,6 @@ public class SignIn extends AppCompatActivity {
                     Log.d(TAG, "after call to signIn() - UID: " + user.getUid());
                     Log.d(TAG, "after call to signIn() - email: " + user.getEmail());
                     Log.d(TAG, "after call to signIn() - name: " + user.getDisplayName());
-                    Log.d(TAG, "after call to signIn() - phone: " + user.getPhoneNumber());
                 }
 
                 // FIREBASE: NOTE - although documentation doesn't list this, firebase user does
@@ -192,7 +232,7 @@ public class SignIn extends AppCompatActivity {
 //
 //                if (accountType != null) {
 //                    if (accountType.equals("therapist")) {
-//                        // intent to go to Therapist's My Clients screen, passing user via extra message
+//                        // intent to go to example.com.hometherapy.Therapist's My Clients screen, passing user via extra message
 //                        Intent intentClients = new Intent(SignIn.this, MyClients.class);
 //                        intentClients.putExtra(MSG_USER_EMAIL, loginUser.getEmail());
 ////                        intentClients.putExtra(MSG_ACCT_TYPE, loginUser.get_accountType()); // not sure if we need this
@@ -242,7 +282,64 @@ public class SignIn extends AppCompatActivity {
             }
         }); // END register button events
 
+        // initialize auth state listener
+        // note - I think this makes sense to be on the Main Activity where the splash screen is
+        // that way if you are logged in, it goes right to your dashboard
+        // auth state listener may need to be on other pages so that the app can be "torn down"
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                // check if firebase user is logged in wtih firebase user
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // user is signed in
+                } else {
+                    // user is signed out
+                    // follow sign in flow
+                }
+            }
+        };
+
     } // END onCreate()
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mAuth.removeAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    // [START on_start_check_user]
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        updateUI(currentUser);
+    } // [END on_start_check_user]
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+//        signOut(); - thought about this, but doesn't make sense from this page
+        // should be where data is stored, normally, but Firebase makes sure data is
+        // synced, so not sure if this is needed
+    }
+
+    // use this for whenever we need to call sign out from any page
+    private void signOut() {
+        mAuth.signOut();
+
+        // go to sign in page
+        Intent intentSignIn = new Intent(getApplicationContext(), SignIn.class);
+        startActivity(intentSignIn);
+//        updateUI(null);
+    }
 
     @Override
     public void onBackPressed() {
@@ -272,23 +369,104 @@ public class SignIn extends AppCompatActivity {
                             updateUI(user);
 
                             Log.d(TAG, "Within SignIn() - User: " + user);
+
+                            // FIREBASE: if user not null, then go to specified intent
                             if (user != null) {
                                 Log.d(TAG, "Within SignIn() - UID: " + user.getUid());
-                            }
 
-                            // add intent to go to specific sign-in screen
-                            // only issue is, we need to know the account type
-                            // could still use shared prefs to store user account info
-                            // but instead of key in User Data being email, it could
-                            // simply be UID
-                            // but... what we actually want is to use firestore database
+                                Log.d(TAG, "account type before: " + _accountType);
+
+                                // get an instance of the current logged in user
+                                mUsersDatabaseReference.child(user.getUid()).addListenerForSingleValueEvent(
+                                        new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                _loginUser = dataSnapshot.getValue(User.class);
+
+                                                Log.d(TAG, "onDataChange: _loginUser data: " + _loginUser);
+
+                                                // get account type of logged in user
+                                                if (_loginUser != null) {
+                                                    _accountType = _loginUser.get_accountType();
+                                                }
+
+                                                // add intent to go to specific sign-in screen
+                                                if (_accountType != null) {
+                                                    switch (_accountType) {
+                                                        case "therapist":
+                                                            // intent to go to example.com.hometherapy.Therapist's My Clients screen, passing user via extra message
+                                                            Intent intentClients = new Intent(SignIn.this, MyClients.class);
+                                                            startActivity(intentClients);
+                                                            break;
+
+                                                        case "client":
+                                                            // intent to go to Exercises screen, passing user via extra message
+                                                            Intent intentExercises = new Intent(SignIn.this, MyExercises.class);
+                                                            startActivity(intentExercises);
+                                                            break;
+
+                                                        case "admin":
+                                                            // intent to go to Users screen, passing user via extra message
+                                                            Intent intentUsers = new Intent(SignIn.this, Users.class);
+                                                            startActivity(intentUsers);
+                                                            break;
+
+                                                        case "pending":
+                                                            // inform user to confirm email and wait for user to confirm account
+                                                            Toast.makeText(SignIn.this, "Account is pending approval from administrator.",
+                                                                    Toast.LENGTH_SHORT).show();
+                                                            break;
+
+                                                        default:
+                                                            // display error message - contact administrator
+                                                            Toast.makeText(SignIn.this, "Error with signin. Please contact administrator.",
+                                                                    Toast.LENGTH_SHORT).show();
+                                                            Log.e(TAG, "error with sign in.");
+                                                            break;
+                                                    }
+
+                                                } // END accountType check
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            }
+                                        }
+                                );
+
+                                // query the database for userID and get user
+//                                Query query = mUsersDatabaseReference
+//                                        .orderByChild("userID")
+//                                        .equalTo(user.getUid());
+//                                query.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                        if (dataSnapshot.exists()) {
+//                                            Log.d(TAG, "onDataChange: exists");
+//                                        } else {
+//                                            Log.d(TAG, "onDataChange: doesn't exist");
+//                                        }
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//                                        Log.d(TAG, "onCancelled: ");
+//                                    }
+//                                });
+
+                                // another method of query that was attempted
+//                                query.addValueEventListener(_userValueEventListener);
+
+                            } // END if user is null
 
                         } else {
+
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(SignIn.this, "Invalid username and/or password. Please try again.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
+
                         }
 
 //                        hideProgressDialog(); - consider adding this functionality
@@ -327,6 +505,17 @@ public class SignIn extends AppCompatActivity {
 //            findViewById(R.id.signedInButtons).setVisibility(View.GONE);
         }
     } // END updateUI()
+
+    // FIREBASE: THIS WOULD BE GOOD TO TAKE THE USER TO HIS/HER FIRST DASHBOARD
+    // IF THE APP IS OPENED AND THEY ARE ALREADY LOGGED IN
+    // FOR NOW, COMMENT OUT
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        // Check if user is signed in (non-null) and update UI accordingly.
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        updateUI(currentUser);
+//    }
 
 
 } // END SignIn.class
