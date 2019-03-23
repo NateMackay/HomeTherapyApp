@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -47,8 +48,10 @@ public class MyProfile extends AppCompatActivity
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
 
-    // validator for email input field
+    // validators for email, password, and phone number input fields
     private EmailValidator _emailValidator;
+    private PasswordValidator _passwordValidator;
+    private PhoneNumberValidator _phoneNumberValidator;
 
     // Views
     private TextView _etUserProfFirstName;
@@ -83,8 +86,16 @@ public class MyProfile extends AppCompatActivity
         _btnUserProfSave = (Button) findViewById(R.id.btnUserProfSave);
 
         // setup field validators
+        // email
         _emailValidator = new EmailValidator();
         _etUserProfEmail.addTextChangedListener(_emailValidator);
+        // password
+        _passwordValidator = new PasswordValidator();
+        _etUserProfPwd.addTextChangedListener(_passwordValidator);
+        // phone number
+        _phoneNumberValidator = new PhoneNumberValidator();
+        _etUserProfPhone.addTextChangedListener(_phoneNumberValidator);
+
 
         // open up User database (shared preferences)
         // JSON formatted string stored in shared preferences storing a UserList object
@@ -136,11 +147,37 @@ public class MyProfile extends AppCompatActivity
                     return;
                 }
 
+                // validate password
+                if (!_passwordValidator.isValid()) {
+                    _etUserProfPwd.setError("Invalid Password");
+                    Toast.makeText(MyProfile.this, "Password must,\n" +
+                            "contain at least one digit,\n" +
+                            "contain at least one lower case character,\n" +
+                            "contain at least one upper case character,\n" +
+                            "contain at least one special character, and" +
+                            "be between 8 and 40 characters long", Toast.LENGTH_LONG).show();
+                    _etUserProfPwd.requestFocus();
+                    return;
+                }
+
                 // verify password confirmation matches password
                 // add password validation class
                 if (!_etUserProfPwd.getText().toString().equals(_etUserProfPwdConfirm.getText().toString())) {
                     _etUserProfPwdConfirm.setError("Password does not match");
                     _etUserProfPwdConfirm.requestFocus();
+                    return;
+                }
+
+                // validate phone number
+                if (!_phoneNumberValidator.isValid()) {
+                    _etUserProfPhone.setError("Invalid phone number.");
+                    Toast.makeText(MyProfile.this,
+                            "Phone number must be of the form," +
+                                    "1234567890,.\n" +
+                                    "123-456-7890,\n" +
+                                    "(123)456-7890, or\n" +
+                                    "(123)4567890", Toast.LENGTH_LONG).show();
+                    _etUserProfPhone.requestFocus();
                     return;
                 }
 

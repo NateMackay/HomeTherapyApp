@@ -62,8 +62,10 @@ public class AddEditUser extends AppCompatActivity {
     // Key for extra message for user email address to pass to activity
     public static final String MSG_PASSED_UID = "example.com.hometherapy.PASSED_UID";
 
-    // validator for email input field
+    // validators for email, password, and phone number input fields
     private EmailValidator _emailValidator;
+    private PasswordValidator _passwordValidator;
+    private PhoneNumberValidator _phoneNumberValidator;
 
     // private member variables
     private TextView _tvAddEditUser;
@@ -125,8 +127,15 @@ public class AddEditUser extends AppCompatActivity {
         _btnUserSave = (Button) findViewById(R.id.btnAEUSave);
 
         // setup field validators
+        // email
         _emailValidator = new EmailValidator();
         _etUserEmail.addTextChangedListener(_emailValidator);
+        // password
+        _passwordValidator = new PasswordValidator();
+        _etUserPassword.addTextChangedListener(_passwordValidator);
+        // phone number
+        _phoneNumberValidator = new PhoneNumberValidator();
+        _etUserPhone.addTextChangedListener(_phoneNumberValidator);
 
         // create list of therapists
         _therapistList = new ArrayList<>();
@@ -181,12 +190,38 @@ public class AddEditUser extends AppCompatActivity {
                     return;
                 }
 
+                // validate password
+                if (!_passwordValidator.isValid()) {
+                    _etUserPassword.setError("Invalid Password");
+                    Toast.makeText(AddEditUser.this, "Password must,\n" +
+                            "contain at least one digit,\n" +
+                            "contain at least one lower case character,\n" +
+                            "contain at least one upper case character,\n" +
+                            "contain at least one special character, and" +
+                            "be between 8 and 40 characters long", Toast.LENGTH_LONG).show();
+                    _etUserPassword.requestFocus();
+                    return;
+                }
+
                 // verify password confirmation matches password
                 // note no other password validity
                 // consider adding a password validation class
                 if (!_etUserPassword.getText().toString().equals(_etUserPasswordConfirm.getText().toString())) {
                     _etUserPasswordConfirm.setError("Password does not match");
                     _etUserPasswordConfirm.requestFocus();
+                    return;
+                }
+
+                // validate phone number
+                if (!_phoneNumberValidator.isValid()) {
+                    _etUserPhone.setError("Invalid phone number.");
+                    Toast.makeText(AddEditUser.this,
+                            "Phone number must be of the form," +
+                            "1234567890,.\n" +
+                            "123-456-7890,\n" +
+                            "(123)456-7890, or\n" +
+                            "(123)4567890", Toast.LENGTH_LONG).show();
+                    _etUserPhone.requestFocus();
                     return;
                 }
 
