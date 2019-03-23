@@ -4,6 +4,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Class used to test PasswordValidator.java.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-03-23
+ */
 public class PasswordValidatorTest {
 
     @Test
