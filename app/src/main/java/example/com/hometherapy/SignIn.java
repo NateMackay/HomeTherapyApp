@@ -52,8 +52,9 @@ public class SignIn extends AppCompatActivity {
     private Button _btnLogin;
     private Button _btnRegister;
 
-    // validator for email input field
+    // validators for email, password, and phone number input fields
     private EmailValidator _emailValidator;
+    private PasswordValidator _passwordValidator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +71,12 @@ public class SignIn extends AppCompatActivity {
         _etSignInPassword = (EditText) findViewById(R.id.etSignInPassword);
 
         // setup field validators
+        // email
         _emailValidator = new EmailValidator();
         _etSignInEmail.addTextChangedListener(_emailValidator);
-
-
+        // password
+        _passwordValidator = new PasswordValidator();
+        _etSignInPassword.addTextChangedListener(_passwordValidator);
 
 
         // FIREBASE: login button just needs to get email and password and call signin function
@@ -91,6 +94,13 @@ public class SignIn extends AppCompatActivity {
                 if (!_emailValidator.isValid()) {
                     _etSignInEmail.setError("Invalid email address.");
                     _etSignInEmail.requestFocus();
+                    return;
+                }
+
+                // validate password
+                if (!_passwordValidator.isValid()) {
+                    _etSignInPassword.setError("Invalid Password");
+                    _etSignInPassword.requestFocus();
                     return;
                 }
 
