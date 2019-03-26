@@ -197,9 +197,9 @@ public class MyProfile extends AppCompatActivity
                     _currentUser.setPhone(etUserProfPhone);
 
                     // update password only if password has been updated
-                    if (etUserProfPwd.length() > 0) {
-                        _currentUser.setPassword(etUserProfPwd);
-                    }
+//                    if (etUserProfPwd.length() > 0) {
+//                        _currentUser.setPassword(etUserProfPwd);
+//                    }
 
                     // convert updated UserList object back to JSON format
                     String updatedUserList = _gson.toJson(_userDatabase);

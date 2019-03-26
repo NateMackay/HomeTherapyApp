@@ -17,6 +17,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -33,6 +35,10 @@ public class Register extends AppCompatActivity {
 
     // FIREBASE declare auth
     private FirebaseAuth mAuth;
+
+    // FIREBASE RTDB instances
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mUsersDatabaseReference;
 
     // for log
     private static final String TAG = "Register_Activity";
@@ -62,6 +68,22 @@ public class Register extends AppCompatActivity {
 
         // initialize Firebase auth instance
         mAuth = FirebaseAuth.getInstance();
+
+        // instantiate Firebase RTDB and DBREF
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users");
+
+        // notes on Firebase instance and reference
+        // mFirebaseDatabase.getReference() gets reference to the root node
+        // child.("users") gets reference to the users "database", which is nothing
+        // more than a map of key/value pairs, where the key is a "push ID" - a String
+        // and the value is a User object - map <String, User> structure
+        // the User object is of a user class
+        // the User object needs a UID for the user so that a given hashed entry
+        // in the Users database can be linked with a given Firebase user
+        // one would think that the "key" in the users "database" could be the
+        // UID, but the UID is auto-generated whenever user information is added
+        // which is after the fact that the user is added
 
         // register views
         _btnCreateAccount = (Button) findViewById(R.id.btnRegCreateAccount);
@@ -143,25 +165,13 @@ public class Register extends AppCompatActivity {
                 // the email and password
                 String email = _etEmail.getText().toString();
                 String password = _etPassword.getText().toString();
-                String firstName = _etFirstName.getText().toString();
-                String lastName = _etLastName.getText().toString();
-                String phone = _etPhone.getText().toString();
-                String userID = "pending";
-                String status = "pending";
-                String assignedClinic = "pending";
-                String accountType = "pending";
-                String assignedTherapist = "pending";
 
                 // FIREBASE create new user account
                 createAccount(email, password);
 
-                // FIREBASE: this may be necessary, but the User class will likely need
-                // to change, so that we are storing the User ID so that that user
-                // can be associated with the other data we want to capture and store in firestore
-                // LIKELY MOVE THIS TO TASK SUCCESSFUL OR TO ANOTHER FUNCTION THAT IS CALLED
-                // AFTER TASK IS SUCCESSFUL
-                User newUser = new User(email, password, firstName, lastName, phone, userID,
-                        status, assignedClinic, accountType, assignedTherapist);
+
+
+
 
 
                 // FIREBASE: Shared Prefs logic will go away
@@ -226,37 +236,12 @@ public class Register extends AppCompatActivity {
         });
     } // END onCreate()
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        Log.d(TAG, "onStart-currentUser: " + currentUser);
-
-        updateUI(currentUser);
-    }
-
+    // create new user function
     public void createAccount(String email, String password) {
 
         // put in email validator here, or keep above in onclick function
 
-        // showProgressDialog(); - consider adding this functionality
-
-        // create Firebase user
-        // note that the addOnCompleteListener is "after" the create user function
-        // the createUserWithEmailAndPassword(String email, String password) is a
-        // member function of the FirebaseAuth class
-        // the listener is just an override - possibly not necessary, except
-        // what do you want to do after the user has been created - go back to sign in page?
-        // maybe this is where you will add an instance of the User class data
-        // so other information can be stored for user, such as phone, etc.
-        // or maybe it directs the user to go to their profile to update/add that
-        // information there and not at the register screen
-        // if the task is unsuccessful, then it just displays the toast
-        // - what would be the exception
-        // - is there an exception for user account already created with email
-        //   that would prompt the user to create an account with a different email address?
+        // Firebase auth method call to create user with email and password
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -265,51 +250,55 @@ public class Register extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-
-                            // set name and phone info in Firebase user profile
-//                            String phone = _etPhone.getText().toString();
-                            String displayName = String.format("%s %s", _etFirstName.getText().toString(), _etLastName.getText().toString());
-
-                            // reference for updating phone numbers - will be required for messaging no doubt
-                            // but not as easy as just updating the phone number
-                            // ref: https://stackoverflow.com/questions/45304912/firebase-users-setting-phone-number
-                            // NOTE: not sure we want to do this - phone numbers are associated with user accounts
-                            // for an alternate sign-in method - probably just want to stick with email/password method
-                            // we can store the phone number just for display purposes in the User database, just like
-                            // we store status, assigned clinic, therapist, etc.
-                            // we probably want to store first name and last name separately in the User database as well
-                            // but we can use the display name field for now
-                            // QUESTION: do we want display name to be different than first and last name? maybe. we could
-                            // use display name throughout the app, and we may not need first and last name at all anyway
-                            // except therapists/admin would want to know first/last name information to
-                            // know which client they are working with
-                            // probably good to have first, last, and displayname as 3 separate fields in registration tab
-
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(displayName)
-                                    .build();
+//                            updateUI(user); - probably not going to need this but keep until know for sure
 
                             if (user != null) {
+
+                                // get values from activity for creating a new User object and updating Firebase User object
+                                // change Register screen to capture a "display name" that we can user for any user
+                                // for now, just make displayName the same as the users first name
+                                String userID = user.getUid(); // store UID in User object
+                                String firstName = _etFirstName.getText().toString();
+                                String lastName = _etLastName.getText().toString();
+                                String phone = _etPhone.getText().toString();
+                                String status = "pending";
+                                String assignedClinic = "pending";
+                                String accountType = "pending";
+                                String assignedTherapistUID = "";
+                                String assignedTherapistName = "";
+
+                                // set displayName directly linked to Firebase UID - not part of User class
+                                // NOTE: may want to add a separate display name value to the users database
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(firstName)
+                                        .build();
                                 user.updateProfile(profileUpdates);
-//                                user.updatePhoneNumber(phone); - FIREBASE: can't do this - see ref above
 
                                 // confirm user ID matches what is in Firebase authentication console - for testing
                                 Log.d(TAG, "user ID: " + user.getUid());
-                            }
 
-                            // send verification email upon successful creation of user
-                            // NOTE: change custom NonNull to add the support annotation instead throughout app where used
-                            if (user != null) {
+                                // send verification email upon successful creation of user
+                                // NOTE: change custom NonNull to add the support annotation instead throughout app where used
                                 user.sendEmailVerification()
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
-                                            public void onComplete(@android.support.annotation.NonNull Task<Void> task) {
+                                            public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
                                                     Log.d(TAG, "Verification email sent.");
                                                 }
                                             }
                                         });
+
+                                // create a new user object from values on screen
+                                User newUser = new User(userID, email, firstName, lastName, phone,
+                                        status, assignedClinic, accountType,
+                                        assignedTherapistUID, assignedTherapistName);
+
+                                // FIREBASE - not sure why, but this doesn't work unless
+                                // database is open to writing w/o authenication - NEED TO FIX
+
+                                // save to users database with a key of userID
+                                mUsersDatabaseReference.child(userID).setValue(newUser);
                             }
 
                             // upon successful completion, go back to sign-in page
@@ -321,7 +310,7 @@ public class Register extends AppCompatActivity {
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(Register.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+//                            updateUI(null);
                         }
 
                         // hideProgressDialog(); - consider adding this functionality

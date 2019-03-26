@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Therapist dashboard.
+ * example.com.hometherapy.Therapist dashboard.
  * Allows therapist to see a list of their clients.
- * Therapist can click on a client to go view of client’s exercises.
+ * example.com.hometherapy.Therapist can click on a client to go view of client’s exercises.
  * @author Team06
  * @version 1.0
  * @since 2019-03-19 *
@@ -88,7 +88,7 @@ public class MyClients extends AppCompatActivity
 
         // filter list of all users to only those users assigned to therapist
         _filteredUserList = _tempUserList.stream()
-                .filter(user -> _currentUserEmail.equals(user.get_assignedTherapist()))
+                .filter(user -> _currentUserEmail.equals(user.get_assignedTherapistUID())) // FIREBASE UPDATE
                 .collect(Collectors.toList());
 
         Log.d(TAG, "list after filtering: " + _filteredUserList);
