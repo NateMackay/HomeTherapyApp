@@ -220,7 +220,11 @@ public class AddExerciseToClient extends AppCompatActivity {
                 // if we are here to add a new exercise,
                 // the following adds a new exercise to the list within the AssignedEceriseList object
                 if (_isIntentAdd) {
-                    _currentAssignedExercises.addAssignedExercise(new AssignedExercise(_exercise,
+
+                    // temporary to get to compile for Exerises.java
+                    String _exerciseID = "";
+
+                    _currentAssignedExercises.addAssignedExercise(new AssignedExercise(_exerciseID, _exercise,
                             _discipline, _modality, _assignment, _linkToVideo, _currentUserEmail,
                             Integer.parseInt(_spinAETCPointValue.getSelectedItem().toString()),
                             _spinAETCStatus.getSelectedItem().toString(), false,

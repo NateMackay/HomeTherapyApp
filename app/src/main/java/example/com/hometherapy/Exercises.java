@@ -3,6 +3,7 @@ package example.com.hometherapy;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -20,8 +21,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,21 +46,20 @@ public class Exercises extends AppCompatActivity
     // for log
     private static final String TAG = "ExercisesActivity";
 
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String EXERCISE_DATA = "exerciseData";
-    public static final String LOGIN_USER = "loginUser";
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mExerciseLibraryRef; // for references to library node
+    private DatabaseReference mUsersRef; // for references to users node
 
     // Key for extra message for exercise name to pass to activity
-    public static final String MSG_EXERCISE_NAME = "example.com.hometherapy.EXERCISENAME";
+    public static final String MSG_EXERCISE_ID = "example.com.hometherapy.EXERCISE_ID";
+
+    // consider passing exercise ID, and not the name, in the intent to addEditExercise.java
+    // this is only relevant for an existing exercise
 
     // member variables
-    private ExerciseList _currentExercises;
-    private Exercise _exercise;
-    private Gson _gson;
-    private SharedPreferences _sharedPreferences;
-    private List<Exercise> tempExerciseList;
-    private User _loginUser;
+    private List<Exercise> _tempExerciseList;
+    private String _mAuthAccountType; // account type of mAuth user for return to dashboard intent
 
     // views
     private ListView _lvExerciseList;
@@ -68,65 +76,77 @@ public class Exercises extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // open up database for given user (shared preferences)
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonExerciseList = _sharedPreferences.getString(EXERCISE_DATA, "");
-        String jsonLoginUser = _sharedPreferences.getString(LOGIN_USER, "");
-
-        // initialize GSON object
-        _gson = new Gson();
-
-        // deserialize sharedPrefs JSON user database into List of Exercises
-        _currentExercises = _gson.fromJson(jsonExerciseList, ExerciseList.class);
-        _loginUser = _gson.fromJson(jsonLoginUser, User.class);
-
         // register view widgets
         _lvExerciseList = (ListView) findViewById(R.id.lvExerciseList);
         _btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
         _btnExercisesReturnDashboard = (Button) findViewById(R.id.btnExercisesReturnDashboard);
 
-        // if current exercise database is not empty, then proceed with getting list of exercises
-        // and binding to array adapter
-        if (_currentExercises != null) {
+        // initialize firebase auth
+        mAuth = FirebaseAuth.getInstance();
 
-            tempExerciseList = _currentExercises.getExerciseList();
+        // initialize array adapter and bind exercise list to it, then set the adapter
+        _tempExerciseList = new ArrayList<>();
+        _adapterExerciseList = new ExerciseListAdapter(this, _tempExerciseList);
+        _lvExerciseList.setAdapter(_adapterExerciseList);
 
-            Log.d(TAG, "tempExerciseList: " + tempExerciseList);
+        Log.d(TAG, "array adapter initialized");
 
-            // initialize array adapter and bind exercise list to it
-            _adapterExerciseList = new ExerciseListAdapter(this, tempExerciseList);
+        // add listener for display reference to pull data from firebase and display in listview
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mExerciseLibraryRef = mFirebaseDatabase.getReference().child("library");
+        mExerciseLibraryRef.addListenerForSingleValueEvent(valueEventListener);
 
-            // set the adapter to the list view
-            _lvExerciseList.setAdapter(_adapterExerciseList);
-        }
+        Log.d(TAG, "library reference set and listener added");
 
-        // add an on item click listener that will open up the existing exercise for editing
+        // add reference for Users so that we can identify the account type of the current mAuth user
+        mUsersRef = mFirebaseDatabase.getReference().child("users");
+
+        Log.d(TAG, "users ref added");
+
+        // query user database by UID to see the account type of the mAuth user; this is done
+        // to know which dashboard to return the user to upon click of "return to dashboard"
+        Log.d(TAG, "onCreate: mAccountType before Query: " + _mAuthAccountType);
+        Log.d(TAG, "onCreate: mAuth Get UID " + mAuth.getUid());
+        Query query = mUsersRef.orderByChild("userID").equalTo(mAuth.getUid());
+        query.addListenerForSingleValueEvent(valueEventListenerUser);
+
+        Log.d(TAG, "onCreate: valueEventListenerUser added");
+
+        // click on an existing exercise from the list
+        // that will open up the existing exercise for editing in AddExerciseToLibrary.java
         _lvExerciseList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 // get current exercise from position in list
-                Exercise currentExercise = tempExerciseList.get(position);
+                Exercise currentExercise = _tempExerciseList.get(position);
+
+                Log.d(TAG, "Position: " + position);
+                Log.d(TAG, "Current Exercise: " + currentExercise);
+                Log.d(TAG, "Exercise ID: " + currentExercise.get_exerciseID());
 
                 // intent to go to Add/Edit Exercise to Library screen, passing exercise via extra message
                 Intent intentAddExerciseToLibrary = new Intent(Exercises.this, AddExerciseToLibrary.class);
-                intentAddExerciseToLibrary.putExtra(MSG_EXERCISE_NAME, currentExercise.get_exerciseName());
+                intentAddExerciseToLibrary.putExtra(MSG_EXERCISE_ID, currentExercise.get_exerciseID());
                 startActivity(intentAddExerciseToLibrary);
             }
         });
 
+         //return to dashboard button
         _btnExercisesReturnDashboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (_loginUser != null) {
+                Log.d(TAG, "onClick: Return to Dashboard: " + _mAuthAccountType);
 
-                    if (_loginUser.get_accountType().equals("therapist")) {
+                if (_mAuthAccountType != null) {
+
+                    if (_mAuthAccountType.equals("therapist")) {
 
                         Intent intentReturnTherapistDashboard = new Intent(Exercises.this, MyClients.class);
                         startActivity(intentReturnTherapistDashboard);
 
-                    } else if (_loginUser.get_accountType().equals("admin")){
+                    } else if (_mAuthAccountType.equals("admin")){
                         // go to users
                         Intent intentReturnAdminDashboard = new Intent(Exercises.this, Users.class);
                         startActivity(intentReturnAdminDashboard);
@@ -145,15 +165,17 @@ public class Exercises extends AppCompatActivity
             }
         });
 
+        // add new exercise to library button
         _btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intentAddExercise = new Intent(Exercises.this, AddExerciseToLibrary.class);
-                intentAddExercise.putExtra(MSG_EXERCISE_NAME, "***new_exercise***");
+                intentAddExercise.putExtra(MSG_EXERCISE_ID, "");
                 startActivity(intentAddExercise);
             }
         });
 
+        // navigation
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -162,7 +184,43 @@ public class Exercises extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
+
+    } // END onCreate()
+
+    // value event listener for library of exercises
+    ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            _tempExerciseList.clear();
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Exercise exercise = snapshot.getValue(Exercise.class);
+                    _tempExerciseList.add(exercise);
+                }
+            }
+            _adapterExerciseList.notifyDataSetChanged();
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+
+    // value event listener for query of user ID to identify user type
+    ValueEventListener valueEventListenerUser = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            User user = new User();
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    user = snapshot.getValue(User.class);
+                }
+                if (user != null) {
+                    _mAuthAccountType = user.get_accountType();
+                }
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
 
     @Override
     public void onBackPressed() {
@@ -206,37 +264,7 @@ public class Exercises extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
+    } // END listener for navigation menu
 
+} // END Exercises class
 
-    // future logic - add async tasks
-    // execute task in background
-//        new AddDataToListTask().execute();
-
-//    private class AddDataToListTask extends AsyncTask<Void, Void, Void> {
-//
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//
-//            // add some Exercises to the list
-//            //_ExercisesList.add("TH Sound");
-//            //_ExercisesList.add("R Sound");
-//            //_ExercisesList.add("S Sound");
-//            //_ExercisesList.add("Basic Swallow");
-//            //_ExercisesList.add("3 Step Directions");
-//
-//
-//
-//            // simulate time delay
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//
-//            return null;
-//        }
-//    }
-
-
-}
