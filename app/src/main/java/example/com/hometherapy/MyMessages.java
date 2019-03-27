@@ -45,13 +45,6 @@ public class MyMessages extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.my_messages, menu);
-        return true;
-    }
-
-    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -60,7 +53,7 @@ public class MyMessages extends AppCompatActivity
             Intent intentExercises = new Intent(MyMessages.this, MyClients.class);
             startActivity(intentExercises);
         } else if (id == R.id.nav_myExercises) {
-            Intent intentMessage = new Intent(MyMessages.this, MyExercise.class);
+            Intent intentMessage = new Intent(MyMessages.this, MyExercises.class);
             startActivity(intentMessage);
         } else if (id == R.id.nav_myMessages) {
 /*          Intent intentRewards = new Intent(MyMessages.this, MyMessages.class);
