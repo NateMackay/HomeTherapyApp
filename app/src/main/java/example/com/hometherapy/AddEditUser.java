@@ -408,7 +408,12 @@ public class AddEditUser extends AppCompatActivity {
         Log.d(TAG, "onResume: ");
     }
 
-    // create new user function
+    /**
+     * This method creates a new user object.
+     *
+     * @param email - email address of new user.
+     * @param password - password of new user.
+     */
     public void createAccount(String email, String password) {
 
         // put in email validator here, or keep above in onclick function
