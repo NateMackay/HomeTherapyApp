@@ -3,6 +3,7 @@ package example.com.hometherapy;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -18,8 +19,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +43,20 @@ import java.util.stream.Collectors;
 public class MyClients extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    // Firebase instances
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mUsersRef;
+
     // for log
     private static final String TAG = "MyClients_Activity";
 
+    // Key for extra message for client UID to pass to activity
+    public static final String MSG_CLIENT_UID = "example.com.hometherapy.CLIENT_UID";
+    public static final String MSG_THERAPIST_UID = "example.com.hometherapy.THERAPIST_UID";
+
+    /**
     // name shared preferences
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String USER_DATA = "userData";
@@ -45,6 +65,7 @@ public class MyClients extends AppCompatActivity
     // Key for extra message for user email address to pass to activity
     public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
     public static final String MSG_CLIENT_FIRST_NAME = "example.com.hometherapy.CLIENT_FIRST_NAME";
+     **/
 
     // private member variables
     private TextView _tvClientViewTitle;
@@ -70,60 +91,57 @@ public class MyClients extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // open up user database from shared preferences
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonUserList = _sharedPreferences.getString(USER_DATA, "");
-        String jsonLoginUser = _sharedPreferences.getString(LOGIN_USER, "");
-
-        // initialize GSON object
-        _gson = new Gson();
-
-        // deserialize sharedPrefs JSON user database int list of users
-        _currentUsers = _gson.fromJson(jsonUserList, UserList.class);
-        _tempUserList = _currentUsers.getUserList();
-
-        // deserialize sharedPrefs JSON login user into current user
-        _currentUser = _gson.fromJson(jsonLoginUser, User.class);
-        _currentUserEmail = _currentUser.getEmail();
-
-        // filter list of all users to only those users assigned to therapist
-        _filteredUserList = _tempUserList.stream()
-                .filter(user -> _currentUserEmail.equals(user.get_assignedTherapistUID())) // FIREBASE UPDATE
-                .collect(Collectors.toList());
-
-        Log.d(TAG, "list after filtering: " + _filteredUserList);
-
         // register views
         _tvClientViewTitle = (TextView) findViewById(R.id.tvClientViewTitle);
         _lvClientList = (ListView) findViewById(R.id.lvClientList);
         _btnMyClientsGoToExerciseLibrary = (Button) findViewById(R.id.btnMyClientsGoToExerciseLibrary);
         _btnMyClientsLogOut = (Button) findViewById(R.id.btnMyClientsLogOut);
 
-        // initialize array adapter and bind user list to it
-        _adapterUserList = new MyClientsAdapter(this, _filteredUserList);
+        // initialize firebase auth
+        mAuth = FirebaseAuth.getInstance();
 
-        // set adapter
+        // initialize array adapter and bind user list to it, then set the adapter
+        _tempUserList = new ArrayList<>();
+        _adapterUserList = new MyClientsAdapter(this, _tempUserList);
         _lvClientList.setAdapter(_adapterUserList);
 
-        // add set on item click listener here, to go to the client's view of his/her exercises
-        // need to make sure there is a return to dashboard button on that client's view
-        // to return either to my clients for a therapist or users for an admin staff
+        // add listener for display reference to pull data from firebase and display in listview
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mUsersRef = mFirebaseDatabase.getReference().child("users");
+        mUsersRef.addListenerForSingleValueEvent(valueEventListener);
+
+        Log.d(TAG, "onCreate: after value listener: " + _tempUserList);
+
+        // add reference for Users so that we can identify the account type of the current mAuth user
+        mUsersRef = mFirebaseDatabase.getReference().child("users");
+
+        Log.d(TAG, "users ref added");
+
+        // query user database by UID to see the account type of the mAuth user; this is done
+        // to know which dashboard to return the user to upon click of "return to dashboard"
+        //Log.d(TAG, "onCreate: mAccountType before Query: " + _mAuthAccountType);
+        Log.d(TAG, "onCreate: mAuth Get UID " + mAuth.getUid());
+        Query query = mUsersRef.orderByChild("assignedTherapistUID").equalTo(mAuth.getUid());
+        query.addListenerForSingleValueEvent(valueEventListener);
+
+        Log.d(TAG, "onCreate: valueEventListenerUser added");
+
         // set on item click listener so we move to the add edit user activity when
         // a user is clicked, moving to that specific user's account
         _lvClientList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                // get current assigned exercise from position in the list
-                User selectedClient = _filteredUserList.get(position);
+                // get current user from position in list
+                User currentUser = _tempUserList.get(position);
 
-                // the following is for therapists and admin users only
-                // intent to go to Add(Edit) Exercise to Client
-                // need to pass an intent that has the user ID as well as the assigned exercise ID
-                Intent intentClientExercises = new Intent(MyClients.this, ClientExercises.class);
-                intentClientExercises.putExtra(MSG_CLIENT_FIRST_NAME, selectedClient.getFirstName());
-                intentClientExercises.putExtra(MSG_USER_EMAIL, selectedClient.getEmail());
-                startActivity(intentClientExercises);
+                Log.d(TAG, "onItemClick: Current User.Name" + currentUser.getFirstName());
+                Log.d(TAG, "onItemClick: Current User.UserID" + currentUser.getUserID());
+
+                // intent to go to view the MyExercises of the selected client.
+                Intent intentME = new Intent(MyClients.this, ClientExercises.class);
+                intentME.putExtra(MSG_CLIENT_UID, currentUser.getUserID());
+                startActivity(intentME);
             }
         });
 
@@ -156,7 +174,26 @@ public class MyClients extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
+    } // END onCreate()
+
+    // listener for user data
+    ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            _tempUserList.clear();
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    User user = snapshot.getValue(User.class);
+                    if (user.get_assignedTherapistUID().equals(mAuth.getUid())) {
+                        _tempUserList.add(user);
+                    }
+                }
+            }
+            _adapterUserList.notifyDataSetChanged();
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
 
     @Override
     public void onBackPressed() {
@@ -186,7 +223,6 @@ public class MyClients extends AppCompatActivity
             startActivity(intentRewards);
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(MyClients.this, MyProfile.class);
-            intentProfile.putExtra(MSG_USER_EMAIL, _currentUserEmail);
             startActivity(intentProfile);
         } else if (id == R.id.nav_LogOut) {
             Intent intentLogOut = new Intent(MyClients.this, SignIn.class);
