@@ -133,13 +133,15 @@ public class MyRewards extends AppCompatActivity
 
                     Log.d(TAG, "selectedAmt: " + selectedRewardAmt + ", myPoints: " + _myPoints);
 
-                    // redeem points only if myPoints is sufficient, otherwise show error message
-                    if (selectedRewardAmt <= _myPoints) {
-
-                        // redeem points and update user info
-                        _myPoints -= selectedRewardAmt;
+                    // check if myPoints is sufficient (by calling enoughRewards). If not
+                    // sufficient, show error message.
+                    if (enoughRewards(_currentUser, selectedRewardAmt)) {
+                        // redeem points and update user info by calling redeemRewards()
+                        //_myPoints -= selectedRewardAmt;
+                        redeemRewards(_currentUser, selectedRewardAmt);
+                        _myPoints = _currentUser.get_myPoints();
                         _tvRewardsPoints.setText(_myPoints.toString());
-                        _currentUser.set_myPoints(_myPoints);
+                        //_currentUser.set_myPoints(_myPoints);
 
                         // update database
                         // convert updated UserList object back to JSON format
@@ -170,6 +172,61 @@ public class MyRewards extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    /**
+     * This is a helper method, which checks to make sure that there are enough rewards before
+     * proceeding with any transaction.
+     *
+     * If the user has enough rewards, this method will return true, which will then allow
+     * the redeemRewards() method to be called, and a transaction to take place. If the user
+     * does not have enough rewards, then this method returns false, which will prevent
+     * redeemRewards() from being called, and instead the user will see
+     * an error message.
+     *
+     * @param pointsSelected - Point value selected by current user.
+     * @param currentUser - Current user. Will get reward points from currentUser.
+     * @return - True if points is less than or equal to the point value selected by
+     * current user, false if otherwise.
+     */
+    public static boolean enoughRewards(User currentUser, Integer pointsSelected) {
+        // return true if points is less than or equal to the current user's reward
+        // points, false if otherwise.
+        return pointsSelected <= currentUser.get_myPoints();
+    }
+
+    /**
+     * This method will redeem the points from the user reward points (_myPoints), by
+     * subtracting points from the user reward points.
+     * @param points - Point value selected by current user.
+     * @param currentUser - The current user. Will get reward points from currentUser.
+     */
+    private static void redeemRewards(User currentUser, Integer points) {
+        // store the difference between the current user's reward points and the redeem points
+        // selected by the user in an Integer variable.
+        Integer newMyPoints = currentUser.get_myPoints() - points;
+
+        // Set the user's reward points to the value of the the above integer variable.
+        currentUser.set_myPoints(newMyPoints);
+    }
+
+    /**
+     * When called, this method will test if the subtraction logic in redeemRewards()
+     * works as intended.
+     *
+     * @param currentUser - The current user.
+     * @param points - Point value selected by current user.
+     * @return - Returns true if subtraction logic in redeemRewards() works correctly.
+     */
+    public static boolean doesSubtractCorrectly(User currentUser, Integer points) {
+        // Calculate rewards before call to redeemRewards() and store in Integer.
+        Integer testEquals = currentUser.get_myPoints() - points;
+
+        // Call addToRewards to update user's rewards
+        redeemRewards(currentUser, points);
+
+        // Should return true, to indicate that logic in addToRewardsTotal works as intended.
+        return testEquals.equals(currentUser.get_myPoints());
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -178,13 +235,6 @@ public class MyRewards extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.my_rewards, menu);
-        return true;
     }
 
     @Override

@@ -159,6 +159,7 @@ public class MyExercises extends AppCompatActivity
             super.onBackPressed();
         }
     }
+/*
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -166,6 +167,7 @@ public class MyExercises extends AppCompatActivity
         getMenuInflater().inflate(R.menu.my_exercises, menu);
         return true;
     }
+*/
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {

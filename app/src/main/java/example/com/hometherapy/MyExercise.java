@@ -198,8 +198,10 @@ public class MyExercise extends AppCompatActivity {
                 // Complete button was clicked so update rewards
                 if (_currentUser != null && _currentAssignedExercise != null) {
 
-                    // update rewards / point value in user account
-                    _currentUser.set_myPoints(_myPoints + _pointValue);
+                    // Call addToRewardsTotal() to update rewards of
+                    // current user (_currentUser), by the point value amount
+                    // (_pointValue) of the current exercise.
+                    addToRewardsTotal(_currentUser, _pointValue);
                     Log.d(TAG, "User: " + _currentUser.getFirstName()
                             + " Rewards after completion is " + _currentUser.get_myPoints() + ".");
 
@@ -243,6 +245,44 @@ public class MyExercise extends AppCompatActivity {
                 startActivity(intentClientExercises);
             }
         });
+    }
+
+    /**
+     * This method will update the current user rewards total, by the point value of the
+     * assigned exercise.
+     *
+     * @param currentUser - The current user.
+     * @param pointValue  - The point value of the assigned exercise, i.e. the current
+     *                    exercise being viewed.
+     */
+    private static void addToRewardsTotal(User currentUser, Integer pointValue) {
+
+        // Store the sum of the user's current total rewards point and point value of the
+        // exercise in an Integer variable.
+        Integer newMyPoints = currentUser.get_myPoints() + pointValue;
+
+        // Set the user's reward points to the value of the the above integer variable.
+        currentUser.set_myPoints(newMyPoints);
+    }
+
+    /**
+     * When called, this method will test if the addition logic in addToRewardsTotal()
+     * works as intended.
+     *
+     * @param currentUser - The current user.
+     * @param pointValue - The point value of the assigned exercise, i.e. the current
+     *                   exercise being viewed.
+     * @return - Returns true if addition logic in addToRewardsTotal() works correctly.
+     */
+    public static boolean doesAddCorrectly(User currentUser, Integer pointValue) {
+        // Calculate rewards before call to addToRewardsTotal() and store in Integer.
+        Integer testEquals = currentUser.get_myPoints() + pointValue;
+
+        // Call addToRewards to update user's rewards
+        addToRewardsTotal(currentUser, pointValue);
+
+        // Should return true, to indicate that logic in addToRewardsTotal works as intended.
+        return testEquals.equals(currentUser.get_myPoints());
     }
 
     /**
