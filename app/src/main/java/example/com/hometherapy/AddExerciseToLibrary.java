@@ -2,8 +2,10 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.BoringLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,11 +14,20 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Used to add an exercise to the general exercise library. This has
@@ -35,9 +46,14 @@ public class AddExerciseToLibrary extends AppCompatActivity {
     // for log
     private static final String TAG = "Add_Exercise_Activity";
 
-    // Key for extra message for exercise name to pass to activity
-    // this is needed only if needing to edit an existing exercise
-    public static final String MSG_EXERCISE_NAME = "example.com.hometherapy.EXERCISENAME";
+    // Firebase instances
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mExerciseLibraryRef; // for reference to library node
+
+    // Key for extra message for exercise ID to pass to activity
+    // if empty, then this is a new exercise
+    public static final String MSG_EXERCISE_ID = "example.com.hometherapy.EXERCISE_ID";
 
     // Views
     private TextView _tvATLLabel;
@@ -49,12 +65,13 @@ public class AddExerciseToLibrary extends AppCompatActivity {
     private Button _btnATLSave;
 
     // private member variables
-    SharedPreferences _sharedPreferences;
-    Gson _gson;
-    String _exerciseName;
-    ExerciseList _currentExerciseLibrary;
-    List <Exercise> _listOfExercisesFromLibrary;
-    Exercise _currentExercise;
+    String _exerciseID;
+    Boolean _retrievedExerciseSuccess;
+    String _currentExerciseName;
+    String _currentDiscipline;
+    String _currentModality;
+    String _currentAssignment;
+    String _currentVideoLink;
 
     // String arrays to display different options for discipline and modality.
     String _discipline[] = {"Speech Therapy", "Physical Therapy", "Occupational Therapy"};
@@ -62,14 +79,17 @@ public class AddExerciseToLibrary extends AppCompatActivity {
     ArrayAdapter<String> _adapterDiscipline;
     ArrayAdapter<String> _adapterModality;
 
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String EXERCISE_DATA = "exerciseData";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exercise_to_library);
+
+        // initialize firebase auth
+        mAuth = FirebaseAuth.getInstance();
+
+        // set reference to library node and add listener to populate form if existing exercise
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mExerciseLibraryRef = mFirebaseDatabase.getReference().child("library");
 
         // Register Views
         _tvATLLabel = (TextView) findViewById(R.id.tvATLLabel);
@@ -87,51 +107,94 @@ public class AddExerciseToLibrary extends AppCompatActivity {
         _spinATLDiscipline.setAdapter(_adapterDiscipline);
         _spinATLModality.setAdapter(_adapterModality);
 
-        // initialize GSON object
-        _gson = new Gson();
-
-        // pull existing exercise list from shared preferences into a JSON format "List" of
-        // "Exercise" or rather a ExerciseList object
-        // if nothing is in SHARED_PREFS then default value will be empty string
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonExerciseList = _sharedPreferences.getString(EXERCISE_DATA, "");
-
-        // deserialize sharedPrefs JSON exercise library into ExerciseList class
-        _currentExerciseLibrary = _gson.fromJson(jsonExerciseList, ExerciseList.class);
-
-        // get name of exercise from intent
-        // if name value in intent msg is ***new_exercise*** then this is for a new exercise
+        // get exercise ID from intent
+        // if value is empty then this is for a new exercise
         Intent thisIntent = getIntent();
-        _exerciseName = thisIntent.getStringExtra(MSG_EXERCISE_NAME);
-        Log.d(TAG, "verify current exercise name: " + _exerciseName);
+        _exerciseID = thisIntent.getStringExtra(MSG_EXERCISE_ID);
+        Log.d(TAG, "verify current exercise ID: " + _exerciseID);
 
-        if (_currentExerciseLibrary != null) {
+        // if there is an exercise ID, then populate fields with existing exercise data based on exercise name
+        if (!_exerciseID.equals("")) {
 
-            // if not new exercise, then populate fields with existing exercise data based on exercise name
-            if (!_exerciseName.equals("***new_exercise***")) {
+            // set up query for listener specific to exercise ID
+            // event listener takes care of populating existing exercise values to view
+            Query query = mExerciseLibraryRef.orderByChild("_exerciseID").equalTo(_exerciseID);
+            query.addListenerForSingleValueEvent(valueEventListenerExerciseID);
+        }
 
-                // get list of exercises and filter exercise list by exercise name received in intent
-                _listOfExercisesFromLibrary = _currentExerciseLibrary.getExerciseList();
-                _currentExercise = _listOfExercisesFromLibrary.stream()
-                        .filter(name -> _exerciseName.equals(name.get_exerciseName()))
-                        .findAny()
-                        .orElse(null);
+        // save changes button to save exercise to library
+        _btnATLSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                if (_currentExercise != null) {
+                // set values for new exercise object from view objects
+                String exerciseTitle = _etATLExerciseTitle.getText().toString();
+                String discipline = _spinATLDiscipline.getSelectedItem().toString();
+                String modality = _spinATLModality.getSelectedItem().toString();
+                String assignment = _etATLAssignment.getText().toString();
+                String videoLink = _etATLVideoLink.getText().toString();
 
-                    // set views to exercise data
-                    String discipline = _currentExercise.get_discipline();
-                    String modality = _currentExercise.get_modality();
-                    String assignment = _currentExercise.get_assignment();
-                    String videoLink = _currentExercise.get_videoLink();
+                Log.d(TAG, "onClick: _exerciseID = " + _exerciseID);
+                String exerciseID = _exerciseID; // will be empty if new exercise or will be existing exercise
+                Map<String, Object> exerciseValues; // temporary map to store exercise values
 
-                    _etATLExerciseTitle.setText(_exerciseName);
-                    _etATLAssignment.setText(assignment);
-                    _etATLVideoLink.setText(videoLink);
+                // if new exercise, then create a new exercise and convert values to temporary map
+                if (exerciseID.isEmpty()) {
+                    // write new exercise to library - make this a separate method and method call here
+                    // reference: https://firebase.google.com/docs/database/android/read-and-write
+                    // push() creates a new random key, then we get the key to store it temporarily
+                    exerciseID = mExerciseLibraryRef.push().getKey();
+
+                    // create a new exercise from above
+                    Exercise tempExercise = new Exercise(exerciseID, exerciseTitle, discipline, modality, assignment, videoLink);
+
+                    // create a map from the tempExercise object using Exercise member function toMap()
+                    exerciseValues = tempExercise.toMap();
+
+                } else {
+                    // if we are updating an existing exercise
+                    // update values into a temporary map for uploading to Firebase db
+                    exerciseValues = new HashMap<>();
+                    exerciseValues.put("_exerciseID", exerciseID);
+                    exerciseValues.put("_exerciseTitle", exerciseTitle);
+                    exerciseValues.put("_discipline", discipline);
+                    exerciseValues.put("_modality", modality);
+                    exerciseValues.put("_assignment", assignment);
+                    exerciseValues.put("_videoLink", videoLink);
+                }
+
+                // update values to firebase
+                if (exerciseID != null) {
+                    mExerciseLibraryRef.child(exerciseID).updateChildren(exerciseValues);
+                }
+
+                // go back to library view
+                Intent intentExercises = new Intent(AddExerciseToLibrary.this, Exercises.class);
+                startActivity(intentExercises);
+            }
+
+        }); // END save button
+
+    } // END onCreate()
+
+    ValueEventListener valueEventListenerExerciseID = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
+                Exercise exercise = new Exercise();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    exercise = snapshot.getValue(Exercise.class);
+                }
+                if (exercise != null) {
+
+                    // populate view with data from exercise
+                    _etATLExerciseTitle.setText(exercise.get_exerciseName());
+                    _etATLAssignment.setText(exercise.get_assignment());
+                    _etATLVideoLink.setText(exercise.get_videoLink());
 
                     // get indices of discipline and modality for setting each value to the spinner
-                    int iDiscipline = Arrays.asList(_discipline).indexOf(discipline);
-                    int iModality = Arrays.asList(_modality).indexOf(modality);
+                    int iDiscipline = Arrays.asList(_discipline).indexOf(exercise.get_discipline());
+                    int iModality = Arrays.asList(_modality).indexOf(exercise.get_modality());
 
                     // set spinner values - note a value of -1 means indexOf() did not find value searching for
                     if (iDiscipline >= 0) {
@@ -141,83 +204,12 @@ public class AddExerciseToLibrary extends AppCompatActivity {
                     if (iModality >= 0) {
                         _spinATLModality.setSelection(iModality);
                     }
-                }  else {
-                    Log.e(TAG, "error: _currentExercise is NULL");
                 }
             }
-
-        } else {
-            // instantiate a new exercise library (i.e. ExerciseList class object)
-            _currentExerciseLibrary = new ExerciseList();
         }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
 
-        // save exercise to exercise database in shared preferences after click of button
-        _btnATLSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                // check to see if exercise title already exists in database
-                // if list of exercises from library is null, then database is new and empty
-                String exerciseTitle = _etATLExerciseTitle.getText().toString();
-                boolean exerciseExists = false;
-                if (_listOfExercisesFromLibrary != null) {
-                    // loop through list of current users to see if new Exercise name already exists
-                    for (int i = 0; i < _listOfExercisesFromLibrary.size(); i++) {
-                        // if exercise name entered by user is in the database, set flag to true
-                        if (_listOfExercisesFromLibrary.get(i).get_exerciseName().equals(exerciseTitle)) {
-                            exerciseExists = true;
-                        }
-                    }
-                    // if exercise exists in library, return focus to the exercise name edit text
-                    // however, if we simply matched our own exercise in the library, no need
-                    // to go back as we can save/update our existing exercise
-                    if (exerciseExists && !exerciseTitle.equals(_exerciseName)) {
-                        _etATLExerciseTitle.setError("Exercise name already exists. Try a different name.");
-                        _etATLExerciseTitle.requestFocus();
-                        return;
-                    }
-                }
-
-                // set values for new exercise object from view objects
-                String discipline = _spinATLDiscipline.getSelectedItem().toString();
-                String modality = _spinATLModality.getSelectedItem().toString();
-                String assignment = _etATLAssignment.getText().toString();
-                String videoLink = _etATLVideoLink.getText().toString();
-
-                // check if this is a new exercise or not
-                // if not new, update exercise with data from fields selected
-                // if new exercise, create new exercise object and add it to the library
-                if (_currentExercise != null) {
-                    // update values
-                    _currentExercise.set_exerciseName(exerciseTitle);
-                    _currentExercise.set_discipline(discipline);
-                    _currentExercise.set_modality(modality);
-                    _currentExercise.set_assignment(assignment);
-                    _currentExercise.set_videoLink(videoLink);
-
-                } else {
-                    // this is a new exercise, create new exercise and add to the library
-                    _currentExerciseLibrary.addExercise(new Exercise(exerciseTitle, discipline, modality, assignment, videoLink));
-                }
-
-                // put exercise list back to JSON format
-                String updatedList = _gson.toJson(_currentExerciseLibrary);
-
-                // update Shared Prefs with updated data
-                SharedPreferences.Editor editor = _sharedPreferences.edit();
-                editor.putString(EXERCISE_DATA, updatedList);
-                editor.apply();
-
-                // display contents for testing purposes
-                String fromSharedPrefs = _sharedPreferences.getString(EXERCISE_DATA, "");
-                Log.d(TAG, "fromSharedPrefs: " + fromSharedPrefs);
-
-                // go back to library view
-                Intent intentExercises = new Intent(AddExerciseToLibrary.this, Exercises.class);
-                startActivity(intentExercises);
-            }
-
-        });
-
-    }
-}
+} // END AddExerciseToLibrary.class

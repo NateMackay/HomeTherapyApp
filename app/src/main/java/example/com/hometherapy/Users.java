@@ -52,7 +52,7 @@ public class Users extends AppCompatActivity
     // for log
     private static final String TAG = "Users_Activity";
 
-    // Key for extra message for user email address to pass to activity
+    // Key for extra message for UID of user to edit in add-edit user - NOT the current auth UID
     public static final String MSG_PASSED_UID = "example.com.hometherapy.PASSED_UID";
 
     // private member variables

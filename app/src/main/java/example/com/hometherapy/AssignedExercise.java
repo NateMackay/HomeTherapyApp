@@ -34,11 +34,11 @@ public class AssignedExercise extends Exercise {
 
     private Integer _assignedExerciseID;
 
-    public AssignedExercise(String _exerciseName, String _discipline, String _modality,
+    public AssignedExercise(String _exerciseID, String _exerciseName, String _discipline, String _modality,
                             String _assignment, String _videoLink,
                             String _assignedUserEmail, Integer _pointValue,
                             String _status, boolean _completedToday, Integer _assignedExerciseID) {
-        super(_exerciseName, _discipline, _modality, _assignment, _videoLink);
+        super(_exerciseID, _exerciseName, _discipline, _modality, _assignment, _videoLink);
         this._assignedUserEmail = _assignedUserEmail;
         this._pointValue = _pointValue;
         this._status = _status;
