@@ -91,6 +91,12 @@ public class AssignedExercise extends Exercise {
                 ", _pointValue=" + _pointValue +
                 ", _status='" + _status + '\'' +
                 ", _completedToday=" + _completedToday +
+                ", _exerciseID=" + this.get_exerciseID() +
+                ", _exerciseName=" + this.get_exerciseName() +
+                ", _discipline=" + this.get_discipline() +
+                ", _modality=" + this.get_modality() +
+                ", _assignment=" + this.get_assignment() +
+                ", _videoLink=" + this.get_videoLink() +
                 '}';
     }
 

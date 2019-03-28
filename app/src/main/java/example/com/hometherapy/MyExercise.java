@@ -2,6 +2,8 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.renderscript.Sampler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,9 +11,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Client's view of a given assigned exercise. Clients navigate to this
@@ -27,37 +38,20 @@ public class MyExercise extends AppCompatActivity {
     // for log
     private static final String TAG = "activity_my_exercise";
 
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
-    public static final String USER_DATA = "userData";
+    // Firebase instances
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mAssignedExercisesRef;
+    private DatabaseReference mUsersRef;
 
     // Keys for extra messages
-    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
     public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
 
-    // constant for setting status to complete when button is clicked
-    private static final String COMPLETED = "complete";
-
     // member variables
-    private String _currentUserEmail;
-    private Gson _gson;
-    private SharedPreferences _sharedPreferences;
-    private AssignedExerciseList _currentAssignedExercises;
-    private List<AssignedExercise> _tempAssignedExerciseList;
-    private AssignedExercise _currentAssignedExercise;
-    private UserList _currentUsers;
-    private List<User> _tempUserList;
-    private User _currentUser;
-    private String _assignment;
-    private String _exercise;
-    private String _discipline;
-    private String _modality;
-    private String _linkToVideo;
+    private String _assignedExerciseID;
+    private String _currentUserID;
     private Integer _pointValue;
-    private String _status;
     private Integer _myPoints;
-    private Integer _assignedExerciseID;
 
     // views
     private TextView _tvMyAssignment;
@@ -88,202 +82,176 @@ public class MyExercise extends AppCompatActivity {
         _tvMyEStatus = (TextView) findViewById(R.id.tvMyEStatus);
         _tvWellDoneMSG = (TextView) findViewById(R.id.tvWellDoneMsg);
 
-        // set default value for myPoints
-        _myPoints = 0;
+        // initialize firebase auth
+        mAuth = FirebaseAuth.getInstance();
+        _currentUserID = mAuth.getUid();
 
-        // open up database for given assigned exercise, and current user. (shared preferences)
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
-        String jsonUserList = _sharedPreferences.getString(USER_DATA, "");
+        Log.d(TAG, "onCreate - currentUserID: " + _currentUserID);
 
-        // get assigned exercise ID and user email/ID passed from MyExercises.java
+        // setup firebase references
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mAssignedExercisesRef = mFirebaseDatabase.getReference().child("assignedExercises");
+        mUsersRef = mFirebaseDatabase.getReference().child("users");
+
+        // get assigned exercise ID passed from MyExercises.java
         Intent thisIntent = getIntent();
-        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
-        _assignedExerciseID = Integer.parseInt(thisIntent.getStringExtra(MSG_ASSIGNED_EXERCISE_ID));
+        _assignedExerciseID = thisIntent.getStringExtra(MSG_ASSIGNED_EXERCISE_ID);
 
-        // verify intent messages
-        Log.d(TAG, "verify current user: " + _currentUserEmail);
-        Log.d(TAG, "verify current assigned exercise ID: " + _assignedExerciseID);
+        // verify assigned exercise from intent
+        Log.d(TAG, "assigned exercise ID from Intent: " + _assignedExerciseID);
 
-        // initialize GSON object
-        _gson = new Gson();
+        // query firebase for assigned exercise data
+        Query queryAE = mAssignedExercisesRef.orderByChild("_assignedExerciseID").equalTo(_assignedExerciseID);
+        queryAE.addListenerForSingleValueEvent(assignedExerciseListener);
 
-        // deserialize sharedPrefs JSON assigned exercise and users databases
-        _currentAssignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);
-        _currentUsers = _gson.fromJson(jsonUserList, UserList.class);
+        Log.d(TAG, "onCreate: 1");
 
-        // if assigned exercise database is empty, then log error and return to sign-in screen
-        if (_currentAssignedExercises == null) {
+        // query firebase for user data to get existing points
+        Query queryUser = mUsersRef.orderByChild("userID").equalTo(_currentUserID);
+        queryUser.addListenerForSingleValueEvent(valueEventListenerUser);
 
-            Log.e(TAG, "error: _currentAssignedExercises is null");
-            Intent signInIntent = new Intent(MyExercise.this, SignIn.class);
-            startActivity(signInIntent);
-        }
-
-        // if user database is empty, then log error and return to sign-in screen
-        if (_currentUsers == null) {
-
-            Log.e(TAG, "error: _currentUsers is null");
-            Intent signInIntent = new Intent(MyExercise.this, SignIn.class);
-            startActivity(signInIntent);
-        }
-
-        // pull user list from UserList object and get current user object based on user account
-        // passed in via intent
-        if (_currentUsers != null) {
-            List<User> tempUserList = _currentUsers.getUserList();
-
-            // find matching user account by email account
-            // reference: section 3.5 on this page https://www.baeldung.com/find-list-element-java
-            _currentUser = tempUserList.stream()
-                    .filter(user -> _currentUserEmail.equals(user.getEmail()))
-                    .findAny()
-                    .orElse(null);
-
-            if (_currentUser != null) {
-
-                // get current point value of user
-                _myPoints = _currentUser.get_myPoints();
-
-                Log.d(TAG, "User: " + _currentUser.getFirstName()
-                        + " has current rewards total of " + _myPoints + ".");
-            }
-        }
-
-        // get assigned exercise information from database given assigned exercise ID passed
-        // in via intent
-        if (_currentAssignedExercises != null) {
-
-            // get list of assigned exercises from assigned exercise list object
-            _tempAssignedExerciseList = _currentAssignedExercises.getAssignedExerciseList();
-            Log.d(TAG, "tempExerciseList: " + _tempAssignedExerciseList);
-
-            // get assigned exercise object with exercise ID passed in from intent
-            _currentAssignedExercise = _tempAssignedExerciseList.stream()
-                    .filter(assignedExercise -> _assignedExerciseID.equals(assignedExercise.get_assignedExerciseID()))
-                    .findAny()
-                    .orElse(null);
-
-            // get assigned exercise values and set views to those values
-            if (_currentAssignedExercise != null) {
-                _assignment = _currentAssignedExercise.get_assignment();
-                _exercise = _currentAssignedExercise.get_exerciseName();
-                _discipline = _currentAssignedExercise.get_discipline();
-                _modality = _currentAssignedExercise.get_modality();
-                _linkToVideo = _currentAssignedExercise.get_videoLink();
-                _pointValue = _currentAssignedExercise.get_pointValue();
-                _status = _currentAssignedExercise.get_status();
-
-                // set text view values
-                _tvMyAssignment.setText(_assignment);
-                _tvMyExercise.setText(_exercise);
-                _tvMyDiscipline.setText(_discipline);
-                _tvMyModality.setText(_modality);
-                _tvLinkToVideo.setText(_linkToVideo);
-                _tvMyEPointValue.setText(Integer.toString(_pointValue));
-                _tvMyEStatus.setText(_status);
-
-                // if assignment has been completed already, mark complete
-                if (_status.equals(COMPLETED)) {
-                    hasCompleted();
-                }
-            }
-        }
-
-        // listener for Completed Exercises button
-        _btnMyComplete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // Complete button was clicked so update rewards
-                if (_currentUser != null && _currentAssignedExercise != null) {
-
-                    // Call addToRewardsTotal() to update rewards of
-                    // current user (_currentUser), by the point value amount
-                    // (_pointValue) of the current exercise.
-                    addToRewardsTotal(_currentUser, _pointValue);
-                    Log.d(TAG, "User: " + _currentUser.getFirstName()
-                            + " Rewards after completion is " + _currentUser.get_myPoints() + ".");
-
-                    // Update user assigned exercise status
-                    _currentAssignedExercise.set_status(COMPLETED);
-                    Log.d(TAG, "User: " + _currentUser.getFirstName()
-                            + " Exercise status is " + _currentAssignedExercise.get_status() + ".");
-
-                    // convert updated assigned exercise list back to JSON format
-                    String updatedAssignedExerciseList = _gson.toJson(_currentAssignedExercises);
-
-                    // convert updated UserList object back to JSON format
-                    String updatedUserList = _gson.toJson(_currentUsers);
-
-                    // update Shared Prefs
-                    SharedPreferences.Editor editor = _sharedPreferences.edit();
-                    editor.putString(ASSIGNED_EXERCISE_DATA, updatedAssignedExerciseList);
-                    editor.putString(USER_DATA, updatedUserList);
-                    editor.apply();
-
-                    // display contents for testing purposes
-                    String fromAEDSharedPrefs = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
-                    Log.d(TAG, "fromSharedPrefs (Assigned Exercises): " + fromAEDSharedPrefs);
-                    // display contents for testing purposes
-                    String fromUSharedPrefs = _sharedPreferences.getString(USER_DATA, "");
-                    Log.d(TAG, "fromSharedPrefs (Users): " + fromUSharedPrefs);
-
-                    // set the status to complete
-                    hasCompleted();
-
-                }
-            }
-        });
+        Log.d(TAG, "onCreate: 2");
 
         // listener for Back to My Exercises button
         _btnMyExercises.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intentClientExercises = new Intent(MyExercise.this, MyExercises.class);
-                intentClientExercises.putExtra(MSG_USER_EMAIL, _currentUserEmail);
                 startActivity(intentClientExercises);
             }
         });
-    }
 
-    /**
-     * This method will update the current user rewards total, by the point value of the
-     * assigned exercise.
-     *
-     * @param currentUser - The current user.
-     * @param pointValue  - The point value of the assigned exercise, i.e. the current
-     *                    exercise being viewed.
-     */
-    private static void addToRewardsTotal(User currentUser, Integer pointValue) {
+        Log.d(TAG, "onCreate: 3");
 
-        // Store the sum of the user's current total rewards point and point value of the
-        // exercise in an Integer variable.
-        Integer newMyPoints = currentUser.get_myPoints() + pointValue;
+    } // END onCreate()
 
-        // Set the user's reward points to the value of the the above integer variable.
-        currentUser.set_myPoints(newMyPoints);
-    }
+    // event listener for assigned exercise ID
+    ValueEventListener assignedExerciseListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
 
-    /**
-     * When called, this method will test if the addition logic in addToRewardsTotal()
-     * works as intended.
-     *
-     * @param currentUser - The current user.
-     * @param pointValue - The point value of the assigned exercise, i.e. the current
-     *                   exercise being viewed.
-     * @return - Returns true if addition logic in addToRewardsTotal() works correctly.
-     */
-    public static boolean doesAddCorrectly(User currentUser, Integer pointValue) {
-        // Calculate rewards before call to addToRewardsTotal() and store in Integer.
-        Integer testEquals = currentUser.get_myPoints() + pointValue;
+                Log.d(TAG, "onDataChange: 4");
+                
+                AssignedExercise assignedExercise = new AssignedExercise();
 
-        // Call addToRewards to update user's rewards
-        addToRewardsTotal(currentUser, pointValue);
+                Log.d(TAG, "onDataChange: 5");
+                
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-        // Should return true, to indicate that logic in addToRewardsTotal works as intended.
-        return testEquals.equals(currentUser.get_myPoints());
-    }
+                    Log.d(TAG, "onDataChange: 6");
+                    
+                    assignedExercise = snapshot.getValue(AssignedExercise.class);
+
+                    Log.d(TAG, "onDataChange: 7");
+                }
+
+                if (assignedExercise != null) {
+
+                    Log.d(TAG, "onDataChange: 8");
+
+                    Log.d(TAG, "onDataChange: assignedExercise: " + assignedExercise);
+                    
+                    // populate text views with data passed in with assigned exercise ID
+                    // set text view values
+                    _tvMyAssignment.setText(assignedExercise.get_assignment());
+                    _tvMyExercise.setText(assignedExercise.get_exerciseName());
+                    _tvMyDiscipline.setText(assignedExercise.get_discipline());
+                    _tvMyModality.setText(assignedExercise.get_modality());
+                    _tvLinkToVideo.setText(assignedExercise.get_videoLink());
+                    _tvMyEPointValue.setText(String.format("%s", assignedExercise.get_pointValue().toString()));
+                    _tvMyEStatus.setText(assignedExercise.get_status());
+
+                    Log.d(TAG, "onDataChange: 9");
+                    
+                    // if assignment has been completed already, mark complete
+                    if (assignedExercise.get_completedToday().equals(true)) {
+
+                        Log.d(TAG, "onDataChange: 10");
+                        // set button view to completed status
+                        hasCompleted();
+
+                        Log.d(TAG, "onDataChange: 11");
+                        
+                    }
+
+                    // set temporary point value of exercise
+                    _pointValue = assignedExercise.get_pointValue();
+
+                    Log.d(TAG, "onDataChange: 12");
+
+                    Log.d(TAG, "onDataChange AE Point Value: " + _pointValue);
+                }
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    }; // END event listener for assigned exercise
+
+    // event listener for user data so we can get the current user's points
+    ValueEventListener valueEventListenerUser = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
+                User user = new User();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    user = snapshot.getValue(User.class);
+                }
+
+                Log.d(TAG, "onDataChange: user = " + user);
+
+                if (user != null) {
+                    // get current points
+                    _myPoints = user.get_myPoints();
+                }
+
+                // add button listener to complete button
+                _btnMyComplete.setOnClickListener(completeExerciseBtnListener);
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    }; // END event listener for user query
+
+    // onClick listener for complete button
+    View.OnClickListener completeExerciseBtnListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            // update view of button to show exercise is completed
+            hasCompleted();
+
+            // get new updated point value
+            Integer pointsUpdate = _myPoints + _pointValue;
+
+            // verify point values
+            Log.d(TAG, "onClick: myPoints = " + _myPoints);
+            Log.d(TAG, "onClick: exercise point Value = " + _pointValue);
+            Log.d(TAG, "onClick: total new points = " + pointsUpdate);
+
+            // note: it is possible to combine the two updates below by setting
+            // the reference to the root node and then setting the path for each in the map
+            // and then updating values
+            // reference: https://firebase.google.com/docs/database/android/read-and-write
+            // left as is for clarity
+
+            // update completed flag in assigned exercise data
+            Map<String, Object> updateAEValues = new HashMap<>();
+            updateAEValues.put("_completedToday", true);
+            if (_assignedExerciseID != null) {
+                mAssignedExercisesRef.child(_assignedExerciseID).updateChildren(updateAEValues);
+            }
+
+            // update point value to user data
+            Map<String, Object> updateUserValues = new HashMap<>();
+            updateUserValues.put("_myPoints", pointsUpdate);
+            if (_currentUserID != null) {
+                mUsersRef.child(_currentUserID).updateChildren(updateUserValues);
+            }
+
+        } // END onClick()
+
+    }; // END value event listener for complete button
 
     /**
      * If assigned exercise is already completed, then make the below changes to the view when called.
@@ -297,7 +265,7 @@ public class MyExercise extends AppCompatActivity {
         // https://developer.android.com/guide/topics/resources/drawable-resource#Shape
         _btnMyComplete.setText("Completed");
         _btnMyComplete.setEnabled(false);
-    }
+    } // END hasCompleted()
 
-}
+} // END MyExercise class
 
