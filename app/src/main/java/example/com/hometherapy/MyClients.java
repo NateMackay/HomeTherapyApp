@@ -45,7 +45,6 @@ public class MyClients extends AppCompatActivity
 
     // Firebase instances
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersRef;
 
@@ -54,32 +53,12 @@ public class MyClients extends AppCompatActivity
 
     // Key for extra message for client UID to pass to activity
     public static final String MSG_CLIENT_UID = "example.com.hometherapy.CLIENT_UID";
-    public static final String MSG_THERAPIST_UID = "example.com.hometherapy.THERAPIST_UID";
-
-    /**
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String USER_DATA = "userData";
-    public static final String LOGIN_USER = "loginUser";
-
-    // Key for extra message for user email address to pass to activity
-    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
-    public static final String MSG_CLIENT_FIRST_NAME = "example.com.hometherapy.CLIENT_FIRST_NAME";
-     **/
 
     // private member variables
-    private TextView _tvClientViewTitle;
     private ListView _lvClientList;
-    private Button _btnAddClient;
     private Button _btnMyClientsGoToExerciseLibrary;
     private Button _btnMyClientsLogOut;
-    private UserList _currentUsers;
-    private User _currentUser;
-    private String _currentUserEmail; // email of the therapist, also the current login user
-    private Gson _gson;
-    private SharedPreferences _sharedPreferences;
     private List<User> _tempUserList; // all users
-    private List<User> _filteredUserList; // only those users assigned to therapist
 
     // array adapter for user list
     private MyClientsAdapter _adapterUserList;
@@ -92,7 +71,6 @@ public class MyClients extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // register views
-        _tvClientViewTitle = (TextView) findViewById(R.id.tvClientViewTitle);
         _lvClientList = (ListView) findViewById(R.id.lvClientList);
         _btnMyClientsGoToExerciseLibrary = (Button) findViewById(R.id.btnMyClientsGoToExerciseLibrary);
         _btnMyClientsLogOut = (Button) findViewById(R.id.btnMyClientsLogOut);
@@ -105,26 +83,16 @@ public class MyClients extends AppCompatActivity
         _adapterUserList = new MyClientsAdapter(this, _tempUserList);
         _lvClientList.setAdapter(_adapterUserList);
 
-        // add listener for display reference to pull data from firebase and display in listview
+        // set up firebase references from database instance
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersRef = mFirebaseDatabase.getReference().child("users");
-        mUsersRef.addListenerForSingleValueEvent(valueEventListener);
 
-        Log.d(TAG, "onCreate: after value listener: " + _tempUserList);
+        // verify mAuth ID
+        Log.d(TAG, "mAuth ID: " + mAuth.getUid());
 
-        // add reference for Users so that we can identify the account type of the current mAuth user
-        mUsersRef = mFirebaseDatabase.getReference().child("users");
-
-        Log.d(TAG, "users ref added");
-
-        // query user database by UID to see the account type of the mAuth user; this is done
-        // to know which dashboard to return the user to upon click of "return to dashboard"
-        //Log.d(TAG, "onCreate: mAccountType before Query: " + _mAuthAccountType);
-        Log.d(TAG, "onCreate: mAuth Get UID " + mAuth.getUid());
-        Query query = mUsersRef.orderByChild("assignedTherapistUID").equalTo(mAuth.getUid());
+        // query users from firebase where therapist (mAuth id) equals assigned therapist ID
+        Query query = mUsersRef.orderByChild("_assignedTherapistUID").equalTo(mAuth.getUid());
         query.addListenerForSingleValueEvent(valueEventListener);
-
-        Log.d(TAG, "onCreate: valueEventListenerUser added");
 
         // set on item click listener so we move to the add edit user activity when
         // a user is clicked, moving to that specific user's account
@@ -184,9 +152,7 @@ public class MyClients extends AppCompatActivity
             if (dataSnapshot.exists()) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
-                    if (user.get_assignedTherapistUID().equals(mAuth.getUid())) {
-                        _tempUserList.add(user);
-                    }
+                    _tempUserList.add(user);
                 }
             }
             _adapterUserList.notifyDataSetChanged();

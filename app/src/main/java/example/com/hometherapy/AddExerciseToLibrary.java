@@ -154,8 +154,8 @@ public class AddExerciseToLibrary extends AppCompatActivity {
                 } else {
                     // if we are updating an existing exercise
                     // update values into a temporary map for uploading to Firebase db
+                    // no need to update the exercise ID if it already exists
                     exerciseValues = new HashMap<>();
-                    exerciseValues.put("_exerciseID", exerciseID);
                     exerciseValues.put("_exerciseTitle", exerciseTitle);
                     exerciseValues.put("_discipline", discipline);
                     exerciseValues.put("_modality", modality);

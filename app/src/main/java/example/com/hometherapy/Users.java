@@ -153,7 +153,7 @@ public class Users extends AppCompatActivity
         }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
-    };
+    }; // END Value Event Listener
 
     // [START on_start_check_user]
     @Override

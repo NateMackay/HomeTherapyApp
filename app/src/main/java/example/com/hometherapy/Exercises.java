@@ -46,6 +46,7 @@ public class Exercises extends AppCompatActivity
     // for log
     private static final String TAG = "ExercisesActivity";
 
+    // Firebase instances
     private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mExerciseLibraryRef; // for references to library node

@@ -2,6 +2,7 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +13,17 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,27 +42,25 @@ public class ClientExercises extends AppCompatActivity {
     // for log
     private static final String TAG = "Client_Exercises_Activity";
 
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
+    // Firebase instances
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mAssignedExercisesRef;
+    private DatabaseReference mUsersRef;
 
     // Key for extra message for user email address to pass to activity
-    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
     public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
-    public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
-    public static final String MSG_CLIENT_FIRST_NAME = "example.com.hometherapy.CLIENT_FIRST_NAME";
-    private String _currentUserEmail;
-    private String _clientFirstName;
+    public static final String MSG_CLIENT_UID = "example.com.hometherapy.CLIENT_UID";
+    public static final String MSG_EXERCISE_ID = "example.com.hometherapy.EXERCISE_ID";
 
     // member variables
-    private AssignedExerciseList _assignedExercises;
-    private Gson _gson;
-    private SharedPreferences _sharedPreferences;
+    private String _clientUID;
     private List<AssignedExercise> _tempAssignedExerciseList;
-    private List<AssignedExercise> _filteredList;
+
+    // adapter for assigned exercise list
+    private AssignedExerciseListAdapter _adapterAssignedExercises;
 
     // views
-    private AssignedExerciseListAdapter _adapterAssignedExercises;
     private ListView _lvCEAssignedExercises;
     private Button _btnCEAddExercise;
     private TextView _tvCELabel;
@@ -71,91 +79,62 @@ public class ClientExercises extends AppCompatActivity {
         _btnCEUserLogOut = (Button) findViewById(R.id.btnCEUsersLogOut);
         _btnCEReturnToMyClients = (Button) findViewById(R.id.btnCEReturnToMyClients);
 
-        // open up database for given user (shared preferences)
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
+        // initialize firebase auth
+        mAuth = FirebaseAuth.getInstance();
 
-        Log.d(TAG, "jsonAssignedExerciseList: " + jsonAssignedExerciseList);
+        // initialize array adapter and bind assigned exercise list to it, then set the adapter
+        _tempAssignedExerciseList = new ArrayList<>();
+        _adapterAssignedExercises = new AssignedExerciseListAdapter(this, _tempAssignedExerciseList);
+        _lvCEAssignedExercises.setAdapter(_adapterAssignedExercises);
 
-        // initialize GSON object
-        _gson = new Gson();
-
-        // get user email (i.e. account) from extra message
+        // get client ID from extra message
         Intent thisIntent = getIntent();
-        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
-        _clientFirstName = thisIntent.getStringExtra(MSG_CLIENT_FIRST_NAME);
-        Log.d(TAG, "verify current user: " + _currentUserEmail);
-        Log.d(TAG, "verify client first name: " + _clientFirstName);
+        _clientUID = thisIntent.getStringExtra(MSG_CLIENT_UID);
+        Log.d(TAG, "verify client ID: " + _clientUID);
 
-        // set title
+        // set up firebase references from database instance
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mAssignedExercisesRef = mFirebaseDatabase.getReference().child("assignedExercises");
+        mUsersRef = mFirebaseDatabase.getReference().child("users");
 
-        String nameTitle = _clientFirstName + "'s Exercises";
-        _tvCELabel.setText(nameTitle);
+        // Add listener for assigned exercise data to pull from firebase and display in listview
+        // query so that we are only pulling those exercises assigned to the client
+        Query queryAE = mAssignedExercisesRef.orderByChild("_assignedUserID").equalTo(_clientUID);
+        queryAE.addListenerForSingleValueEvent(assignedExerciseEventListener);
 
-        // deserialize sharedPrefs JSON assigned exercises database into List of Assigned Exercises
-        _assignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);
+        // Add listener for client UID so that we can get display name to update label
+        Query queryUser = mUsersRef.orderByChild("userID").equalTo(_clientUID);
+        queryUser.addListenerForSingleValueEvent(clientUserEventListener);
 
-        Log.d(TAG, "_assignedExercises: " + _assignedExercises);
+        // if a client clicks on an exercise, then he/she will be taken to the my exercise view
+        _lvCEAssignedExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        // if current assigned exercise database is not empty, then proceed with getting list of
-        // assigned exercises and binding to array adapter
-        if (_assignedExercises != null) {
+                // get current assigned exercise from position in the list
+                AssignedExercise selectedExercise = _tempAssignedExerciseList.get(position);
 
-            _tempAssignedExerciseList = _assignedExercises.getAssignedExerciseList();
+                // the following is for therapists only
+                // intent to go to Add(Edit) Exercise to Client
+                // need to pass an intent that has the user ID as well as the assigned exercise ID
+                Intent intentAETC = new Intent(ClientExercises.this, AddExerciseToClient.class);
+                intentAETC.putExtra(MSG_ASSIGNED_EXERCISE_ID, selectedExercise.get_assignedExerciseID());
+                intentAETC.putExtra(MSG_CLIENT_UID, _clientUID);
+                intentAETC.putExtra(MSG_EXERCISE_ID, selectedExercise.get_exerciseID());
+                startActivity(intentAETC);
+            }
+        });
 
-            Log.d(TAG, "list before filtering: " + _tempAssignedExerciseList);
-
-            // filter here to only show those exercises that are assigned to the user email
-            // Reference: https://www.javabrahman.com/java-8/java-8-filtering-and-slicing-streams-tutorial-with-examples/
-            _filteredList = _tempAssignedExerciseList.stream()
-                    .filter(assignedExercise -> _currentUserEmail.equals(assignedExercise.get_assignedUserEmail()))
-                    .collect(Collectors.toList());
-
-            Log.d(TAG, "list after filtering: " + _filteredList);
-
-            // initialize array adapter and bind exercise list to it
-            // the view will need to be different depending upon whether the user type is
-            // a client or a therapist/admin
-            _adapterAssignedExercises = new AssignedExerciseListAdapter(this, _filteredList);
-
-            // set the adapter to the list view
-            _lvCEAssignedExercises.setAdapter(_adapterAssignedExercises);
-
-            // if the user clicks on an existing exercise, we want to take the user to the add/edit
-            // exercise to client activity where they can view and edit the exercise
-            // only issue - we only want the following functionality if the user type is admin
-            // or therapist
-            // if a client clicks on an exercise, then he/she will be taken to the my exercise view
-            // where the client can mark an exercise as complete
-            _lvCEAssignedExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    // get current assigned exercise from position in the list
-                    AssignedExercise selectedExercise = _filteredList.get(position);
-
-                    // the following is for therapists and admin users only
-                    // intent to go to Add(Edit) Exercise to Client
-                    // need to pass an intent that has the user ID as well as the assigned exercise ID
-                    Intent intentAETC = new Intent(ClientExercises.this, AddExerciseToClient.class);
-                    intentAETC.putExtra(MSG_ADD_OR_EDIT, "edit");
-                    intentAETC.putExtra(MSG_USER_EMAIL, _currentUserEmail);
-                    intentAETC.putExtra(MSG_ASSIGNED_EXERCISE_ID, selectedExercise.get_assignedExerciseID().toString());
-                    intentAETC.putExtra(MSG_CLIENT_FIRST_NAME, _clientFirstName);
-                    startActivity(intentAETC);
-                }
-            });
-        }
-
-        // add an exercise button - this will pass user email to a Exercises
+        // add NEW exercise to client button - goes first to client exercise library
+        // and then from there on to Add Exercise To Client AETC
         _btnCEAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // intent to go to Exercises screen, passing user via extra message
+                // intent to go to Exercises screen, passing user and blank assigned exercise ID
                 Intent intentClientExerciseLibrary = new Intent(ClientExercises.this, ClientExerciseLibrary.class);
-                intentClientExerciseLibrary.putExtra(MSG_USER_EMAIL, _currentUserEmail);
-                intentClientExerciseLibrary.putExtra(MSG_CLIENT_FIRST_NAME, _clientFirstName);
+                intentClientExerciseLibrary.putExtra(MSG_ASSIGNED_EXERCISE_ID, "");
+                intentClientExerciseLibrary.putExtra(MSG_CLIENT_UID, _clientUID);
                 startActivity(intentClientExerciseLibrary);
             }
         });
@@ -180,5 +159,44 @@ public class ClientExercises extends AppCompatActivity {
             }
         });
 
-    }
-}
+    } // END onCreate()
+
+    // listener for list of assigned exercises
+    ValueEventListener assignedExerciseEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            _tempAssignedExerciseList.clear();
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    AssignedExercise assignedExercise = snapshot.getValue(AssignedExercise.class);
+                    _tempAssignedExerciseList.add(assignedExercise);
+                }
+            }
+            _adapterAssignedExercises.notifyDataSetChanged();
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    }; // END assigned exercises listener
+
+    // listener for to get specific user object associated with passed in client UID
+    ValueEventListener clientUserEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
+                User user = new User();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    user = snapshot.getValue(User.class);
+                }
+
+                // set label to client's first name + "'s Exercises"
+                if (user != null) {
+                    _tvCELabel.setText(String.format("%s's Exercises", user.getFirstName()));
+                }
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    }; // END client user listener
+
+
+} // END Client Exercises class

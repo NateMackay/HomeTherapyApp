@@ -1,5 +1,8 @@
 package example.com.hometherapy;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Model class for assigned exercise
  * This is a class / data structure for an assigned exercise.
@@ -23,77 +26,87 @@ package example.com.hometherapy;
 public class AssignedExercise extends Exercise {
 
     // private member variables
-    private String _assignedUserEmail;
+    private String _assignedExerciseID;
+    private String _assignedUserID;
     private Integer _pointValue;
     private String _status;
+    private Boolean _completedToday;
 
-    // for future use - idea is to reset this to false at Midnight of each day
-    // possible solution is to create an observable class that this would observe
-    // that would track time and update this to false for each day
-    private boolean _completedToday;
-
-    private Integer _assignedExerciseID;
+    // constructors
+    public AssignedExercise() {
+        // default constructor for data snapshot
+    }
 
     public AssignedExercise(String _exerciseID, String _exerciseName, String _discipline, String _modality,
-                            String _assignment, String _videoLink,
-                            String _assignedUserEmail, Integer _pointValue,
-                            String _status, boolean _completedToday, Integer _assignedExerciseID) {
+                            String _assignment, String _videoLink, String _assignedExerciseID, String _assignedUserID,
+                            Integer _pointValue, String _status, Boolean _completedToday) {
+
         super(_exerciseID, _exerciseName, _discipline, _modality, _assignment, _videoLink);
-        this._assignedUserEmail = _assignedUserEmail;
+        this._assignedExerciseID = _assignedExerciseID;
+        this._assignedUserID = _assignedUserID;
         this._pointValue = _pointValue;
         this._status = _status;
         this._completedToday = _completedToday;
+    }
+
+    // getters and setters
+    public String get_assignedExerciseID() { return _assignedExerciseID; }
+    public String get_assignedUserID() { return _assignedUserID; }
+    public Integer get_pointValue() {
+        return _pointValue;
+    }
+    public String get_status() {
+        return _status;
+    }
+    public Boolean get_completedToday() { return _completedToday; }
+
+    public void set_assignedExerciseID(String _assignedExerciseID) {
         this._assignedExerciseID = _assignedExerciseID;
     }
 
-    public String get_assignedUserEmail() {
-        return _assignedUserEmail;
+    public void set_assignedUserID(String _assignedUserID) {
+        this._assignedUserID = _assignedUserID;
     }
 
-    public void set_assignedUserEmail(String _assignedUserEmail) {
-        this._assignedUserEmail = _assignedUserEmail;
-    }
-
-    public Integer get_pointValue() {
-        return _pointValue;
+    public void set_completedToday(Boolean _completedToday) {
+        this._completedToday = _completedToday;
     }
 
     public void set_pointValue(Integer _pointValue) {
         this._pointValue = _pointValue;
     }
 
-    public String get_status() {
-        return _status;
-    }
-
     public void set_status(String _status) {
         this._status = _status;
     }
 
-    public boolean is_completedToday() {
-        return _completedToday;
-    }
-
-    public void set_completedToday(boolean _completedToday) {
-        this._completedToday = _completedToday;
-    }
-
-    public Integer get_assignedExerciseID() {
-        return _assignedExerciseID;
-    }
-
-    public void set_assignedExerciseID(Integer _assignedExerciseID) {
-        this._assignedExerciseID = _assignedExerciseID;
-    }
-
+    // to String override
     @Override
     public String toString() {
         return "AssignedExercise{" +
-                "_assignedUserEmail='" + _assignedUserEmail + '\'' +
+                "_assignedExerciseID='" + _assignedExerciseID + '\'' +
+                ", _assignedUserID='" + _assignedUserID + '\'' +
                 ", _pointValue=" + _pointValue +
                 ", _status='" + _status + '\'' +
                 ", _completedToday=" + _completedToday +
-                ", _assignedExerciseID=" + _assignedExerciseID +
                 '}';
     }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("_exerciseID", this.get_exerciseID());
+        result.put("_exerciseName", this.get_exerciseName());
+        result.put("_discipline", this.get_discipline());
+        result.put("_modality", this.get_modality());
+        result.put("_assignment", this.get_assignment());
+        result.put("_videoLink", this.get_videoLink());
+        result.put("_assignedExerciseID", _assignedExerciseID);
+        result.put("_assignedUserID", _assignedUserID);
+        result.put("_pointValue", _pointValue);
+        result.put("_status", _status);
+        result.put("_completedToday", _completedToday);
+
+        return result;
+    }
+
 }

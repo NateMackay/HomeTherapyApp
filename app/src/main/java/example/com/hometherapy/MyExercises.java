@@ -107,7 +107,7 @@ public class MyExercises extends AppCompatActivity
             // filter here to only show those exercises that are assigned to the user email
             // Reference: https://www.javabrahman.com/java-8/java-8-filtering-and-slicing-streams-tutorial-with-examples/
             _filteredList = _tempAssignedExerciseList.stream()
-                    .filter(assignedExercise -> _currentUserEmail.equals(assignedExercise.get_assignedUserEmail()))
+                    .filter(assignedExercise -> _currentUserEmail.equals(assignedExercise.get_assignedExerciseID()))
                     .collect(Collectors.toList());
 
             Log.d(TAG, "list after filtering: " + _filteredList);

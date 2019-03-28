@@ -2,6 +2,7 @@ package example.com.hometherapy;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,15 +12,24 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * From the therapist dashboard (ClientExercises.Java/client_exercises.xml), the therapist
@@ -38,27 +48,23 @@ public class AddExerciseToClient extends AppCompatActivity {
     // for log
     private static final String TAG = "activity_add_exercise_to_client";
 
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
-
+    // Firebase instances
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mAssignedExercisesRef;
+    private DatabaseReference mUsersRef;
+    private DatabaseReference mExerciseLibrary;
 
     // Key for extra message for user email address to pass to activity
-    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
-    public static final String MSG_CLIENT_FIRST_NAME = "example.com.hometherapy.CLIENT_FIRST_NAME";
-    private String _currentUserEmail;
-    private String _clientFirstName;
-
-    // Keys for extra message to pass elements of exercise from library to add library
-    public static final String MSG_ADD_OR_EDIT = "example.com.hometherapy.ADD_OR_EDIT";
     public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
-    public static final String MSG_EXERCISE_NAME = "example.com.hometherapy.EXERCISE_NAME";
-    public static final String MSG_MODALITY = "example.com.hometherapy.MODALITY";
-    public static final String MSG_DISCIPLINE = "example.com.hometherapy.DISCIPLINE";
-    public static final String MSG_ASSIGNMENT = "example.com.hometherapy.ASSIGNMENT";
-    public static final String MSG_VIDEO_LINK = "example.com.hometherapy.VIDEO_LINK";
+    public static final String MSG_CLIENT_UID = "example.com.hometherapy.CLIENT_UID";
+    public static final String MSG_EXERCISE_ID = "example.com.hometherapy.EXERCISE_ID";
 
     // member variables
+    private String _clientUID;
+    private String _assignedExerciseID;
+    private String _exerciseID;
+
     private TextView _tvAETCAssignment;
     private TextView _tvAETCExercise;
     private TextView _tvAETCDiscipline;
@@ -67,18 +73,6 @@ public class AddExerciseToClient extends AppCompatActivity {
     private Button _btnAETCSave;
     private Spinner _spinAETCPointValue;
     private Spinner _spinAETCStatus;
-    private Gson _gson;
-    private SharedPreferences _sharedPreferences;
-    private AssignedExerciseList _currentAssignedExercises;
-    private List<AssignedExercise> _tempAssignedExerciseList;
-    private AssignedExercise _currentAssignedExercise;
-    private String _assignment;
-    private String _exercise;
-    private String _discipline;
-    private String _modality;
-    private String _linkToVideo;
-    private boolean _isIntentAdd;
-    private Integer _assignedExerciseID;
 
     // array adapter for spinner views
     private String _exerciseStatusNames[] = {"Status", "not started", "started", "complete", "on hold", "inactive"};
@@ -91,6 +85,9 @@ public class AddExerciseToClient extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exercise_to_client);
 
+        // initialize firebase auth
+        mAuth = FirebaseAuth.getInstance();
+
         // register views
         _tvAETCAssignment = (TextView) findViewById(R.id.tvAETCAssignment);
         _tvAETCExercise = (TextView) findViewById(R.id.tvAETCExercise);
@@ -101,7 +98,7 @@ public class AddExerciseToClient extends AppCompatActivity {
         _spinAETCPointValue = (Spinner) findViewById(R.id.spinAETCPointValue);
         _spinAETCStatus = (Spinner) findViewById(R.id.spinAETCStatus);
 
-        // adapters
+        // register adapters
         _adapterPointValue = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _pointValueOptions);
         _adapterStatus = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _exerciseStatusNames);
 
@@ -109,159 +106,167 @@ public class AddExerciseToClient extends AppCompatActivity {
         _spinAETCPointValue.setAdapter(_adapterPointValue);
         _spinAETCStatus.setAdapter(_adapterStatus);
 
-        // open up database for given assigned exercise (shared preferences)
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
-
-        // initialize GSON object
-        _gson = new Gson();
-
-        // deserialize sharedPrefs JSON assigned exercise database into List of Assigned Exercises
-        _currentAssignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);
-
-        // if no list has been created yet, create a new assigned exercise list
-        if (_currentAssignedExercises == null) {
-            _currentAssignedExercises = new AssignedExerciseList();
-        }
-
-        // get list of assigned exercises from assigned exercise list object
-        _tempAssignedExerciseList = _currentAssignedExercises.getAssignedExerciseList();
-        Log.d(TAG, "tempExerciseList: " + _tempAssignedExerciseList);
-
         // get exercise data passed from client exercise library
         Intent thisIntent = getIntent();
-        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
-        _clientFirstName = thisIntent.getStringExtra(MSG_CLIENT_FIRST_NAME);
+        _assignedExerciseID = thisIntent.getStringExtra(MSG_ASSIGNED_EXERCISE_ID);
+        _clientUID = thisIntent.getStringExtra(MSG_CLIENT_UID);
+        _exerciseID = thisIntent.getStringExtra(MSG_EXERCISE_ID);
 
-        Log.d(TAG, "verify current user: " + _currentUserEmail);
+        // set up firebase references from database instance
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mAssignedExercisesRef = mFirebaseDatabase.getReference().child("assignedExercises");
+        mUsersRef = mFirebaseDatabase.getReference().child("users");
+        mExerciseLibrary = mFirebaseDatabase.getReference().child("library");
 
-        // depending on whether intent is to either add or edit a client exercise
-        // if intent is to add, then get values from intent passed in from client exercise library
-        if (thisIntent.getStringExtra(MSG_ADD_OR_EDIT).equals("add")) {
-            _isIntentAdd = true;
-            _assignment = thisIntent.getStringExtra(MSG_ASSIGNMENT);
-            _exercise = thisIntent.getStringExtra(MSG_EXERCISE_NAME);
-            _discipline = thisIntent.getStringExtra(MSG_DISCIPLINE);
-            _modality = thisIntent.getStringExtra(MSG_MODALITY);
-            _linkToVideo = thisIntent.getStringExtra(MSG_VIDEO_LINK);
+        // Populate views with either existing assigned exercise data or data from exercise library
+        // For existing exercises, coming from ClientExercises, query existing exercise and set listener
+        // Otherwise we are assigning a new exercise, which is coming from ClientExerciseLibrary
+        if (!_assignedExerciseID.equals("")) {
 
-            // assign a new exercise ID
-            // find maximum value of _assignedExerciseID within the list of assigned exercises
-            // reference: https://stackoverflow.com/questions/19338686/java-getting-max-value-from-an-arraylist-of-objects
-            // reference: https://dzone.com/articles/optional-ispresent-is-bad-for-you
-            // if id is not present, for example if this is the first assigned exercise
-            // then the assigned ID will be the default value of 0 + 1
-            Integer maxID = 0;
-            if (_tempAssignedExerciseList.stream()
-                    .max(Comparator.comparing(AssignedExercise::get_assignedExerciseID)).isPresent()) {
-                AssignedExercise assignedExerciseWithMaxID = _tempAssignedExerciseList.stream()
-                        .max(Comparator.comparing(AssignedExercise::get_assignedExerciseID)).get();
-                maxID = assignedExerciseWithMaxID.get_assignedExerciseID();
-            }
-
-            Log.d(TAG, "Verify max ID: " + maxID);
-
-            // set ID for new assigned exercise to maxID plus one
-            _assignedExerciseID = maxID + 1;
+            // Query assigned exercise data for the specific assigned exercise we're looking for and set listener
+            Query queryAE = mAssignedExercisesRef.orderByChild("_assignedExerciseID").equalTo(_assignedExerciseID);
+            queryAE.addListenerForSingleValueEvent(assignedExerciseListener);
 
         } else {
-            // if intent is to view/edit, not add, then lookup assigned exercise in exercise db
-            // based on assigned exercise ID, and set the text views and spinners accordingly
-            _isIntentAdd = false;
-            _assignedExerciseID = Integer.parseInt(thisIntent.getStringExtra(MSG_ASSIGNED_EXERCISE_ID));
+            // For new exercises, we are coming from Client Exercise Library, so we will have
+            // an Exercise ID in our intent, but confirm for sure that Exercise ID is not empty
+            if (!_exerciseID.equals("")) {
 
-            // get assigned exercise object with exercise ID passed in from intent
-            _currentAssignedExercise = _tempAssignedExerciseList.stream()
-                    .filter(assignedExercise -> _assignedExerciseID.equals(assignedExercise.get_assignedExerciseID()))
-                    .findAny()
-                    .orElse(null);
+                // Query exercise data for specified exercise ID we're looking for and set listener
+                Query queryExercise = mExerciseLibrary.orderByChild("library").equalTo(_exerciseID);
+                queryExercise.addListenerForSingleValueEvent(exerciseListener);
 
-            // get assigned exercise values
-            if (_currentAssignedExercise != null) {
-                _assignment = _currentAssignedExercise.get_assignment();
-                _exercise = _currentAssignedExercise.get_exerciseName();
-                _discipline = _currentAssignedExercise.get_discipline();
-                _modality = _currentAssignedExercise.get_modality();
-                _linkToVideo = _currentAssignedExercise.get_videoLink();
-            }
-
-            // set status and point value spinners based on what is in assigned exercise
-            // first, get indices of these values
-            int iSpinAETCPointValue = Arrays.asList(_pointValueOptions).indexOf(_currentAssignedExercise.get_pointValue().toString());
-            int iSpinAETCStatus = Arrays.asList(_exerciseStatusNames).indexOf(_currentAssignedExercise.get_status());
-
-            // set spinner values based on current assigned exercise
-            // note that a value of -1 means indexOf() did not find value searching for
-            if (iSpinAETCPointValue >= 0) {
-                _spinAETCPointValue.setSelection(iSpinAETCPointValue);
-            }
-
-            if (iSpinAETCStatus >= 0) {
-                _spinAETCStatus.setSelection(iSpinAETCStatus);
+            } else {
+                Log.e(TAG, "error: exerciseID should not be empty");
             }
         }
 
-        // set view text values
-        _tvAETCAssignment.setText(_assignment);
-        _tvAETCExercise.setText(_exercise);
-        _tvAETCDiscipline.setText(_discipline);
-        _tvAETCModality.setText(_modality);
-        _tvLinkToVideo.setText(_linkToVideo);
-
-        // we could alternatively set the index value for the spinners in the above if/else statement
-        // and then set the spinners here per the index, but I believe the default value is 0
-        // which for a new exercise, would be set anyway by the user.
-
-        // listener for save changes button
+        // save changes button
         _btnAETCSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // if we are here to add a new exercise,
-                // the following adds a new exercise to the list within the AssignedEceriseList object
-                if (_isIntentAdd) {
+                // set values for new assigned exercise object from view objects
+                String exerciseName = _tvAETCExercise.getText().toString();
+                String discipline = _tvAETCDiscipline.getText().toString();
+                String modality = _tvAETCModality.getText().toString();
+                String assignment = _tvAETCAssignment.getText().toString();
+                String videoLink = _tvLinkToVideo.getText().toString();
+                String status = _spinAETCStatus.getSelectedItem().toString();
+                Integer pointValue = Integer.parseInt(_spinAETCPointValue.getSelectedItem().toString());
 
-                    // temporary to get to compile for Exerises.java
-                    String _exerciseID = "";
+                Map<String, Object> assignedExerciseValues; // temporary map to store values
+                String assignedExerciseID = _assignedExerciseID; // empty if new, or existing value
 
-                    _currentAssignedExercises.addAssignedExercise(new AssignedExercise(_exerciseID, _exercise,
-                            _discipline, _modality, _assignment, _linkToVideo, _currentUserEmail,
-                            Integer.parseInt(_spinAETCPointValue.getSelectedItem().toString()),
-                            _spinAETCStatus.getSelectedItem().toString(), false,
-                            _assignedExerciseID));
+                // if adding a new exercise, create a new assigned exercise
+                if (assignedExerciseID.isEmpty()) {
+
+                    // write new assigned exercise to library
+                    // push() creates a new random key, which will be stored in assigned exercise
+                    assignedExerciseID = mAssignedExercisesRef.push().getKey();
+
+                    // create a new assigned exercise from values in form
+                    // if this is a new exercise, we should have received an exercise ID from
+                    // client exercise library
+                    // we also received the client ID from the intent
+                    // all other values besides the generated assigned exercise ID are recieved from view
+                    AssignedExercise tempAssignedExercise = new AssignedExercise(_exerciseID, exerciseName,
+                            discipline, modality, assignment, videoLink, assignedExerciseID,
+                            _clientUID, pointValue, status, false );
+
+                    // create a map from the tempAssignedExercise object using toMap()
+                    // in Assigned Exercise class
+                    assignedExerciseValues = tempAssignedExercise.toMap();
+
                 } else {
-                    // if not adding, we are simply viewing / editing
-                    // update the _currentAssignedExercise, the individual AssignedExercise object
-                    // that we referenced based on assigned exercise ID
-                    _currentAssignedExercise.set_exerciseName(_tvAETCExercise.getText().toString());
-                    _currentAssignedExercise.set_assignment(_tvAETCAssignment.getText().toString());
-                    _currentAssignedExercise.set_discipline(_tvAETCDiscipline.getText().toString());
-                    _currentAssignedExercise.set_modality(_tvAETCModality.getText().toString());
-                    _currentAssignedExercise.set_videoLink(_tvLinkToVideo.getText().toString());
-                    _currentAssignedExercise.set_status(_spinAETCStatus.getSelectedItem().toString());
-                    _currentAssignedExercise.set_pointValue(Integer.parseInt(_spinAETCPointValue.getSelectedItem().toString()));
+                    // update the existing assigned exercise
+                    // only need to update point value, status
+                    assignedExerciseValues = new HashMap<>();
+                    assignedExerciseValues.put("_pointValue", pointValue);
+                    assignedExerciseValues.put("_status", status);
                 }
 
-                // convert updated assigned exercise list back to JSON format
-                String updatedList = _gson.toJson(_currentAssignedExercises);
+                // update values to firebase
+                if (assignedExerciseID != null) {
+                    mAssignedExercisesRef.child(assignedExerciseID).updateChildren(assignedExerciseValues);
+                }
 
-                // update Shared Prefs
-                SharedPreferences.Editor editor = _sharedPreferences.edit();
-                editor.putString(ASSIGNED_EXERCISE_DATA, updatedList);
-                editor.apply();
-
-                // display contents for testing purposes
-                String fromSharedPrefs = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
-                Log.d(TAG, "fromSharedPrefs: " + fromSharedPrefs);
-
+                // navigate back to Client Exercises
                 Intent intentClientExercises = new Intent(AddExerciseToClient.this, ClientExercises.class);
-                intentClientExercises.putExtra(MSG_USER_EMAIL, _currentUserEmail);
-                intentClientExercises.putExtra(MSG_CLIENT_FIRST_NAME, _clientFirstName);
+                intentClientExercises.putExtra(MSG_CLIENT_UID, _clientUID);
                 startActivity(intentClientExercises);
 
             }
-        });
+        }); // END save changes button
 
-    }
+    } // END onCreate()
 
-}
+    // event listener for assigned exercise ID when there is an existing exercise ID passed in
+    ValueEventListener assignedExerciseListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
+                AssignedExercise assignedExercise = new AssignedExercise();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    assignedExercise = snapshot.getValue(AssignedExercise.class);
+                }
+
+                if (assignedExercise != null) {
+
+                    // populate text views with data from assigned exercise
+                    _tvAETCAssignment.setText(assignedExercise.get_assignment());
+                    _tvAETCExercise.setText(assignedExercise.get_exerciseName());
+                    _tvAETCDiscipline.setText(assignedExercise.get_discipline());
+                    _tvAETCModality.setText(assignedExercise.get_modality());
+                    _tvLinkToVideo.setText(assignedExercise.get_videoLink());
+
+                    // populate spinners with data from assigned exercise
+                    // set status and point value spinners based on what is in assigned exercise
+                    // first, get indices of these values
+                    int iSpinAETCPointValue = Arrays.asList(_pointValueOptions).indexOf(assignedExercise.get_pointValue().toString());
+                    int iSpinAETCStatus = Arrays.asList(_exerciseStatusNames).indexOf(assignedExercise.get_status());
+
+                    // set spinner values based on current assigned exercise
+                    // note that a value of -1 means indexOf() did not find value searching for
+                    if (iSpinAETCPointValue >= 0) {
+                        _spinAETCPointValue.setSelection(iSpinAETCPointValue);
+                    }
+
+                    if (iSpinAETCStatus >= 0) {
+                        _spinAETCStatus.setSelection(iSpinAETCStatus);
+                    }
+                }
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    }; // END assigned exercise listener
+
+    // event listener for exercise ID
+    ValueEventListener exerciseListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
+                Exercise exercise = new Exercise();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    exercise = snapshot.getValue(Exercise.class);
+                }
+
+                if (exercise != null) {
+
+                    // populate text views with data passed in exercise ID
+                    _tvAETCAssignment.setText(exercise.get_assignment());
+                    _tvAETCExercise.setText(exercise.get_exerciseName());
+                    _tvAETCDiscipline.setText(exercise.get_discipline());
+                    _tvAETCModality.setText(exercise.get_modality());
+                    _tvLinkToVideo.setText(exercise.get_videoLink());
+
+                }
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    };
+
+
+} // END Add Exercise to Client class
