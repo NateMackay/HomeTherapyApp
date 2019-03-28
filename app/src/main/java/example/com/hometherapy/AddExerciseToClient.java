@@ -112,6 +112,10 @@ public class AddExerciseToClient extends AppCompatActivity {
         _clientUID = thisIntent.getStringExtra(MSG_CLIENT_UID);
         _exerciseID = thisIntent.getStringExtra(MSG_EXERCISE_ID);
 
+        Log.d(TAG, "Intent: _assignedExerciseID: " + _assignedExerciseID);
+        Log.d(TAG, "Intent: _clientUID: " + _clientUID);
+        Log.d(TAG, "Intent: _exerciseID: " + _exerciseID);
+
         // set up firebase references from database instance
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mAssignedExercisesRef = mFirebaseDatabase.getReference().child("assignedExercises");
@@ -132,8 +136,10 @@ public class AddExerciseToClient extends AppCompatActivity {
             // an Exercise ID in our intent, but confirm for sure that Exercise ID is not empty
             if (!_exerciseID.equals("")) {
 
+                Log.d(TAG, "exerciseID Not Empty - New Exercise");
+
                 // Query exercise data for specified exercise ID we're looking for and set listener
-                Query queryExercise = mExerciseLibrary.orderByChild("library").equalTo(_exerciseID);
+                Query queryExercise = mExerciseLibrary.orderByChild("_exerciseID").equalTo(_exerciseID);
                 queryExercise.addListenerForSingleValueEvent(exerciseListener);
 
             } else {

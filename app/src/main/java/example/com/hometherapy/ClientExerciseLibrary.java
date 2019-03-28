@@ -101,6 +101,11 @@ public class ClientExerciseLibrary extends AppCompatActivity {
                 // get current exercise that is clicked on by user by its position
                 Exercise selectedExercise = _tempExerciseList.get(position);
 
+                Log.d(TAG, "click on exercise in list: " + selectedExercise);
+                Log.d(TAG, "exercise ID: " + selectedExercise.get_exerciseID());
+                Log.d(TAG, "Intent clientID: " + _clientUID);
+                Log.d(TAG, "Intent AssignedExerciseID: " + _assignedExerciseID );
+
                 // intent to go to add exercise to client activity
                 // note that _assignedExerciseID should be empty, but we pass it on to AETC
                 // because AETC expects it from both this ClientExerciseLibrary as well

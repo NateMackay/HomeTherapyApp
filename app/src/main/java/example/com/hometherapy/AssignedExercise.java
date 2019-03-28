@@ -1,5 +1,7 @@
 package example.com.hometherapy;
 
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 
