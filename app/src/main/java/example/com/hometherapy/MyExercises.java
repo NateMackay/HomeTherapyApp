@@ -3,6 +3,7 @@ package example.com.hometherapy;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -21,8 +22,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,28 +52,23 @@ public class MyExercises extends AppCompatActivity
     // for log
     private static final String TAG = "My_Exercises_Activity";
 
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String ASSIGNED_EXERCISE_DATA = "assignedExerciseData";
+    // Firebase instances
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mAssignedExercisesRef;
 
     // Key for extra message for user email address to pass to activity
-    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
     public static final String MSG_ASSIGNED_EXERCISE_ID = "example.com.hometherapy.ASSIGNED_EXERCISE_ID";
-    private String _currentUserEmail; // user email of the client
 
     // member variables
-    private AssignedExerciseList _assignedExercises;
-    private Gson _gson;
-    private SharedPreferences _sharedPreferences;
     private List<AssignedExercise> _tempAssignedExerciseList;
-    private List<AssignedExercise> _filteredList;
 
     // views
     private ListView _lvMEAssignedExercises;
     private TextView _tvMELabel;
 
-    // array adapter for exercise list
-    private AssignedExerciseListAdapter _adapterAssignedExerciseList;
+    // adapter for assigned exercise list
+    private AssignedExerciseListAdapter _adapterAssignedExercises;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,69 +81,40 @@ public class MyExercises extends AppCompatActivity
         _lvMEAssignedExercises = (ListView) findViewById(R.id.lvMEAssignedExercises);
         _tvMELabel = (TextView) findViewById(R.id.tvMELabel);
 
-        // open up database for given user (shared preferences)
-        _sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        String jsonAssignedExerciseList = _sharedPreferences.getString(ASSIGNED_EXERCISE_DATA, "");
+        // initialize firebase auth
+        mAuth = FirebaseAuth.getInstance();
 
-        Log.d(TAG, "jsonAssignedExerciseList: " + jsonAssignedExerciseList);
+        // initialize array adapter and bind assigned exercise list to it, then set the adapter
+        _tempAssignedExerciseList = new ArrayList<>();
+        _adapterAssignedExercises = new AssignedExerciseListAdapter(this, _tempAssignedExerciseList);
+        _lvMEAssignedExercises.setAdapter(_adapterAssignedExercises);
 
-        // initialize GSON object
-        _gson = new Gson();
+        // setup firebase references
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mAssignedExercisesRef = mFirebaseDatabase.getReference().child("assignedExercises");
 
-        // get user email (i.e. account) from extra message
-        Intent thisIntent = getIntent();
-        _currentUserEmail = thisIntent.getStringExtra(MSG_USER_EMAIL);
-        Log.d(TAG, "verify current user: " + _currentUserEmail);
+        // add listener for assigned exercise data to pull from firebase and display in listview
+        Query queryAE = mAssignedExercisesRef.orderByChild("_assignedUserID").equalTo(mAuth.getUid());
+        queryAE.addListenerForSingleValueEvent(assignedExerciseEventListener);
 
-        // deserialize sharedPrefs JSON user database into List of Assigned Exercises
-        _assignedExercises = _gson.fromJson(jsonAssignedExerciseList, AssignedExerciseList.class);
+        // client clicks on exercise to take them to a view of that individual exercise
+        _lvMEAssignedExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        Log.d(TAG, "_assignedExercises: " + _assignedExercises);
+                // get current assigned exercise from position in the list
+                AssignedExercise selectedExercise = _tempAssignedExerciseList.get(position);
 
-        // if current assigned exercise database is not empty, then proceed with getting list of
-        // assigned exercises and binding to array adapter
-        if (_assignedExercises != null) {
+                Log.d(TAG, "selected Exercise: " + selectedExercise);
 
-            _tempAssignedExerciseList = _assignedExercises.getAssignedExerciseList();
+                // intent to open up client's view of their own exercise
+                Intent intentMyExercise = new Intent(MyExercises.this, MyExercise.class);
+                intentMyExercise.putExtra(MSG_ASSIGNED_EXERCISE_ID, selectedExercise.get_assignedExerciseID());
+                startActivity(intentMyExercise);
+            }
+        });
 
-            Log.d(TAG, "list before filtering: " + _tempAssignedExerciseList);
-
-            // filter here to only show those exercises that are assigned to the user email
-            // Reference: https://www.javabrahman.com/java-8/java-8-filtering-and-slicing-streams-tutorial-with-examples/
-            _filteredList = _tempAssignedExerciseList.stream()
-                    .filter(assignedExercise -> _currentUserEmail.equals(assignedExercise.get_assignedExerciseID()))
-                    .collect(Collectors.toList());
-
-            Log.d(TAG, "list after filtering: " + _filteredList);
-
-            // initialize array adapter and bind exercise list to it
-            // the view will need to be different depending upon whether the user type is
-            // a client or a therapist/admin
-            _adapterAssignedExerciseList = new AssignedExerciseListAdapter(this, _filteredList);
-
-            // set the adapter to the list view
-            _lvMEAssignedExercises.setAdapter(_adapterAssignedExerciseList);
-
-            // if a client clicks on an exercise, then he/she will be taken to the my exercise view
-            // where the client can mark an exercise as complete
-            _lvMEAssignedExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    // get current assigned exercise from position in the list
-                    AssignedExercise selectedExercise = _filteredList.get(position);
-
-                    Log.d(TAG, "selected Exercise: " + selectedExercise);
-
-                    // intent to open up client's view of their own exercise
-                    Intent intentMyExercise = new Intent(MyExercises.this, MyExercise.class);
-                    intentMyExercise.putExtra(MSG_USER_EMAIL, _currentUserEmail);
-                    intentMyExercise.putExtra(MSG_ASSIGNED_EXERCISE_ID, selectedExercise.get_assignedExerciseID().toString());
-                    startActivity(intentMyExercise);
-                }
-            });
-        }
-
+        // navigation
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -148,7 +123,25 @@ public class MyExercises extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
+
+    } // END onCreate()
+
+    // listener for list of assigned exercises
+    ValueEventListener assignedExerciseEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
+            _tempAssignedExerciseList.clear();
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    AssignedExercise assignedExercise = snapshot.getValue(AssignedExercise.class);
+                    _tempAssignedExerciseList.add(assignedExercise);
+                }
+            }
+            _adapterAssignedExercises.notifyDataSetChanged();
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
+    }; // END assigned exercises listener
 
     @Override
     public void onBackPressed() {
@@ -176,14 +169,12 @@ public class MyExercises extends AppCompatActivity
 
         if (id == R.id.nav_myRewards) {
             Intent intentRewards = new Intent(MyExercises.this, MyRewards.class);
-            intentRewards.putExtra(MSG_USER_EMAIL, _currentUserEmail);
             startActivity(intentRewards);
         } else if (id == R.id.nav_myMessages) {
             Intent intentRewards = new Intent(MyExercises.this, MyMessages.class);
             startActivity(intentRewards);
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(MyExercises.this, MyProfile.class);
-            intentProfile.putExtra(MSG_USER_EMAIL, _currentUserEmail);
             startActivity(intentProfile);
         } else if (id == R.id.nav_MELogOut) {
             Intent intentSignIn = new Intent(MyExercises.this, SignIn.class);

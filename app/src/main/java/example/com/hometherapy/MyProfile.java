@@ -232,18 +232,20 @@ public class MyProfile extends AppCompatActivity
 
             // update password and email logic
             // note, because you cannot update a password or user without the recent
-            // authentication (i.e. on myProfile page), the functionality is removed
-            // to update the password or email address from the admin portal
-            // instead, a link to reset password can be sent or they can do it from
-            // the portal if they have their current login credentials
-            // for now, just ignore email addresses when the function is to update
-            // email is still left in for new users
+            // authentication (i.e. on myProfile page), this functionality is only included
+            // here and not in AddEditUser.java
+
+            // ADD THE FOLLOWING:
+            // UPDATE MAUTH EMAIL
+            // UPDATE MAUTH DISPLAYNAME WITH FIRST NAME
+            // ADD PASSWORD RESET BUTTON
+            // REMOVE OUT PASSWORD FIELDS, LOGIC, AND VALIDATORS
+            // THERE IS A BUG - WE ARE SPECIFIYING PASSWORD REQUIREMENTS IN THE CODE, BUT IT IS
+            // POSSIBLE TO CHANGE THE PASSWORD
+            // IF YOU CAN UPDATE THE PASSWORD FROM THE APP THOUGH, THEN YOU COULD FORCE
+            // THE PASSWORD RESTRICTIONS AT THE APP LEVEL
+
             // reference: https://firebase.google.com/docs/auth/android/manage-users
-            // see Send password reset email, re-authenticate user, set a user's password
-            // set a users email address, update user's profile
-            // note, [my first name]'s Exercises on that activity will be
-            // based on displayname, a property of the UID, not the Users database
-            // have the user update it on myProfile if they want to change that value
 
                 // update password only if password has been updated
 //                    if (etUserProfPwd.length() > 0) {
