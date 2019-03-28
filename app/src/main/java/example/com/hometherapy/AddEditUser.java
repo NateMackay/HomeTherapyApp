@@ -177,7 +177,7 @@ public class AddEditUser extends AppCompatActivity {
         Query query = mUsersDatabaseReference.orderByChild("userID").equalTo(_passedUID);
         query.addListenerForSingleValueEvent(valueEventListenerUser);
 
-        // listeners
+        // save button listener
         _btnUserSave.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -190,8 +190,22 @@ public class AddEditUser extends AppCompatActivity {
                     return;
                 }
 
-                // validate password
-                if (!_passwordValidator.isValid()) {
+                // verify password confirmation matches password
+                // note no other password validity
+                // consider adding a password validation class
+                if (!_etUserPassword.getText().toString().equals(_etUserPasswordConfirm.getText().toString())) {
+                    _etUserPasswordConfirm.setError("Password does not match");
+                    _etUserPasswordConfirm.requestFocus();
+                    return;
+                }
+
+                // validate password if value is entered
+                // no value entered means no attempt to change password
+                // and therefore password validator should not run
+                // FYI this is left here for testing purposes
+                // Not needed for Firebase
+                // Only use in My Profile
+                if (!_etUserPassword.getText().toString().isEmpty() && !_passwordValidator.isValid()) {
                     _etUserPassword.setError("Invalid Password");
                     Toast.makeText(AddEditUser.this, "Password must,\n" +
                             "contain at least one digit,\n" +
@@ -200,15 +214,6 @@ public class AddEditUser extends AppCompatActivity {
                             "contain at least one special character, and" +
                             "be between 8 and 40 characters long", Toast.LENGTH_LONG).show();
                     _etUserPassword.requestFocus();
-                    return;
-                }
-
-                // verify password confirmation matches password
-                // note no other password validity
-                // consider adding a password validation class
-                if (!_etUserPassword.getText().toString().equals(_etUserPasswordConfirm.getText().toString())) {
-                    _etUserPasswordConfirm.setError("Password does not match");
-                    _etUserPasswordConfirm.requestFocus();
                     return;
                 }
 
@@ -357,6 +362,7 @@ public class AddEditUser extends AppCompatActivity {
         @Override
         public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
             _therapistList.clear();
+            _therapistList.add(new Therapist("unassigned", "Not " , "Assigned"));
             if (dataSnapshot.exists()) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
