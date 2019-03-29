@@ -20,6 +20,6 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/activity_my_exercises_drawer" />
+        app:menu="@menu/activity_client_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

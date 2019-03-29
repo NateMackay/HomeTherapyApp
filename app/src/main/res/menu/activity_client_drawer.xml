@@ -3,15 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <!--for Clients-->
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/mp_client_menu" >
+
         <item
-            android:id="@+id/nav_users"
+            android:id="@+id/nav_myExercises"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Users" />
+            android:title="@string/my_exercises" />
         <item
-            android:id="@+id/nav_exercise_library"
+            android:id="@+id/nav_myRewards"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/exercise_library" />
+            android:title="@string/my_rewards" />
+        <item
+            android:id="@+id/nav_myMessages1"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/my_messages" />
+
     </group>
 
     <item android:title="Settings">
