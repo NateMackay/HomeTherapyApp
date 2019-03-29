@@ -167,11 +167,10 @@ public class AddEditUser extends AppCompatActivity {
         Log.d(TAG, "verify passed UserID: " + _passedUID);
 
         // query user database based on therapist
-        Query queryTherapistList = FirebaseDatabase.getInstance().getReference("users")
-                .orderByChild("_accountType")
-                .equalTo("therapist");
-        Log.d(TAG, "onCreate: therapist list 2" + _therapistList);
+        Query queryTherapistList = mUsersDatabaseReference.orderByChild("_accountType").equalTo("therapist");
         queryTherapistList.addListenerForSingleValueEvent(valueEventListener);
+
+        Log.d(TAG, "onCreate: therapist list 2" + _therapistList);
 
         // query user database based on passed in UID
         Query query = mUsersDatabaseReference.orderByChild("userID").equalTo(_passedUID);
@@ -322,14 +321,25 @@ public class AddEditUser extends AppCompatActivity {
                     int iUserAssignedClinic = Arrays.asList(_userClinicNames).indexOf(user.get_assignedClinic());
                     int iUserStatus = Arrays.asList(_userStatusNames).indexOf(user.get_status());
 
+                    // verify _therapistList != Null
+                    Log.d(TAG, "_therapistList should not be Null: " + _therapistList);
+
+                    // get index of therapist in _therapistList that matches user's assignedTherapistID
+                    // if _therapistList is null, set default index for spinner to zero
+                    int iAssignedTherapist = 0;
                     String assignedTherapistUserID = user.get_assignedTherapistUID();
-                    int iAssignedTherapist;
-                    if (assignedTherapistUserID != null && _therapistList != null) {
-                        iAssignedTherapist = _therapistList.indexOf(assignedTherapistUserID);
-                        Log.d(TAG, "_therapistList: " + _therapistList);
-                    } else {
-                        iAssignedTherapist = -1;
+                    if (_therapistList != null) {
+                        for (int i = 0; i < _therapistList.size(); i++) {
+                            if (assignedTherapistUserID.equals(_therapistList.get(i).get_userID())) {
+                                iAssignedTherapist = i;
+                                break;
+                            }
+                        }
                     }
+
+                    // verify assigned therapist ID and index
+                    Log.d(TAG, "assignedTherapistUID: " + assignedTherapistUserID);
+                    Log.d(TAG, "iAssignedTherapist: " + iAssignedTherapist);
 
                     // set spinner values based on current user
                     // note that a value of -1 means indexOf() did not find value searching for
@@ -345,11 +355,8 @@ public class AddEditUser extends AppCompatActivity {
                         _spinUserStatus.setSelection(iUserStatus);
                     }
 
-                    if (iAssignedTherapist >= 0) {
-                        _spinAssignedTherapist.setSelection(iAssignedTherapist);
-                    } else {
-                        _spinAssignedTherapist.setSelection(0);
-                    }
+                    _spinAssignedTherapist.setSelection(iAssignedTherapist);
+
                 }
             }
         }
@@ -486,9 +493,9 @@ public class AddEditUser extends AppCompatActivity {
                                 mUsersDatabaseReference.child(userID).setValue(newUser);
                             }
 
-                            // upon successful completion, go back to sign-in page
-                            Intent intentSignIn = new Intent(AddEditUser.this, SignIn.class);
-                            startActivity(intentSignIn);
+                            // go back to Users activity after creating new user
+                            Intent intentUsers = new Intent(AddEditUser.this, Users.class);
+                            startActivity(intentUsers);
 
                         } else {
                             // If sign in fails, display a message to the user.

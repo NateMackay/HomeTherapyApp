@@ -35,10 +35,4 @@ public class Therapist {
         return _firstName + " " + _lastName;
     }
 
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        if (super.equals(obj)) {
-            return true;
-        } else return this._userID.equals(obj); // if assigned therapist ID equals user ID
-    }
 }
