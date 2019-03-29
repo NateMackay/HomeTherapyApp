@@ -160,6 +160,10 @@ public class MyRewards extends AppCompatActivity
                 // update view
                 _tvRewardsPoints.setText(String.format("%s", updatedPoints.toString()));
 
+                // navigate back to client dashboard
+                Intent intentMyExercises = new Intent(MyRewards.this, MyExercises.class);
+                startActivity(intentMyExercises);
+
             } else {
                 // toast message not enough points
                 Toast.makeText(getApplicationContext(),
