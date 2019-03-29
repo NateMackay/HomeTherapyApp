@@ -486,9 +486,9 @@ public class AddEditUser extends AppCompatActivity {
                                 mUsersDatabaseReference.child(userID).setValue(newUser);
                             }
 
-                            // upon successful completion, go back to sign-in page
-                            Intent intentSignIn = new Intent(AddEditUser.this, SignIn.class);
-                            startActivity(intentSignIn);
+                            // go back to Users activity after creating new user
+                            Intent intentUsers = new Intent(AddEditUser.this, Users.class);
+                            startActivity(intentUsers);
 
                         } else {
                             // If sign in fails, display a message to the user.
