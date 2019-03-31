@@ -16,6 +16,10 @@
             android:id="@+id/nav_exercise_library1"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/exercise_library" />
+        <item
+            android:id="@+id/nav_add_new_user"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Add New User" />
     </group>
 
     <item android:title="Settings">
