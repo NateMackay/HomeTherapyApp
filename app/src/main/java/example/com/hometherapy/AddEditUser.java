@@ -1,13 +1,11 @@
 package example.com.hometherapy;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,14 +25,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * This screen is used to add a new user or edit an existing user.
@@ -52,7 +48,6 @@ public class AddEditUser extends AppCompatActivity {
 
     // Firebase instances
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersDatabaseReference;
 
@@ -83,8 +78,6 @@ public class AddEditUser extends AppCompatActivity {
     private List<Therapist> _therapistList;
     private String _passedUID;
     private boolean _isNewUser;
-
-    private List<Therapist> _therapistListTest;
 
     // array adapters for spinner views
     private String _userAccountTypes[] = {"Account Type", "pending", "client", "therapist", "admin"};
@@ -282,8 +275,8 @@ public class AddEditUser extends AppCompatActivity {
                     // ref: https://github.com/firebase/quickstart-android/issues/821
                     userRef.updateChildren(userUpdates);
 
-                    // updateChildren has an add on complete listener
-                    // consider adding this and only going back to users upon successful
+                    // updateChildren has an add on complete listener and onSuccessful() methods
+                    // consider adding one of these and only going back to users upon successful
                     // completion
 
                     // go back to Users activity after update
