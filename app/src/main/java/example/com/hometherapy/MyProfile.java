@@ -118,16 +118,6 @@ public class MyProfile extends AppCompatActivity
         Query query = mUsersRef.orderByChild("userID").equalTo(_currentUserID);
         query.addListenerForSingleValueEvent(valueEventListenerUser);
 
-        // navigation
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
     } // END onCreate()
 
     // value listener for authenticated user to populate view
@@ -300,44 +290,17 @@ public class MyProfile extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
             super.onBackPressed();
-        }
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
         // NOTE: Because MyProfile.java is used for all three user types, in order to have
         // MyClients or MyExercises or Users as available options, we would need to build in
         // the same logic above where it depends on the user type
         // Problem with this is that the user type will likely not be set at the time
         // this listener is set
 
-        if (id == R.id.nav_myClients) {
-            Intent intentExercises = new Intent(MyProfile.this, MyClients.class);
-            startActivity(intentExercises);
-        } else if (id == R.id.nav_myExercises) {
-            Intent intentMessage = new Intent(MyProfile.this, MyExercise.class);
-            startActivity(intentMessage);
-        } else if (id == R.id.nav_myMessages) {
-            Intent intentRewards = new Intent(MyProfile.this, MyMessages.class);
-            startActivity(intentRewards);
-        } else if (id == R.id.nav_myProfile) {
-            // Intent intentProfile = new Intent(MyProfile.this, MyProfile.class);
-            // startActivity(intentProfile);
-        } else if (id == R.id.nav_LogOut) {
-            Intent intentProfile = new Intent(MyProfile.this, ClientProfile.class);
-            startActivity(intentProfile);
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     } // END on Navigation Item Selected
 

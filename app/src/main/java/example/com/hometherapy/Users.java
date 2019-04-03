@@ -57,7 +57,6 @@ public class Users extends AppCompatActivity
 
     // private member variables
     private ListView _lvUserList;
-    private Button _btnUsersAddNewUser;
     private List<User> _tempUserList;
 
     // array adapter for user list
@@ -72,7 +71,6 @@ public class Users extends AppCompatActivity
 
         // register views
         _lvUserList = (ListView) findViewById(R.id.lvUserList);
-        _btnUsersAddNewUser = (Button) findViewById(R.id.btnUsersAddUser);
 
         // initialize firebase auth
         mAuth = FirebaseAuth.getInstance();
@@ -135,20 +133,6 @@ public class Users extends AppCompatActivity
                 }
             });
 
-            // add new user from user screen
-            _btnUsersAddNewUser.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    // since adding a new user, we do not have a user email yet
-                    // AddEditUser.java is expecting an intent for user email
-                    // so we are sending an empty string value
-                    Intent intentAEU = new Intent(Users.this, AddEditUser.class);
-                    intentAEU.putExtra(MSG_PASSED_UID, "");
-                    startActivity(intentAEU);
-                }
-            });
-
             Log.d(TAG, "onDataChange: tempUserList = " + _tempUserList);
         }
         @Override
@@ -193,17 +177,20 @@ public class Users extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        /* if (id == R.id.nav_users) {
-            Intent intentUsers = new Intent(Users.this, Users.class);
-            startActivity(intentUsers);
-        } else */
-            if (id == R.id.nav_exercise_library) {
+        if (id == R.id.nav_exercise_library) {
             Intent intentExerciseLibrary = new Intent(Users.this, Exercises.class);
             startActivity(intentExerciseLibrary);
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(Users.this, MyProfile.class);
-//            intentProfile.putExtra(MSG_USER_EMAIL, _adminUserEmail);
+            // intentProfile.putExtra(MSG_USER_EMAIL, _adminUserEmail);
             startActivity(intentProfile);
+        } else if (id == R.id.nav_add_new_user) {
+            Intent intentAEU = new Intent(Users.this, AddEditUser.class);
+            // since adding a new user, we do not have a user email yet
+            // AddEditUser.java is expecting an intent for user email
+            // so we are sending an empty string value
+            intentAEU.putExtra(MSG_PASSED_UID, "");
+            startActivity(intentAEU);
         } else if (id == R.id.nav_LogOut) {
             Intent intentLogIn = new Intent(Users.this, SignIn.class);
             startActivity(intentLogIn);
@@ -212,5 +199,6 @@ public class Users extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-}
+    } // END onNavigationItemSelected
+
+} // END Users class

@@ -3,7 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <!--for Therapists-->
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/mp_therapist_menu" >
+
         <item
             android:id="@+id/nav_myClients"
             android:icon="@drawable/ic_menu_gallery"
@@ -25,7 +29,7 @@
                 android:icon="@drawable/ic_menu_manage"
                 android:title="@string/my_profile" />
             <item
-                android:id="@+id/nav_MELogOut"
+                android:id="@+id/nav_LogOut"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="@string/log_out" />
         </menu>
