@@ -176,22 +176,29 @@ public class Users extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_exercise_library) {
+
             Intent intentExerciseLibrary = new Intent(Users.this, Exercises.class);
             startActivity(intentExerciseLibrary);
+
         } else if (id == R.id.nav_myProfile) {
+
             Intent intentProfile = new Intent(Users.this, MyProfile.class);
-            // intentProfile.putExtra(MSG_USER_EMAIL, _adminUserEmail);
             startActivity(intentProfile);
+
         } else if (id == R.id.nav_add_new_user) {
+
             Intent intentAEU = new Intent(Users.this, AddEditUser.class);
-            // since adding a new user, we do not have a user email yet
-            // AddEditUser.java is expecting an intent for user email
+            // since adding a new user, we do not have a user ID yet
+            // AddEditUser.java is expecting an intent for user ID
             // so we are sending an empty string value
             intentAEU.putExtra(MSG_PASSED_UID, "");
             startActivity(intentAEU);
+
         } else if (id == R.id.nav_LogOut) {
+
             Intent intentLogIn = new Intent(Users.this, SignIn.class);
             startActivity(intentLogIn);
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

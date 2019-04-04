@@ -4,30 +4,14 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-        <!--for Therapists-->
         <item
-            android:id="@+id/nav_myClients"
+            android:id="@+id/nav_addNewExercise"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/my_clients" />
+            android:title="@string/add_new_exercise" />
         <item
-            android:id="@+id/nav_exercise_library1"
+            android:id="@+id/nav_returnToDashboard"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/exercise_library" />
-        <item
-            android:id="@+id/nav_myMessages"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/my_messages" />
-
-        <!-- for admin -->
-            <item
-                android:id="@+id/nav_users"
-                android:icon="@drawable/ic_menu_gallery"
-                android:title="Users" />
-            <item
-                android:id="@+id/nav_exercise_library"
-                android:icon="@drawable/ic_menu_gallery"
-                android:title="@string/exercise_library" />
-
+            android:title="@string/return_to_dashboard" />
         </group>
 
     <item android:title="Settings">

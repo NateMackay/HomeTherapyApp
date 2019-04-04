@@ -153,17 +153,25 @@ public class MyClients extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_exercise_library) {
+
             Intent intentExerciseLibrary = new Intent(MyClients.this, Exercises.class);
             startActivity(intentExerciseLibrary);
+
         } else if (id == R.id.nav_myMessages) {
+
             Intent intentRewards = new Intent(MyClients.this, MyMessages.class);
             startActivity(intentRewards);
+
         } else if (id == R.id.nav_myProfile) {
+
             Intent intentProfile = new Intent(MyClients.this, MyProfile.class);
             startActivity(intentProfile);
+
         } else if (id == R.id.nav_LogOut) {
+
             Intent intentLogOut = new Intent(MyClients.this, SignIn.class);
             startActivity(intentLogOut);
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

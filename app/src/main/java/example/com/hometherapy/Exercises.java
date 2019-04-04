@@ -64,8 +64,6 @@ public class Exercises extends AppCompatActivity
 
     // views
     private ListView _lvExerciseList;
-    private Button _btnAddExercise;
-    private Button _btnExercisesReturnDashboard;
 
     // array adapter for exercise list
     private ExerciseListAdapter _adapterExerciseList;
@@ -79,8 +77,6 @@ public class Exercises extends AppCompatActivity
 
         // register view widgets
         _lvExerciseList = (ListView) findViewById(R.id.lvExerciseList);
-        _btnAddExercise = (Button) findViewById(R.id.btnAddExercise);
-        _btnExercisesReturnDashboard = (Button) findViewById(R.id.btnExercisesReturnDashboard);
 
         // initialize firebase auth
         mAuth = FirebaseAuth.getInstance();
@@ -130,49 +126,6 @@ public class Exercises extends AppCompatActivity
                 Intent intentAddExerciseToLibrary = new Intent(Exercises.this, AddExerciseToLibrary.class);
                 intentAddExerciseToLibrary.putExtra(MSG_EXERCISE_ID, currentExercise.get_exerciseID());
                 startActivity(intentAddExerciseToLibrary);
-            }
-        });
-
-         //return to dashboard button
-        _btnExercisesReturnDashboard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Log.d(TAG, "onClick: Return to Dashboard: " + _mAuthAccountType);
-
-                if (_mAuthAccountType != null) {
-
-                    if (_mAuthAccountType.equals("therapist")) {
-
-                        Intent intentReturnTherapistDashboard = new Intent(Exercises.this, MyClients.class);
-                        startActivity(intentReturnTherapistDashboard);
-
-                    } else if (_mAuthAccountType.equals("admin")){
-                        // go to users
-                        Intent intentReturnAdminDashboard = new Intent(Exercises.this, Users.class);
-                        startActivity(intentReturnAdminDashboard);
-                    } else {
-                        // only therapist and admin users should have had access to the exercise
-                        // library, so if this is happening, then there is a problem with the
-                        // login user SP or somehow a client was able to see this screen
-                        Toast.makeText(Exercises.this, "Unable to return to dashboard: " +
-                                "user not therapist or admin", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    // Check Shared Prefs Login User logic if you get this message
-                    Toast.makeText(Exercises.this, "Unable to return to dashboard: " +
-                            "error with user login", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        // add new exercise to library button
-        _btnAddExercise.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentAddExercise = new Intent(Exercises.this, AddExerciseToLibrary.class);
-                intentAddExercise.putExtra(MSG_EXERCISE_ID, "");
-                startActivity(intentAddExercise);
             }
         });
 
@@ -233,24 +186,62 @@ public class Exercises extends AppCompatActivity
         }
     }
 
+    // navigation menu
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-         if (id == R.id.nav_myClients) {
-            Intent intentExercises = new Intent(Exercises.this, MyClients.class);
-            startActivity(intentExercises);
-        } else if (id == R.id.nav_exercise_library) {
-            Intent intentExerciseLibrary = new Intent(Exercises.this, Exercises.class);
-            startActivity(intentExerciseLibrary);
-        } else if (id == R.id.nav_myMessages) {
-            Intent intentRewards = new Intent(Exercises.this, MyMessages.class);
-            startActivity(intentRewards);
+         if (id == R.id.nav_returnToDashboard) {
+
+             Log.d(TAG, "on My Clients navigation: Return to Dashboard: " + _mAuthAccountType);
+
+             if (_mAuthAccountType != null) {
+
+                 if (_mAuthAccountType.equals("therapist")) {
+
+                     // go to My Clients (therapist dashboard)
+                     Intent intentReturnTherapistDashboard = new Intent(Exercises.this, MyClients.class);
+                     startActivity(intentReturnTherapistDashboard);
+
+                 } else if (_mAuthAccountType.equals("admin")){
+
+                     // go to Users (admin dashboard)
+                     Intent intentReturnAdminDashboard = new Intent(Exercises.this, Users.class);
+                     startActivity(intentReturnAdminDashboard);
+
+                 } else {
+
+                     // only therapist and admin users should have had access to the exercise
+                     // library, so if this is happening, then there is a problem with the
+                     // login user SP or somehow a client was able to see this screen
+                     Toast.makeText(Exercises.this, "Unable to return to dashboard: " +
+                             "user not therapist or admin", Toast.LENGTH_SHORT).show();
+                 }
+
+             } else {
+
+                 // if account type is not set then present an error message to the user
+                 Toast.makeText(Exercises.this, "Unable to return to dashboard: " +
+                         "error with user login", Toast.LENGTH_SHORT).show();
+             }
+
+        } else if (id == R.id.nav_addNewExercise) {
+
+             // add new exercise button is clicked, go to add exercise to library activity
+             Intent intentAddExercise = new Intent(Exercises.this, AddExerciseToLibrary.class);
+             intentAddExercise.putExtra(MSG_EXERCISE_ID, "");
+             startActivity(intentAddExercise);
+
         } else if (id == R.id.nav_myProfile) {
+
+            // my profile button is clicked, go to my profile activity
             Intent intentProfile = new Intent(Exercises.this, MyProfile.class);
             startActivity(intentProfile);
+
         }  else if (id == R.id.nav_LogOut) {
+
+             // log out button is clicked, go to sign in activity
              Intent intentLogOut = new Intent(Exercises.this, SignIn.class);
              startActivity(intentLogOut);
          }
@@ -258,6 +249,7 @@ public class Exercises extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+
     } // END listener for navigation menu
 
 } // END Exercises class
