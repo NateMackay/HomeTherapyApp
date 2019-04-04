@@ -49,15 +49,20 @@
             android:name=".TestNavigation"
             android:label="@string/title_activity_test_navigation"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".AddExerciseToClient" />
+        <activity
+            android:name=".AddExerciseToClient"
+            android:label="Add/Edit Assigned Exercise" />
         <activity android:name=".UserProfile" />
         <activity android:name=".ClientProfile" />
         <activity android:name=".AddExerciseToLibrary" />
         <activity android:name=".MyExercise" />
         <activity android:name=".AddEditUser" />
-<!--        <activity android:name=".Exercises" />-->
-        <activity android:name=".Register" />
-        <activity android:name=".SignIn" />
+        <activity
+            android:name=".Register"
+            android:label="Register New User"/>
+        <activity
+            android:name=".SignIn"
+            android:label="Sign In or Register"/>
         <activity android:name=".Messaging" />
 
         <meta-data
