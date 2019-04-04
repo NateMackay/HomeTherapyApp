@@ -1,11 +1,16 @@
 package example.com.hometherapy;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,11 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * example.com.hometherapy.Therapist view of client's assigned exercises. Intent only comes
@@ -37,7 +40,8 @@ import java.util.stream.Collectors;
  * @since 2019-03-19
  * {@link MyClients}
  */
-public class ClientExercises extends AppCompatActivity {
+public class ClientExercises extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     // for log
     private static final String TAG = "Client_Exercises_Activity";
@@ -62,22 +66,16 @@ public class ClientExercises extends AppCompatActivity {
 
     // views
     private ListView _lvCEAssignedExercises;
-    private Button _btnCEAddExercise;
-    private TextView _tvCELabel;
-    private Button _btnCEUserLogOut;
-    private Button _btnCEReturnToMyClients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_exercises);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // register views
         _lvCEAssignedExercises = (ListView) findViewById(R.id.lvCEAssignedExercises);
-        _btnCEAddExercise = (Button) findViewById(R.id.btnCEAddExercise);
-        _tvCELabel = (TextView) findViewById(R.id.tvCELabel);
-        _btnCEUserLogOut = (Button) findViewById(R.id.btnCEUsersLogOut);
-        _btnCEReturnToMyClients = (Button) findViewById(R.id.btnCEReturnToMyClients);
 
         // initialize firebase auth
         mAuth = FirebaseAuth.getInstance();
@@ -125,39 +123,15 @@ public class ClientExercises extends AppCompatActivity {
             }
         });
 
-        // add NEW exercise to client button - goes first to client exercise library
-        // and then from there on to Add Exercise To Client AETC
-        _btnCEAddExercise.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        // navigation
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-                // intent to go to Exercises screen, passing user and blank assigned exercise ID
-                Intent intentClientExerciseLibrary = new Intent(ClientExercises.this, ClientExerciseLibrary.class);
-                intentClientExerciseLibrary.putExtra(MSG_ASSIGNED_EXERCISE_ID, "");
-                intentClientExerciseLibrary.putExtra(MSG_CLIENT_UID, _clientUID);
-                startActivity(intentClientExerciseLibrary);
-            }
-        });
-
-        // return to list of my clients button
-        _btnCEReturnToMyClients.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intentMyClients = new Intent(ClientExercises.this, MyClients.class);
-                startActivity(intentMyClients);
-            }
-        });
-
-        // on click, just go back to signIn screen
-        // for testing purposes
-        _btnCEUserLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentSignIn = new Intent(ClientExercises.this, SignIn.class);
-                startActivity(intentSignIn);
-            }
-        });
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
     } // END onCreate()
 
@@ -190,7 +164,7 @@ public class ClientExercises extends AppCompatActivity {
 
                 // set label to client's first name + "'s Exercises"
                 if (user != null) {
-                    _tvCELabel.setText(String.format("%s's Exercises", user.getFirstName()));
+                    ClientExercises.this.setTitle(String.format("%s's Exercises", user.getFirstName()));
                 }
             }
         }
@@ -198,5 +172,55 @@ public class ClientExercises extends AppCompatActivity {
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END client user listener
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    // navigation menu options
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_myClients) {
+
+            Intent intentMyClients = new Intent(ClientExercises.this, MyClients.class);
+            startActivity(intentMyClients);
+
+        } else if (id == R.id.nav_exercise_library) {
+
+            Intent intentExerciseLibrary = new Intent(ClientExercises.this, Exercises.class);
+            startActivity(intentExerciseLibrary);
+
+        } else if (id == R.id.nav_assign_exercise_to_client) {
+
+            // intent to go to Exercises screen, passing user and blank assigned exercise ID
+            Intent intentClientExerciseLibrary = new Intent(ClientExercises.this, ClientExerciseLibrary.class);
+            intentClientExerciseLibrary.putExtra(MSG_ASSIGNED_EXERCISE_ID, "");
+            intentClientExerciseLibrary.putExtra(MSG_CLIENT_UID, _clientUID);
+            startActivity(intentClientExerciseLibrary);
+
+        } else if (id == R.id.nav_myProfile) {
+
+            Intent intentProfile = new Intent(ClientExercises.this, MyProfile.class);
+            startActivity(intentProfile);
+
+        } else if (id == R.id.nav_LogOut) {
+
+            Intent intentLogIn = new Intent(ClientExercises.this, SignIn.class);
+            startActivity(intentLogIn);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+
+    } // END onNavigationItemSelected
 
 } // END Client Exercises class

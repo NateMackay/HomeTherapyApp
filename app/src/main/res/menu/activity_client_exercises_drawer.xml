@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <!--Menu for therapist's view of client exercises-->
+    <group
+        android:id="@+id/mp_client_exercise_menu"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_myClients"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/my_clients" />
+        <item
+            android:id="@+id/nav_exercise_library"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/exercise_library" />
+        <item
+            android:id="@+id/nav_assign_exercise_to_client"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/assign_new_exercise" />
+    </group>
+
+    <item android:title="Settings">
+        <menu>
+            <item
+                android:id="@+id/nav_myProfile"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/my_profile" />
+            <item
+                android:id="@+id/nav_LogOut"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/log_out" />
+        </menu>
+    </item>
+
+</menu>

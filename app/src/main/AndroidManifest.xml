@@ -14,7 +14,7 @@
         <activity
             android:name=".Users"
             android:label="@string/title_activity_users"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MyExercises"
             android:label="@string/title_activity_my_exercises"
@@ -28,7 +28,10 @@
             android:label="@string/title_activity_my_rewards"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ClientExerciseLibrary" />
-        <activity android:name=".ClientExercises" />
+        <activity
+            android:name=".ClientExercises"
+            android:label="Client Exercises"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MyProfile"
             android:label="@string/title_activity_my_profile"
