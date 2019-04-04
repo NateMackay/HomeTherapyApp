@@ -53,9 +53,8 @@ public class MyClientsAdapter extends ArrayAdapter<User> {
         TextView status = (TextView) listItem.findViewById(R.id.tvRowMCStatus);
         status.setText(String.format("Status: %s", currentUser.get_status()));
 
-        String pointValue = "0"; // temporary place holder for points until set in User class
         TextView points = (TextView) listItem.findViewById(R.id.tvRowMCPoints);
-        points.setText(String.format("Points: %s",pointValue));
+        points.setText(String.format("Points: %s", currentUser.get_myPoints()));
 
         return listItem;
     }
