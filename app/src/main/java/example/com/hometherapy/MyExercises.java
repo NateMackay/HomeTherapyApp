@@ -65,7 +65,6 @@ public class MyExercises extends AppCompatActivity
 
     // views
     private ListView _lvMEAssignedExercises;
-    private TextView _tvMELabel;
 
     // adapter for assigned exercise list
     private AssignedExerciseListAdapter _adapterAssignedExercises;
@@ -79,7 +78,6 @@ public class MyExercises extends AppCompatActivity
 
         // register views
         _lvMEAssignedExercises = (ListView) findViewById(R.id.lvMEAssignedExercises);
-        _tvMELabel = (TextView) findViewById(R.id.tvMELabel);
 
         // initialize firebase auth
         mAuth = FirebaseAuth.getInstance();
@@ -176,7 +174,7 @@ public class MyExercises extends AppCompatActivity
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(MyExercises.this, MyProfile.class);
             startActivity(intentProfile);
-        } else if (id == R.id.nav_MELogOut) {
+        } else if (id == R.id.nav_LogOut) {
             Intent intentSignIn = new Intent(MyExercises.this, SignIn.class);
             startActivity(intentSignIn);
         }
