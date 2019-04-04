@@ -56,8 +56,6 @@ public class MyClients extends AppCompatActivity
 
     // private member variables
     private ListView _lvClientList;
-    private Button _btnMyClientsGoToExerciseLibrary;
-    private Button _btnMyClientsLogOut;
     private List<User> _tempUserList; // all users
 
     // array adapter for user list
@@ -72,8 +70,6 @@ public class MyClients extends AppCompatActivity
 
         // register views
         _lvClientList = (ListView) findViewById(R.id.lvClientList);
-        _btnMyClientsGoToExerciseLibrary = (Button) findViewById(R.id.btnMyClientsGoToExerciseLibrary);
-        _btnMyClientsLogOut = (Button) findViewById(R.id.btnMyClientsLogOut);
 
         // initialize firebase auth
         mAuth = FirebaseAuth.getInstance();
@@ -110,26 +106,6 @@ public class MyClients extends AppCompatActivity
                 Intent intentME = new Intent(MyClients.this, ClientExercises.class);
                 intentME.putExtra(MSG_CLIENT_UID, currentUser.getUserID());
                 startActivity(intentME);
-            }
-        });
-
-        // go to exercise library
-        _btnMyClientsGoToExerciseLibrary.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intentExercises = new Intent(MyClients.this, Exercises.class);
-                startActivity(intentExercises);
-            }
-        });
-
-        // log out, go back to signIn screen
-        _btnMyClientsLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intentSignIn = new Intent(MyClients.this, SignIn.class);
-                startActivity(intentSignIn);
             }
         });
 
@@ -176,11 +152,6 @@ public class MyClients extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-/*        if (id == R.id.nav_myClients) {
-            // Handle the camera action
-            Intent intentExercises = new Intent(MyClients.this, MyClients.class);
-            startActivity(intentExercises);
-        } else*/
         if (id == R.id.nav_exercise_library) {
             Intent intentExerciseLibrary = new Intent(MyClients.this, Exercises.class);
             startActivity(intentExerciseLibrary);
