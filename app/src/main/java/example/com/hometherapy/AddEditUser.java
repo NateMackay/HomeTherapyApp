@@ -75,9 +75,12 @@ public class AddEditUser extends AppCompatActivity {
     private Spinner _spinUserStatus;
     private Spinner _spinAssignedTherapist;
     private Button _btnUserSave;
+    private Button _btnUserResetPwd;
     private List<Therapist> _therapistList;
     private String _passedUID;
     private boolean _isNewUser;
+
+    private String _currentUserEmail;
 
     // array adapters for spinner views
     private String _userAccountTypes[] = {"Account Type", "pending", "client", "therapist", "admin"};
@@ -118,6 +121,7 @@ public class AddEditUser extends AppCompatActivity {
         _spinAssignedTherapist = (Spinner) findViewById(R.id.spinAEUAssignedTherapist);
         _spinUserStatus = (Spinner) findViewById(R.id.spinAEUStatus);
         _btnUserSave = (Button) findViewById(R.id.btnAEUSave);
+        _btnUserResetPwd = (Button) findViewById(R.id.btnAEUResetPwd);
 
         // setup field validators
         // email
@@ -153,19 +157,29 @@ public class AddEditUser extends AppCompatActivity {
 
         if (_passedUID.equals("")) {
             _isNewUser = true;
+
+            // for new user, hide send reset password button
+            _btnUserResetPwd.setVisibility(View.GONE);
+
         } else {
             _isNewUser = false;
         }
 
         Log.d(TAG, "verify passed UserID: " + _passedUID);
 
-        // query user database based on therapist
+        // we need a list of the users who are therapists in order to populate
+        // the therapist spinner. This query will filter the list of all users by
+        // therapist account type and the listener will populate the local therapist list
+        // used by the assigned therapist spinner
         Query queryTherapistList = mUsersDatabaseReference.orderByChild("_accountType").equalTo("therapist");
         queryTherapistList.addListenerForSingleValueEvent(valueEventListener);
 
-        Log.d(TAG, "onCreate: therapist list 2" + _therapistList);
+        // verify contents of therapist list to make sure it was populated by query and listener
+        Log.d(TAG, "therapist list after therapist query" + _therapistList);
 
-        // query user database based on passed in UID
+        // we need to get the specific data from the user database for the
+        // user that was clicked on
+        // should be able to move this to the else condition above
         Query query = mUsersDatabaseReference.orderByChild("userID").equalTo(_passedUID);
         query.addListenerForSingleValueEvent(valueEventListenerUser);
 
@@ -175,38 +189,43 @@ public class AddEditUser extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // validate email
-                if (!_emailValidator.isValid()) {
-                    _etUserEmail.setError("Invalid Email");
-                    _etUserEmail.requestFocus();
-                    return;
-                }
+                // validate email and password entries only for new users
+                if (_isNewUser) {
 
-                // verify password confirmation matches password
-                // note no other password validity
-                // consider adding a password validation class
-                if (!_etUserPassword.getText().toString().equals(_etUserPasswordConfirm.getText().toString())) {
-                    _etUserPasswordConfirm.setError("Password does not match");
-                    _etUserPasswordConfirm.requestFocus();
-                    return;
-                }
+                    // validate email
+                    if (!_emailValidator.isValid()) {
+                        _etUserEmail.setError("Invalid Email");
+                        _etUserEmail.requestFocus();
+                        return;
+                    }
 
-                // validate password if value is entered
-                // no value entered means no attempt to change password
-                // and therefore password validator should not run
-                // FYI this is left here for testing purposes
-                // Not needed for Firebase
-                // Only use in My Profile
-                if (!_etUserPassword.getText().toString().isEmpty() && !_passwordValidator.isValid()) {
-                    _etUserPassword.setError("Invalid Password");
-                    Toast.makeText(AddEditUser.this, "Password must,\n" +
-                            "contain at least one digit,\n" +
-                            "contain at least one lower case character,\n" +
-                            "contain at least one upper case character,\n" +
-                            "contain at least one special character, and" +
-                            "be between 8 and 40 characters long", Toast.LENGTH_LONG).show();
-                    _etUserPassword.requestFocus();
-                    return;
+                    // verify password confirmation matches password
+                    // note no other password validity
+                    // consider adding a password validation class
+                    if (!_etUserPassword.getText().toString().equals(_etUserPasswordConfirm.getText().toString())) {
+                        _etUserPasswordConfirm.setError("Password does not match");
+                        _etUserPasswordConfirm.requestFocus();
+                        return;
+                    }
+
+                    // validate password if value is entered
+                    // no value entered means no attempt to change password
+                    // and therefore password validator should not run
+                    // FYI this is left here for testing purposes
+                    // Not needed for Firebase
+                    // Only use in My Profile
+                    if (!_etUserPassword.getText().toString().isEmpty() && !_passwordValidator.isValid()) {
+                        _etUserPassword.setError("Invalid Password");
+                        Toast.makeText(AddEditUser.this, "Password must,\n" +
+                                "contain at least one digit,\n" +
+                                "contain at least one lower case character,\n" +
+                                "contain at least one upper case character,\n" +
+                                "contain at least one special character, and" +
+                                "be between 8 and 40 characters long", Toast.LENGTH_LONG).show();
+                        _etUserPassword.requestFocus();
+                        return;
+                    }
+
                 }
 
                 // validate phone number
@@ -273,17 +292,46 @@ public class AddEditUser extends AppCompatActivity {
 
                     // note, this is an async update
                     // ref: https://github.com/firebase/quickstart-android/issues/821
-                    userRef.updateChildren(userUpdates);
-
-                    // updateChildren has an add on complete listener and onSuccessful() methods
-                    // consider adding one of these and only going back to users upon successful
-                    // completion
+                    userRef.updateChildren(userUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "Update was successful");
+                            } else {
+                                Log.d(TAG, "Update failed");
+                            }
+                        }
+                    });
 
                     // go back to Users activity after update
                     Intent intentUsers = new Intent(AddEditUser.this, Users.class);
                     startActivity(intentUsers);
 
                 }
+            }
+        });
+
+        // send a reset link for user to change their password
+        _btnUserResetPwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // send password link to user's account
+                mAuth.sendPasswordResetEmail(_currentUserEmail)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "Reset password email sent successfully");
+                                } else {
+                                    Log.d(TAG, "Reset password email not successful");
+                                }
+                            }
+                        });
+
+                // return to admin dashboard
+                Intent intentUsers = new Intent(AddEditUser.this, Users.class);
+                startActivity(intentUsers);
             }
         });
 
@@ -298,14 +346,22 @@ public class AddEditUser extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     user = snapshot.getValue(User.class);
                 }
-                Log.d(TAG, "onDataChange: user = " + user);
+                Log.d(TAG, "valueEventListenerUser: user = " + user);
 
                 if (user != null) {
 
+                    // set current user email for password reset option
+                    _currentUserEmail = user.getEmail();
+
+                    // populate views from user data
                     _etUserFirstName.setText(user.getFirstName());
                     _etUserLastName.setText(user.getLastName());
-                    _etUserEmail.setText(user.getEmail());
                     _etUserPhone.setText(user.getPhone());
+
+                    // hide views relevant only for new users
+                    _etUserEmail.setVisibility(View.GONE);
+                    _etUserPassword.setVisibility(View.GONE);
+                    _etUserPasswordConfirm.setVisibility(View.GONE);
 
                     // get indices of user's account type, assigned clinic, and status
                     // this is for setting the value for each spinner
@@ -493,7 +549,7 @@ public class AddEditUser extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(AddEditUser.this, "Authentication failed.",
+                            Toast.makeText(AddEditUser.this, "New user creation failed.",
                                     Toast.LENGTH_SHORT).show();
 //                            updateUI(null);
                         }
