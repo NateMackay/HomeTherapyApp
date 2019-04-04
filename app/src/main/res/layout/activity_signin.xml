@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="48dp"
             android:layout_marginEnd="8dp"
             android:fontFamily="sans-serif-medium"
             android:padding="10dp"
@@ -26,11 +26,10 @@
             android:paddingEnd="10dp"
             android:paddingRight="10dp"
             android:paddingBottom="10dp"
-            android:text="My Home Therapy Program"
+            android:text="My Home Therapy App"
             android:textAlignment="center"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.628"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
