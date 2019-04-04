@@ -9,9 +9,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -65,12 +68,14 @@ public class AddExerciseToClient extends AppCompatActivity {
     private String _assignedExerciseID;
     private String _exerciseID;
 
+    // views
     private TextView _tvAETCAssignment;
     private TextView _tvAETCExercise;
     private TextView _tvAETCDiscipline;
     private TextView _tvAETCModality;
     private TextView _tvLinkToVideo;
     private Button _btnAETCSave;
+    private CheckBox _cbAETCClientCompleted;
     private Spinner _spinAETCPointValue;
     private Spinner _spinAETCStatus;
 
@@ -97,6 +102,7 @@ public class AddExerciseToClient extends AppCompatActivity {
         _btnAETCSave = (Button) findViewById(R.id.btnAETCSave);
         _spinAETCPointValue = (Spinner) findViewById(R.id.spinAETCPointValue);
         _spinAETCStatus = (Spinner) findViewById(R.id.spinAETCStatus);
+        _cbAETCClientCompleted = (CheckBox) findViewById(R.id.cbAETCClientCompleted);
 
         // register adapters
         _adapterPointValue = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, _pointValueOptions);
@@ -158,6 +164,7 @@ public class AddExerciseToClient extends AppCompatActivity {
                 String modality = _tvAETCModality.getText().toString();
                 String assignment = _tvAETCAssignment.getText().toString();
                 String videoLink = _tvLinkToVideo.getText().toString();
+                Boolean isExerciseCompleted = _cbAETCClientCompleted.isChecked();
                 String status = _spinAETCStatus.getSelectedItem().toString();
                 Integer pointValue = Integer.parseInt(_spinAETCPointValue.getSelectedItem().toString());
 
@@ -190,11 +197,22 @@ public class AddExerciseToClient extends AppCompatActivity {
                     assignedExerciseValues = new HashMap<>();
                     assignedExerciseValues.put("_pointValue", pointValue);
                     assignedExerciseValues.put("_status", status);
+                    assignedExerciseValues.put("_completedToday", isExerciseCompleted);
                 }
 
                 // update values to firebase
                 if (assignedExerciseID != null) {
-                    mAssignedExercisesRef.child(assignedExerciseID).updateChildren(assignedExerciseValues);
+                    mAssignedExercisesRef.child(assignedExerciseID).updateChildren(assignedExerciseValues)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "Update to firebase was successful");
+                            } else {
+                                Log.d(TAG, "Update to firebase failed");
+                            }
+                        }
+                    });
                 }
 
                 // navigate back to Client Exercises
@@ -225,6 +243,7 @@ public class AddExerciseToClient extends AppCompatActivity {
                     _tvAETCDiscipline.setText(assignedExercise.get_discipline());
                     _tvAETCModality.setText(assignedExercise.get_modality());
                     _tvLinkToVideo.setText(assignedExercise.get_videoLink());
+                    _cbAETCClientCompleted.setChecked(assignedExercise.get_completedToday());
 
                     // populate spinners with data from assigned exercise
                     // set status and point value spinners based on what is in assigned exercise
