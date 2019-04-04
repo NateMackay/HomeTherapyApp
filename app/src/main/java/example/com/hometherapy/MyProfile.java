@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -74,6 +76,12 @@ public class MyProfile extends AppCompatActivity
     // member variables
     private String _currentUserID;
     private String _userAccountType;
+    private String _currentUserEmail;
+    private String _firstName;
+    private String _lastName;
+    private String _email;
+    private String _phone;
+    private String _pwd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +150,9 @@ public class MyProfile extends AppCompatActivity
                     // set current user account type
                     _userAccountType = user.get_accountType();
 
+                    // set current user email
+                    _currentUserEmail = user.getEmail();
+
                     // verify user ID and account type
                     Log.d(TAG, "onDataChange _currentUserID: " + _currentUserID);
                     Log.d(TAG, "onDataChange user.getUserID(): " + user.getUserID());
@@ -204,89 +215,120 @@ public class MyProfile extends AppCompatActivity
             }
 
             // set views to variables
-            String etUserProfFirstName = _etUserProfFirstName.getText().toString();
-            String etUserProfLastName = _etUserProfLastName.getText().toString();
-            String etUserProfEmail = _etUserProfEmail.getText().toString();
-            String etUserProfPhone = _etUserProfPhone.getText().toString();
-            String etUserProfPwd = _etUserProfPwd.getText().toString();
+            _firstName = _etUserProfFirstName.getText().toString();
+            _lastName = _etUserProfLastName.getText().toString();
+            _email = _etUserProfEmail.getText().toString();
+            _phone = _etUserProfPhone.getText().toString();
+            _pwd = _etUserProfPwd.getText().toString();
 
-            // update data
+            // set data for update to firebase
             DatabaseReference userRef = mUsersRef.child(_currentUserID);
 
             Map<String, Object> userUpdates = new HashMap<>();
-            userUpdates.put("firstName", etUserProfFirstName);
-            userUpdates.put("lastName", etUserProfLastName);
-            userUpdates.put("phone", etUserProfPhone);
+            userUpdates.put("firstName", _firstName);
+            userUpdates.put("lastName", _lastName);
+            userUpdates.put("phone", _phone);
+            userUpdates.put("email", _email);
 
-            userRef.updateChildren(userUpdates);
+            // update data in firebase; if successful, update email/password if changed
+            userRef.updateChildren(userUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
 
-            // update password and email logic
-            // note, because you cannot update a password or user without the recent
-            // authentication (i.e. on myProfile page), this functionality is only included
-            // here and not in AddEditUser.java
+                        Log.d(TAG, "Update was successful");
 
-            // ADD THE FOLLOWING:
-            // UPDATE MAUTH EMAIL
-            // UPDATE MAUTH DISPLAYNAME WITH FIRST NAME
-            // ADD PASSWORD RESET BUTTON
-            // REMOVE OUT PASSWORD FIELDS, LOGIC, AND VALIDATORS
-            // THERE IS A BUG - WE ARE SPECIFIYING PASSWORD REQUIREMENTS IN THE CODE, BUT IT IS
-            // POSSIBLE TO CHANGE THE PASSWORD
-            // IF YOU CAN UPDATE THE PASSWORD FROM THE APP THOUGH, THEN YOU COULD FORCE
-            // THE PASSWORD RESTRICTIONS AT THE APP LEVEL
+                        // update firebase auth user email if changed
+                        if (!_email.equals(_currentUserEmail)) {
+                            FirebaseUser user = mAuth.getCurrentUser();
 
-            // reference: https://firebase.google.com/docs/auth/android/manage-users
+                            if (user != null) {
+                                user.updateEmail(_email)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "Success: user email updated.");
+                                                } else {
+                                                    Log.d(TAG, "Error: user email not updated.");
+                                                }
+                                            }
+                                        });
+                            } else {
+                                Log.d(TAG, "Error: user null; email not updated.");
+                            }
+                        }
 
-                // update password only if password has been updated
-//                    if (etUserProfPwd.length() > 0) {
-//                        _currentUser.setPassword(etUserProfPwd);
-//                    }
+                        // update firebase auth user password if not empty
+                        if (_pwd.length() > 0) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            if (user != null) {
+                                user.updatePassword(_pwd)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "Success: user password updated.");
+                                                } else {
+                                                    Log.d(TAG, "Error: password not updated");
+                                                }
+                                            }
+                                        });
+                            } else {
+                                Log.d(TAG, "Error: user null; password not updated.");
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "Update to firebase failed");
+                    }
+                }
+            });
 
             Log.d(TAG, "onClick _userAccountType: " + _userAccountType);
 
-                // intent to go back to admin, client, or therapist dashboard
-                if (_userAccountType != null) {
+            // intent to go back to admin, client, or therapist dashboard
+            if (_userAccountType != null) {
 
-                    switch (_userAccountType) {
-                        case "therapist":
-                            // go to my clients, or therapist dashboard
-                            Intent intentClients = new Intent(MyProfile.this, MyClients.class);
-                            startActivity(intentClients);
-                            break;
+                switch (_userAccountType) {
+                    case "therapist":
+                        // go to my clients, or therapist dashboard
+                        Intent intentClients = new Intent(MyProfile.this, MyClients.class);
+                        startActivity(intentClients);
+                        break;
 
-                        case "client":
-                            // go to my exercises, or client dashboard
-                            Intent intentExercises = new Intent(MyProfile.this, MyExercises.class);
-                            startActivity(intentExercises);
-                            break;
+                    case "client":
+                        // go to my exercises, or client dashboard
+                        Intent intentExercises = new Intent(MyProfile.this, MyExercises.class);
+                        startActivity(intentExercises);
+                        break;
 
-                        case "admin":
-                            // go to users, or admin dashboard
-                            Intent intentUsers = new Intent(MyProfile.this, Users.class);
-                            startActivity(intentUsers);
-                            break;
+                    case "admin":
+                        // go to users, or admin dashboard
+                        Intent intentUsers = new Intent(MyProfile.this, Users.class);
+                        startActivity(intentUsers);
+                        break;
 
-                        default:
-                            // if account type is other than admin, therapist, or client
-                            // send error message to contact administrator then go back to sign-in screen
-                            // NOTE - ADD SNACKBAR AND THEN PUT IN SEPARATE FUNCTION CALL HERE AND BELOW
-                            Log.e(TAG, "error: on save, user type other than admin, therapist, or client");
-                            Intent intentSignIn = new Intent(MyProfile.this, SignIn.class);
-                            startActivity(intentSignIn);
-                            break;
-                    }
-
-                } else {
-                    // if account type is null
-                    // send error message to contact administrator then go back to sign-in screen
-                    Log.e(TAG, "error: on save, account type is null");
-//                    Intent intentSignIn = new Intent(MyProfile.this, SignIn.class);
-//                    startActivity(intentSignIn);
+                    default:
+                        // if account type is other than admin, therapist, or client
+                        // send error message to contact administrator then go back to sign-in screen
+                        Log.e(TAG, "error: on save, user type other than admin, therapist, or client");
+                        Intent intentSignIn = new Intent(MyProfile.this, SignIn.class);
+                        startActivity(intentSignIn);
+                        break;
                 }
 
-            } // END onClick
+            } else {
+                // if account type is null
+                // log error message to contact administrator then go back to sign-in screen
+                Log.e(TAG, "error: on save, account type is null");
+                Intent intentSignIn = new Intent(MyProfile.this, SignIn.class);
+                startActivity(intentSignIn);
+            }
 
-        }; // END on click listener for save changes button
+        } // END onClick
+
+    }; // END on click listener for save changes button
 
     @Override
     public void onBackPressed() {
