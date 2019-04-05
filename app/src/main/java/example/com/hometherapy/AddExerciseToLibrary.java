@@ -177,17 +177,30 @@ public class AddExerciseToLibrary extends AppCompatActivity {
 
     } // END onCreate()
 
+    // event listener for exercise ID when there is an existing exercise ID passed in.
+    // Adding a ValueEventListener to the exercise ID will allow our app to update
+    // exercise data in realtime, or extract exercise data from realtime.
     ValueEventListener valueEventListenerExerciseID = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the exercise. Any time you read Database data, you receive the data as a
+        // DataSnapshot.
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
                 Exercise exercise = new Exercise();
+                // if so, get the exercise data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local exercise variable
                     exercise = snapshot.getValue(Exercise.class);
                 }
+                // if there is an exercise and a successful extraction...
                 if (exercise != null) {
 
-                    // populate view with data from exercise
+                    // populate view with data from the local exercise variable.
                     _etATLExerciseTitle.setText(exercise.get_exerciseName());
                     _etATLAssignment.setText(exercise.get_assignment());
                     _etATLVideoLink.setText(exercise.get_videoLink());
@@ -207,6 +220,8 @@ public class AddExerciseToLibrary extends AppCompatActivity {
                 }
             }
         }
+
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
