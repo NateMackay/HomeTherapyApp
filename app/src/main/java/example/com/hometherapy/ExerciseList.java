@@ -17,12 +17,18 @@ import java.util.List;
  */
 public class ExerciseList {
 
+    // private member variable.
     private List<Exercise> _exerciseList;
 
+    // constructor
     public ExerciseList() {
         _exerciseList = new ArrayList<>();
     }
 
+    /**
+     * Add an exercise to the List <Exercise> member variable.
+     * @param exercise
+     */
     public void addExercise(Exercise exercise) {
         _exerciseList.add(exercise);
     }
