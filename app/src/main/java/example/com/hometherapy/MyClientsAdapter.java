@@ -20,15 +20,24 @@ import java.util.List;
  */
 public class MyClientsAdapter extends ArrayAdapter<User> {
 
+    // private member variables
     private Context _context;
     private List<User> _userList;
 
+    // constructor
     public MyClientsAdapter(@NonNull Context context, @NonNull List<User> userList) {
         super(context, 0, userList);
         _context = context;
         _userList = userList;
     }
 
+    /**
+     * Get a View that displays the data at the specified position in the data set.
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
