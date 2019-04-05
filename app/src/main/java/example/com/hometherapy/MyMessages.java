@@ -70,8 +70,8 @@ public class MyMessages extends AppCompatActivity
         } else if (id == R.id.nav_myProfile) {
             Intent intentProfile = new Intent(MyMessages.this, MyProfile.class);
             startActivity(intentProfile);
-        } else if (id == R.id.nav_send) {
-            Intent intentProfile = new Intent(MyMessages.this, ClientProfile.class);
+        } else if (id == R.id.nav_LogOut) {
+            Intent intentProfile = new Intent(MyMessages.this, SignIn.class);
             startActivity(intentProfile);
         }
 
