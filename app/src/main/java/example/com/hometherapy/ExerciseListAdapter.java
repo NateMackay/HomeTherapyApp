@@ -26,15 +26,24 @@ public class ExerciseListAdapter extends ArrayAdapter<Exercise> {
     // for log
     private static final String TAG = "ExerciseListAdapter";
 
+    // private member variables
     private Context _context;
     private List<Exercise> _exerciseList;
 
+    // constructor
     public ExerciseListAdapter(@NonNull Context context, @NonNull List<Exercise> exerciseList) {
         super(context, 0, exerciseList);
         _context = context;
         _exerciseList = exerciseList;
     }
 
+    /**
+     * Get a View that displays the data at the specified position in the data set.
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
