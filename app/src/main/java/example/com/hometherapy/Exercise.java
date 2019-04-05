@@ -99,6 +99,10 @@ public class Exercise {
                 '}';
     }
 
+    /**
+     * stores the exercise into a Map object, and returns the Map object.
+     * @return returns a Map object of the exercise.
+     */
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("_exerciseID", _exerciseID);
