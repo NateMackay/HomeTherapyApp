@@ -46,10 +46,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ExerciseView" />
         <activity
-            android:name=".TestNavigation"
-            android:label="@string/title_activity_test_navigation"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".AddExerciseToClient"
             android:label="Add/Edit Assigned Exercise" />
         <activity android:name=".UserProfile" />
