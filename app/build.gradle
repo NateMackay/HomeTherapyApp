@@ -32,11 +32,11 @@ dependencies {
     // firebase core
     implementation 'com.google.firebase:firebase-core:16.0.8'
     // Firestore
-    implementation 'com.google.firebase:firebase-firestore:18.1.0'
+    implementation 'com.google.firebase:firebase-firestore:18.2.0'
     // Authentication
     implementation 'com.google.firebase:firebase-auth:16.2.0'
-    // Cloud Messaging
-    implementation 'com.google.firebase:firebase-messaging:17.4.0'
+    // Cloud Firebase Messages
+    implementation 'com.google.firebase:firebase-messaging:17.5.0'
     // Firebase Realtime Database
     implementation 'com.google.firebase:firebase-database:16.1.0'
     testImplementation 'junit:junit:4.12'

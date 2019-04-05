@@ -56,25 +56,11 @@
         <activity
             android:name=".SignIn"
             android:label="Sign In or Register"/>
-        <activity android:name=".Messaging" />
-
         <meta-data
             android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc" />
 
         <service android:name=".MyMessaging" />
-
-        <receiver android:name=".MessageReadReceiver">
-            <intent-filter>
-                <action android:name="example.com.hometherapy.ACTION_MESSAGE_READ" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".MessageReplyReceiver">
-            <intent-filter>
-                <action android:name="example.com.hometherapy.ACTION_MESSAGE_REPLY" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
