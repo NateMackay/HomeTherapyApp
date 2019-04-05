@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class PhoneNumberValidator implements TextWatcher  {
 
-
+    // Pattern.compile() compiles the given regular expression into a phone number pattern.
     public static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile(
             // matches 1234567890
             "\\d{10}" +
@@ -26,12 +26,24 @@ public class PhoneNumberValidator implements TextWatcher  {
                     "\\(\\d{3}\\)\\d{3}-?\\d{4}"
     );
 
+    // private member variable.
     private boolean _isValid = false;
 
+    /**
+     * returns member variable value. A return of true, indicates that the
+     * string meets the pattern regex for a phone number.
+     * @return
+     */
     public boolean isValid() {
         return _isValid;
     }
 
+    /**
+     * Takes a phone number as a parameter, and compares the number against the regex pattern
+     * stored in PHONE_NUMBER_PATTERN. If there is a match, returns true.
+     * @param phoneNumber
+     * @return
+     */
     public static boolean isValidPhoneNumber (CharSequence phoneNumber) {
         return phoneNumber != null && PHONE_NUMBER_PATTERN.matcher(phoneNumber).matches();
     }

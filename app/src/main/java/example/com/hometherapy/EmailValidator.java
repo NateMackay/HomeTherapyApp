@@ -28,7 +28,8 @@ public class EmailValidator implements TextWatcher {
     private boolean _isValid = false;
 
     /**
-     * returns true if string meets the pattern regex for an email.
+     * returns member variable value. A return of true, indicates that the
+     * string meets the pattern regex for an email.
      * @return
      */
     public boolean isValid() {
