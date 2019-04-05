@@ -15,8 +15,10 @@ import java.util.List;
  */
 public class AssignedExerciseList {
 
+    // private member variable.
     private List<AssignedExercise> _assignedExerciseList;
 
+    // constructor
     public AssignedExerciseList() { _assignedExerciseList = new ArrayList<>(); }
 
     /**
