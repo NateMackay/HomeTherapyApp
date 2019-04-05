@@ -108,17 +108,29 @@ public class MyRewards extends AppCompatActivity
     } // END onCreate()
 
     // event listener for user data so we can get the current user's points
+    // Adding a ValueEventListener to the user ID will allow our app to extract
+    // the rewards points of the mAuth client user.
     ValueEventListener valueEventListenerUser = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the user. Any time you read Database data, you receive the
+        // data as a DataSnapshot.
         @Override
         public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
                 User user = new User();
+                // if so, get the user data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local user variable
                     user = snapshot.getValue(User.class);
                 }
 
                 Log.d(TAG, "onDataChange: user = " + user);
 
+                // If user data extracted correctly and stored in local user variable...
                 if (user != null) {
                     // get current points
                     _myPoints = user.get_myPoints();
@@ -133,10 +145,12 @@ public class MyRewards extends AppCompatActivity
                 _btnRedeemPoints.setOnClickListener(redeemPointsBtnListener);
             }
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END event listener for user query
 
+    // onClick listener for redeem points button
     View.OnClickListener redeemPointsBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -175,6 +189,9 @@ public class MyRewards extends AppCompatActivity
 
     }; // END redeem points button listener
 
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -185,6 +202,12 @@ public class MyRewards extends AppCompatActivity
         }
     }
 
+    /**
+     * Navigation menu options
+     * Called when an item in the navigation menu is selected.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
