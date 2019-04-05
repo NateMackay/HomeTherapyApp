@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  */
 public class PasswordValidator implements TextWatcher {
 
+    // Pattern.compile() compiles the given regular expression into a password pattern.
     public static final Pattern PASSWORD_PATTERN = Pattern.compile(
             // a lower case letter must occur at least once
             "((?=.*[a-z])"  +
@@ -25,12 +26,23 @@ public class PasswordValidator implements TextWatcher {
             ".{8,20})"
     );
 
+    // private member variable
     private boolean _isValid = false;
 
+    /**
+     * returns true if string meets the pattern regex for an email.
+     * @return
+     */
     public boolean isValid() {
         return _isValid;
     }
 
+    /**
+     * Takes a password as a parameter, and compares the password against the regex pattern
+     * stored in PASSWORD_PATTERN. If there is a match, returns true.
+     * @param password
+     * @return
+     */
     public static boolean isValidPassword (CharSequence password) {
         return password != null && PASSWORD_PATTERN.matcher(password).matches();
     }

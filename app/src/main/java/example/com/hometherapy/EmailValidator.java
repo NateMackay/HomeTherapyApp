@@ -37,7 +37,7 @@ public class EmailValidator implements TextWatcher {
 
     /**
      * Takes an email as a parameter, and compares the email against the regex pattern
-     * stored in EMAIL_PATTERN.
+     * stored in EMAIL_PATTERN. If there is a match, returns true.
      * @param email
      * @return
      */
