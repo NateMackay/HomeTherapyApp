@@ -416,7 +416,7 @@ public class AddEditUser extends AppCompatActivity {
     // listener for user data to generate a filtered list of therapists
     ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
-        public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             _therapistList.clear();
             _therapistList.add(new Therapist("unassigned", "Not " , "Assigned"));
             if (dataSnapshot.exists()) {
@@ -436,40 +436,6 @@ public class AddEditUser extends AppCompatActivity {
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
 
-    // for therapist spinner - to get value
-    public void getSelectedTherapist (View v) {
-        Therapist therapist = (Therapist) _spinAssignedTherapist.getSelectedItem();
-    }
-
-    // [START on_start_check_user]
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart: ");
-        // Check if user is signed in (non-null), and update UI accordingly
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-    } // [END on_start_check_user]
-
-    // update user interface - if user is not authenticated, go back to sign-in screen
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            // continue with loading app
-            Log.d(TAG, "updateUI: NOT NULL - means authorized ");
-        } else {
-            Log.d(TAG, "updateUI: Firebase user is null. Move to Sign-in Activity");
-            // move to sign-in screen if current user is not authenticated
-            Intent intentLogIn = new Intent(getApplicationContext(), SignIn.class);
-            startActivity(intentLogIn);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume: ");
-    }
-
     /**
      * This method creates a new user object.
      *
@@ -478,25 +444,20 @@ public class AddEditUser extends AppCompatActivity {
      */
     public void createAccount(String email, String password) {
 
-        // put in email validator here, or keep above in onclick function
-
         // Firebase auth method call to create user with email and password
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@example.com.hometherapy.NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-//                            updateUI(user); - probably not going to need this but keep until know for sure
 
                             if (user != null) {
 
                                 // get values from activity for creating a new User object and updating Firebase User object
-                                // change Register screen to capture a "display name" that we can user for any user
-                                // for now, just make displayName the same as the users first name
-                                String userID = user.getUid(); // store UID in User object
+                                String userID = user.getUid();
                                 String firstName = _etUserFirstName.getText().toString();
                                 String lastName = _etUserLastName.getText().toString();
                                 String phone = _etUserPhone.getText().toString();
@@ -509,7 +470,6 @@ public class AddEditUser extends AppCompatActivity {
                                 String assignedTherapistName = selectedTherapist.get_firstName() + selectedTherapist.get_lastName();
 
                                 // set displayName directly linked to Firebase UID - not part of User class
-                                // NOTE: may want to add a separate display name value to the users database
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(firstName)
                                         .build();
@@ -519,7 +479,6 @@ public class AddEditUser extends AppCompatActivity {
                                 Log.d(TAG, "user ID: " + user.getUid());
 
                                 // send verification email upon successful creation of user
-                                // NOTE: change custom NonNull to add the support annotation instead throughout app where used
                                 user.sendEmailVerification()
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
@@ -535,9 +494,6 @@ public class AddEditUser extends AppCompatActivity {
                                         status, assignedClinic, accountType,
                                         assignedTherapistUID, assignedTherapistName);
 
-                                // FIREBASE - not sure why, but this doesn't work unless
-                                // database is open to writing w/o authentication - NEED TO FIX
-
                                 // save to users database with a key of userID
                                 mUsersDatabaseReference.child(userID).setValue(newUser);
                             }
@@ -547,11 +503,11 @@ public class AddEditUser extends AppCompatActivity {
                             startActivity(intentUsers);
 
                         } else {
+
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(AddEditUser.this, "New user creation failed.",
                                     Toast.LENGTH_SHORT).show();
-//                            updateUI(null);
                         }
                     }
                 });

@@ -90,23 +90,6 @@ public class SignIn extends AppCompatActivity {
         // initialize firebase auth
         mAuth = FirebaseAuth.getInstance();
 
-        // Value Event Listener for User object
-//        _userValueEventListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.exists()) {
-//                    User tempUser = dataSnapshot.getValue(User.class);
-//                    if (tempUser != null) {
-//                        _accountType = tempUser.get_accountType();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        };
-
         // initialize view elements
         _btnLogin = (Button) findViewById(R.id.btnLogin);
         _btnRegister = (Button) findViewById(R.id.btnRegister);
@@ -120,13 +103,6 @@ public class SignIn extends AppCompatActivity {
         // password
         _passwordValidator = new PasswordValidator();
         _etSignInPassword.addTextChangedListener(_passwordValidator);
-
-
-        // FIREBASE: login button just needs to get email and password and call signin function
-        // but then it also needs to pass information into shared prefs
-        // only problem with doing this is you will need to make sure you don't delete the shared
-        // prefs because it will have all of the UID from Firebase and how will you re-associate new
-        // data with the UID?
 
         // START login button events
         _btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -186,7 +162,7 @@ public class SignIn extends AppCompatActivity {
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                // check if firebase user is logged in wtih firebase user
+                // check if firebase user is logged in with firebase user
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // user is signed in
@@ -221,8 +197,6 @@ public class SignIn extends AppCompatActivity {
         // if user is signed in - i.e if currentUser is not null - then
         // proceed with going to dashboard for given currentUser
 
-//        updateUI(currentUser);
-
     } // [END on_start_check_user]
 
     @Override
@@ -240,7 +214,6 @@ public class SignIn extends AppCompatActivity {
         // go to sign in page
         Intent intentSignIn = new Intent(getApplicationContext(), SignIn.class);
         startActivity(intentSignIn);
-//        updateUI(null);
     }
 
     @Override
@@ -251,31 +224,23 @@ public class SignIn extends AppCompatActivity {
     // START signIn
     private void signIn(String email, String password) {
 
-        // consider adding validation here instead of up above
-//        Log.d(TAG, "signIn:" + email);
-//        if (!validateForm()) {
-//            return;
-//        }
-
-//        showProgressDialog(); - consider adding this function
-
         // START sign_in_with_email
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
 
+                            Log.d(TAG, "signInWithEmail:success");
+
+                            // verify user
+                            FirebaseUser user = mAuth.getCurrentUser();
                             Log.d(TAG, "Within SignIn() - User: " + user);
 
-                            // FIREBASE: if user not null, then go to specified intent
+                            // if user not null, then go to specified intent
                             if (user != null) {
-                                Log.d(TAG, "Within SignIn() - UID: " + user.getUid());
 
+                                Log.d(TAG, "Within SignIn() - UID: " + user.getUid());
                                 Log.d(TAG, "account type before: " + _accountType);
 
                                 // get an instance of the current logged in user
@@ -346,46 +311,12 @@ public class SignIn extends AppCompatActivity {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(SignIn.this, "Invalid username and/or password. Please try again.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
 
                         }
 
                     }
                 }); // END sign_in_with_email
 
-    } // END signIn
-
-    private void updateUI(FirebaseUser user) {
-
-        if (user != null) {
-
-            // do stuff if user is not null
-
-            // sample code
-//            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
-//                    user.getEmail(), user.isEmailVerified()));
-//            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-//
-//            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
-//            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
-//            findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
-//
-//            findViewById(R.id.verifyEmailButton).setEnabled(!user.isEmailVerified());
-
-        } else {
-
-            // do stuff if user IS null
-
-            // sample code
-//            mStatusTextView.setText(R.string.signed_out);
-//            mDetailTextView.setText(null);
-//
-//            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
-//            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
-//            findViewById(R.id.signedInButtons).setVisibility(View.GONE);
-
-        }
-
-    } // END updateUI()
+    } // END signIn()
 
 } // END SignIn.class
