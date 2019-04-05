@@ -2,6 +2,14 @@ package example.com.hometherapy;
 
 import android.support.annotation.NonNull;
 
+/**
+ * This class represents a therapist. This class was created to help facilitate the
+ * assignment of a therapist to a client, and all the data retrievals that are possible with
+ * a therapist/client relationship.
+ * @author Team06
+ * @version 1.0
+ * @since 2019-04-05
+ */
 public class Therapist {
 
     // private member variables
