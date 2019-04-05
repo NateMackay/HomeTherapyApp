@@ -34,6 +34,9 @@ public class MyMessages extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -44,6 +47,12 @@ public class MyMessages extends AppCompatActivity
         }
     }
 
+    /**
+     * Navigation menu options
+     * Called when an item in the navigation menu is selected.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
