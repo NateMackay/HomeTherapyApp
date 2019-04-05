@@ -136,42 +136,73 @@ public class ClientExercises extends AppCompatActivity
     } // END onCreate()
 
     // listener for list of assigned exercises
+    // Adding a ValueEventListener to the assigned exercise ID will allow our app to extract
+    // assigned exercises assigned to the client.
     ValueEventListener assignedExerciseEventListener = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the assigned exercise. Any time you read Database data, you receive the
+        // data as a DataSnapshot.
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             _tempAssignedExerciseList.clear();
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
+                // if so, get the assignedExercise data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local assignedExercise variable
                     AssignedExercise assignedExercise = snapshot.getValue(AssignedExercise.class);
+                    // then add to assigned exercises list (the client's).
                     _tempAssignedExerciseList.add(assignedExercise);
                 }
             }
+            // update the listView when there is a change
             _adapterAssignedExercises.notifyDataSetChanged();
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END assigned exercises listener
 
     // listener for to get specific user object associated with passed in client UID
+    // Adding a ValueEventListener to the user ID will allow our app to extract
+    // the client ID which matches the user ID.
     ValueEventListener clientUserEventListener = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the user. Any time you read Database data, you receive the
+        // data as a DataSnapshot.
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
                 User user = new User();
+                // if so, get the user data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local user variable
                     user = snapshot.getValue(User.class);
                 }
 
-                // set label to client's first name + "'s Exercises"
+                // set label to client's first name + "'s Exercises".
+                // With correct user info stored in local User object, a call to get the
+                // user first name, as store in the database, is possible.
                 if (user != null) {
                     ClientExercises.this.setTitle(String.format("%s's Exercises", user.getFirstName()));
                 }
             }
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END client user listener
 
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -182,7 +213,12 @@ public class ClientExercises extends AppCompatActivity
         }
     }
 
-    // navigation menu options
+    /**
+     * Navigation menu options
+     * Called when an item in the navigation menu is selected.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
