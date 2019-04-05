@@ -330,11 +330,21 @@ public class MyProfile extends AppCompatActivity
 
     }; // END on click listener for save changes button
 
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
             super.onBackPressed();
     }
 
+
+    /**
+     * Navigation menu options
+     * Called when an item in the navigation menu is selected.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // NOTE: Because MyProfile.java is used for all three user types, in order to have
