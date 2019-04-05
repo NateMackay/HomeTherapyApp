@@ -1,9 +1,6 @@
 package example.com.hometherapy;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.renderscript.Sampler;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,18 +15,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Sign-in screen. This is the first view after the splash screen. From here, users
@@ -45,23 +35,12 @@ public class SignIn extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
-    // FIREBASE RTDB instances
+    // FIREBASE instances
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersDatabaseReference;
-    private DatabaseReference mUserDatabaseReference;
-    private ChildEventListener mChildEventListener;
 
     // for log
     private static final String TAG = "SignIn_Activity";
-
-    // name shared preferences
-    public static final String SHARED_PREFS = "sharedPrefs";
-    public static final String USER_DATA = "userData";
-    public static final String LOGIN_USER = "loginUser";
-
-    // Key for extra message for user email address to pass to activity
-    public static final String MSG_USER_EMAIL = "example.com.hometherapy.USEREMAIL";
-    public static final String MSG_ACCT_TYPE = "example.com.hometherapy.ACCT_TYPE";
 
     // private member variables
     private EditText _etSignInEmail;
@@ -70,9 +49,6 @@ public class SignIn extends AppCompatActivity {
     private Button _btnRegister;
     private String _accountType;
     private User _loginUser;
-
-    // value event listeners
-    ValueEventListener _userValueEventListener; // for user object
 
     // validators for email, password, and phone number input fields
     private EmailValidator _emailValidator;
@@ -83,7 +59,7 @@ public class SignIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
 
-        // instantiate Firebase RTDB and DBREF
+        // Firebase references
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersDatabaseReference = mFirebaseDatabase.getReference().child("users");
 
@@ -127,10 +103,10 @@ public class SignIn extends AppCompatActivity {
                 String signInEmail = _etSignInEmail.getText().toString();
                 String signInPassword = _etSignInPassword.getText().toString();
 
-                // FIREBASE: sign-in to firebase using email and password entered
+                // sign-in to firebase using email and password entered
                 signIn(signInEmail, signInPassword);
 
-                // verify current user - for testing
+                // verify current user
                 FirebaseUser user = mAuth.getCurrentUser();
                 if (user != null) {
                     Log.d(TAG, "after call to signIn() - UID: " + user.getUid());
@@ -142,18 +118,16 @@ public class SignIn extends AppCompatActivity {
 
         }); // END Login Button
 
-        // START register button events
+        // Register button listener
         _btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // intent to go to Register activity
+                // go to register activity
                 Intent intentRegister = new Intent(SignIn.this, Register.class);
-
-                // go to Register activity
                 startActivity(intentRegister);
             }
-        }); // END register button events
+        });
 
         // initialize auth state listener
         // note - I think this makes sense to be on the Main Activity where the splash screen is
@@ -221,10 +195,10 @@ public class SignIn extends AppCompatActivity {
         // don't do anything
     }
 
-    // START signIn
+    // method for signing in, takes email and password and passes to Firebase signIn method
     private void signIn(String email, String password) {
 
-        // START sign_in_with_email
+        // Firebase method for signing in with email and password
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -315,8 +289,8 @@ public class SignIn extends AppCompatActivity {
                         }
 
                     }
-                }); // END sign_in_with_email
+                }); // END sign_in_with_email Firebase method
 
-    } // END signIn()
+    } // END signIn() private method
 
 } // END SignIn.class
