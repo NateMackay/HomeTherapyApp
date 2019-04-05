@@ -225,19 +225,30 @@ public class AddExerciseToClient extends AppCompatActivity {
 
     } // END onCreate()
 
-    // event listener for assigned exercise ID when there is an existing exercise ID passed in
+    // event listener for assigned exercise ID when there is an existing exercise ID passed in.
+    // Adding a ValueEventListener to the assigned exercise ID will allow our app to update
+    // assigned exercise data in realtime, or extract exercise data from realtime.
     ValueEventListener assignedExerciseListener = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the assigned exercise. Any time you read Database data, you receive the
+        // data as a DataSnapshot.
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
                 AssignedExercise assignedExercise = new AssignedExercise();
+                // if so, get the assignedExercise data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local assignedExercise variable
                     assignedExercise = snapshot.getValue(AssignedExercise.class);
                 }
-
+                // if there is an assignedExercise and a successful extraction...
                 if (assignedExercise != null) {
 
-                    // populate text views with data from assigned exercise
+                    // populate view with data from the local assignedExercise variable.
                     _tvAETCAssignment.setText(assignedExercise.get_assignment());
                     _tvAETCExercise.setText(assignedExercise.get_exerciseName());
                     _tvAETCDiscipline.setText(assignedExercise.get_discipline());
@@ -263,23 +274,35 @@ public class AddExerciseToClient extends AppCompatActivity {
                 }
             }
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END assigned exercise listener
 
-    // event listener for exercise ID
+    // event listener for exercise ID.
+    // Adding a ValueEventListener to the exercise ID will allow our app to update
+    // exercise data in realtime, or extract exercise data from realtime.
     ValueEventListener exerciseListener = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the exercise. Any time you read Database data, you receive the data as a
+        // DataSnapshot.
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
                 Exercise exercise = new Exercise();
+                // if so, get the exercise data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local exercise variable
                     exercise = snapshot.getValue(Exercise.class);
                 }
-
+                // if there is an exercise and a successful extraction...
                 if (exercise != null) {
 
-                    // populate text views with data passed in exercise ID
+                    // populate view with data from the local exercise variable.
                     _tvAETCAssignment.setText(exercise.get_assignment());
                     _tvAETCExercise.setText(exercise.get_exerciseName());
                     _tvAETCDiscipline.setText(exercise.get_discipline());
@@ -289,6 +312,7 @@ public class AddExerciseToClient extends AppCompatActivity {
                 }
             }
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
