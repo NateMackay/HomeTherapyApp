@@ -123,18 +123,32 @@ public class ClientExerciseLibrary extends AppCompatActivity {
     } // END onCreate()
 
     // value event listener for library of exercises
+    // Adding a ValueEventListener to the library of exercises will allow our app to update
+    // the library in realtime, or extract library data from realtime.
     ValueEventListener valueEventListener = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the library of exercises. Any time you read Database data, you receive the
+        // data as a DataSnapshot.
         @Override
         public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
             _tempExerciseList.clear();
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
+                // if so, get the library exercise data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local exercise variable
                     Exercise exercise = snapshot.getValue(Exercise.class);
+                    // then add to library of exercises.
                     _tempExerciseList.add(exercise);
                 }
             }
+            // update the listView when there is a change
             _adapterExerciseList.notifyDataSetChanged();
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END value event listener
