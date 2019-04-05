@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
  */
 public class EmailValidator implements TextWatcher {
 
+    // Pattern.compile() compiles the given regular expression into a pattern.
     public static final Pattern EMAIL_PATTERN = Pattern.compile(
             "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
                     "\\@" +
@@ -23,12 +24,23 @@ public class EmailValidator implements TextWatcher {
                     ")+"
     );
 
+    // private member variable
     private boolean _isValid = false;
 
+    /**
+     * returns true if string meets the pattern regex for an email.
+     * @return
+     */
     public boolean isValid() {
         return _isValid;
     }
 
+    /**
+     * Takes an email as a parameter, and compares the email against the regex pattern
+     * stored in EMAIL_PATTERN.
+     * @param email
+     * @return
+     */
     public static boolean isValidEmail (CharSequence email) {
         return email != null && EMAIL_PATTERN.matcher(email).matches();
     }
