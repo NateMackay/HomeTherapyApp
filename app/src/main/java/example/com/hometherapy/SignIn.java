@@ -54,6 +54,7 @@ public class SignIn extends AppCompatActivity {
     private EmailValidator _emailValidator;
     private PasswordValidator _passwordValidator;
 
+    // Called when the activity is first created.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,19 +150,24 @@ public class SignIn extends AppCompatActivity {
 
     } // END onCreate()
 
+    // Called when the system is about to start resuming a previous activity.
     @Override
     protected void onPause() {
         super.onPause();
         mAuth.removeAuthStateListener(mAuthStateListener);
     }
 
+    // Called when the activity will start interacting with the user.
     @Override
     protected void onResume() {
         super.onResume();
         mAuth.addAuthStateListener(mAuthStateListener);
     }
 
-    // [START on_start_check_user]
+    /**
+     * [START on_start_check_user]
+     * Called when the activity is becoming visible to the user.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -173,10 +179,12 @@ public class SignIn extends AppCompatActivity {
 
     } // [END on_start_check_user]
 
+    // Called when the activity is no longer visible to the user, because another
+    // activity has been resumed and is covering this one.
     @Override
     protected void onStop() {
         super.onStop();
-//        signOut(); - thought about this, but doesn't make sense from this page
+        //  signOut(); - thought about this, but doesn't make sense from this page
         // should be where data is stored, normally, but Firebase makes sure data is
         // synced, so not sure if this is needed
     }
@@ -190,6 +198,9 @@ public class SignIn extends AppCompatActivity {
         startActivity(intentSignIn);
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
         // don't do anything
