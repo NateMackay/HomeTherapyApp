@@ -125,22 +125,39 @@ public class MyExercises extends AppCompatActivity
     } // END onCreate()
 
     // listener for list of assigned exercises
+    // Adding a ValueEventListener to the assigned exercises will allow our app to extract
+    // all the assigned exercises of the client user.
     ValueEventListener assignedExerciseEventListener = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the library of assigned exercises. Any time you read Database data, you
+        // receive the data as a DataSnapshot.
         @Override
         public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
             _tempAssignedExerciseList.clear();
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
+                // if so, get the assignedExercise data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local assignedExercise variable
                     AssignedExercise assignedExercise = snapshot.getValue(AssignedExercise.class);
+                    // then add assignedExercise to temp AssignedExercise list.
                     _tempAssignedExerciseList.add(assignedExercise);
                 }
             }
+            // update the listView when there is a change
             _adapterAssignedExercises.notifyDataSetChanged();
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END assigned exercises listener
 
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -160,6 +177,12 @@ public class MyExercises extends AppCompatActivity
     }
 */
 
+    /**
+     * Navigation menu options
+     * Called when an item in the navigation menu is selected.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
