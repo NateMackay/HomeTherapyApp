@@ -19,6 +19,10 @@ public class AssignedExerciseList {
 
     public AssignedExerciseList() { _assignedExerciseList = new ArrayList<>(); }
 
+    /**
+     * Add an assignedExercise to the List <AssignedExercise> member variable.
+     * @param assignedExercise
+     */
     public void addAssignedExercise(AssignedExercise assignedExercise) {
         _assignedExerciseList.add(assignedExercise);
     }
