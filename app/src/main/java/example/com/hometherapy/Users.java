@@ -98,13 +98,25 @@ public class Users extends AppCompatActivity
     } // END onCreate()
 
     // listener for user data
+    // Adding a ValueEventListener to the users will allow our app to extract
+    // the user data in realtime.
     ValueEventListener valueEventListener = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the user. Any time you read Database data, you receive the
+        // data as a DataSnapshot.
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             _tempUserList.clear();
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
+                // if so, get the user data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local user variable
                     User user = snapshot.getValue(User.class);
+                    // then add user to a User list.
                     _tempUserList.add(user);
                 }
             }
@@ -133,11 +145,15 @@ public class Users extends AppCompatActivity
 
             Log.d(TAG, "onDataChange: tempUserList = " + _tempUserList);
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END Value Event Listener
 
-    // [START on_start_check_user]
+    /**
+     * [START on_start_check_user]
+     * Called when the activity is becoming visible to the user.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -148,6 +164,7 @@ public class Users extends AppCompatActivity
 
     } // [END on_start_check_user]
 
+    // This method updates the screen layout according to the user authentication.
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             Log.d(TAG, "updateUI: tempUserList = " + _tempUserList);
@@ -160,6 +177,9 @@ public class Users extends AppCompatActivity
         }
     }
 
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -170,6 +190,12 @@ public class Users extends AppCompatActivity
         }
     }
 
+    /**
+     * Navigation menu options
+     * Called when an item in the navigation menu is selected.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
