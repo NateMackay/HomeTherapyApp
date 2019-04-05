@@ -19,6 +19,11 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import example.com.hometherapy.model.User;
+import example.com.hometherapy.validator.EmailValidator;
+import example.com.hometherapy.validator.PasswordValidator;
+import example.com.hometherapy.validator.PhoneNumberValidator;
+
 /**
  * Registration page for new users. Users click on register button
  * from sign-in view {@link SignIn} to register as a new user.

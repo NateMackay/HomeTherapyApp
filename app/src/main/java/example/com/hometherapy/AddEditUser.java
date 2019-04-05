@@ -32,6 +32,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import example.com.hometherapy.model.Therapist;
+import example.com.hometherapy.model.User;
+import example.com.hometherapy.validator.EmailValidator;
+import example.com.hometherapy.validator.PasswordValidator;
+import example.com.hometherapy.validator.PhoneNumberValidator;
+
 /**
  * This screen is used to add a new user or edit an existing user.
  * It is accessed only from the Users.java / .xml view.

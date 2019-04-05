@@ -1,7 +1,6 @@
-package example.com.hometherapy;
+package example.com.hometherapy.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.List;
+
+import example.com.hometherapy.ClientExerciseLibrary;
+import example.com.hometherapy.Exercises;
+import example.com.hometherapy.R;
+import example.com.hometherapy.model.Exercise;
 
 /**
  * This is a custom array adapter for displaying the list of exercises

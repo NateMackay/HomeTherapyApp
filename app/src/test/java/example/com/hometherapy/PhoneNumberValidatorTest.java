@@ -2,6 +2,8 @@ package example.com.hometherapy;
 
 import org.junit.Test;
 
+import example.com.hometherapy.validator.PhoneNumberValidator;
+
 import static org.junit.Assert.*;
 
 /**

@@ -1,9 +1,9 @@
-package example.com.hometherapy;
-
-import android.util.Log;
+package example.com.hometherapy.model;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import example.com.hometherapy.model.Exercise;
 
 /**
  * Model class for assigned exercise

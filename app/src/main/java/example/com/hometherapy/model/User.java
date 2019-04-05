@@ -1,4 +1,4 @@
-package example.com.hometherapy;
+package example.com.hometherapy.model;
 
 /**
  * This is the class / data structure for a user.

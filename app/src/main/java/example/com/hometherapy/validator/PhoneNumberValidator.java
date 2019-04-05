@@ -1,4 +1,4 @@
-package example.com.hometherapy;
+package example.com.hometherapy.validator;
 
 import android.text.Editable;
 import android.text.TextWatcher;

@@ -21,6 +21,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import example.com.hometherapy.model.User;
+import example.com.hometherapy.validator.EmailValidator;
+import example.com.hometherapy.validator.PasswordValidator;
+
 /**
  * Sign-in screen. This is the first view after the splash screen. From here, users
  * can either sign in or click on the register {@link Register} button to register
@@ -246,7 +250,7 @@ public class SignIn extends AppCompatActivity {
                                                 if (_accountType != null) {
                                                     switch (_accountType) {
                                                         case "therapist":
-                                                            // intent to go to example.com.hometherapy.Therapist's My Clients screen, passing user via extra message
+                                                            // intent to go to example.com.hometherapy.model.Therapist's My Clients screen, passing user via extra message
                                                             Intent intentClients = new Intent(SignIn.this, MyClients.class);
                                                             startActivity(intentClients);
                                                             break;

@@ -1,4 +1,4 @@
-package example.com.hometherapy;
+package example.com.hometherapy.model;
 
 import android.support.annotation.NonNull;
 

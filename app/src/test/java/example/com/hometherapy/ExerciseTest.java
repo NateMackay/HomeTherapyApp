@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import example.com.hometherapy.model.Exercise;
+
 import static org.junit.Assert.assertEquals;
 
 /**

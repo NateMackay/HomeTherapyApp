@@ -1,4 +1,4 @@
-package example.com.hometherapy;
+package example.com.hometherapy.adapter;
 
 import android.content.Context;
 import android.view.View;
@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.List;
+
+import example.com.hometherapy.model.AssignedExercise;
 
 import static android.view.LayoutInflater.from;
 import static example.com.hometherapy.R.id.tvRowAE1ExerciseName;

@@ -1,7 +1,6 @@
 package example.com.hometherapy;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -12,12 +11,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,16 +22,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import example.com.hometherapy.adapter.MyClientsAdapter;
+import example.com.hometherapy.model.User;
 
 /**
- * example.com.hometherapy.Therapist dashboard.
+ * example.com.hometherapy.model.Therapist dashboard.
  * Allows therapist to see a list of their clients.
- * example.com.hometherapy.Therapist can click on a client to go view of client’s exercises.
+ * example.com.hometherapy.model.Therapist can click on a client to go view of client’s exercises.
  * @author Team06
  * @version 1.0
  * @since 2019-03-19 *

@@ -13,13 +13,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,8 +26,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import example.com.hometherapy.adapter.AssignedExerciseListAdapter;
+import example.com.hometherapy.model.AssignedExercise;
+import example.com.hometherapy.model.User;
+
 /**
- * example.com.hometherapy.Therapist view of client's assigned exercises. Intent only comes
+ * example.com.hometherapy.model.Therapist view of client's assigned exercises. Intent only comes
  * from MyClients {@link MyClients}, which is the therapist's view
  * of their clients. When therapist selects a client from MyClients,
  * it takes you to this view.

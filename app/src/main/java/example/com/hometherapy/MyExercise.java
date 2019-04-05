@@ -1,8 +1,6 @@
 package example.com.hometherapy;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,11 +16,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import example.com.hometherapy.model.AssignedExercise;
+import example.com.hometherapy.model.User;
 
 /**
  * Client's view of a given assigned exercise. Clients navigate to this
