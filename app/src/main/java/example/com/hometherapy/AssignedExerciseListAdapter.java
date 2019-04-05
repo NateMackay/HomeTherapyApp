@@ -25,15 +25,25 @@ import static java.lang.String.format;
  * @since 2019-03-19
  */
 public class AssignedExerciseListAdapter extends ArrayAdapter<AssignedExercise> {
+
+    // private member variables
     private Context _context;
     private List<AssignedExercise> _aExerciseList;
 
+    // constructor
     public AssignedExerciseListAdapter(@NonNull Context context, @NonNull List<AssignedExercise> aExerciseList) {
         super(context, 0, aExerciseList);
         _context = context;
         _aExerciseList = aExerciseList;
     }
 
+    /**
+     * Get a View that displays the data at the specified position in the data set.
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
