@@ -126,9 +126,18 @@ public class MyExercise extends AppCompatActivity {
     } // END onCreate()
 
     // event listener for assigned exercise ID
+    // Adding a ValueEventListener to the assigned exercise ID will allow our app to extract
+    // assignedExercise data from realtime.
     ValueEventListener assignedExerciseListener = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the assigned exercise of the client. Any time you read Database data, you
+        // receive the data as a DataSnapshot.
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
 
                 Log.d(TAG, "onDataChange: 4");
@@ -136,16 +145,16 @@ public class MyExercise extends AppCompatActivity {
                 AssignedExercise assignedExercise = new AssignedExercise();
 
                 Log.d(TAG, "onDataChange: 5");
-                
+                // if so, get the assignedExercise data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     Log.d(TAG, "onDataChange: 6");
-                    
+                    // and store in local assignedExercise variable
                     assignedExercise = snapshot.getValue(AssignedExercise.class);
 
                     Log.d(TAG, "onDataChange: 7");
                 }
-
+                // if there is an assignedExercise and a successful extraction...
                 if (assignedExercise != null) {
 
                     Log.d(TAG, "onDataChange: 8");
@@ -184,22 +193,35 @@ public class MyExercise extends AppCompatActivity {
                 }
             }
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END event listener for assigned exercise
 
     // event listener for user data so we can get the current user's points
+    // Adding a ValueEventListener to the user ID will allow our app to extract
+    // the reward points of the mAuth client user.
     ValueEventListener valueEventListenerUser = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the user. Any time you read Database data, you receive the
+        // data as a DataSnapshot.
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
                 User user = new User();
+                // if so, get the user data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local user variable
                     user = snapshot.getValue(User.class);
                 }
 
                 Log.d(TAG, "onDataChange: user = " + user);
 
+                // If user data extracted correctly and stored in local user variable...
                 if (user != null) {
                     // get current points
                     _myPoints = user.get_myPoints();
@@ -209,6 +231,7 @@ public class MyExercise extends AppCompatActivity {
                 _btnMyComplete.setOnClickListener(completeExerciseBtnListener);
             }
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }; // END event listener for user query
