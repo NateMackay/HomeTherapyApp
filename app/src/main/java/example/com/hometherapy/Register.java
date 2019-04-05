@@ -84,6 +84,7 @@ public class Register extends AppCompatActivity {
         _phoneNumberValidator = new PhoneNumberValidator();
         _etPhone.addTextChangedListener(_phoneNumberValidator);
 
+        // set on click listener for create account button.
         _btnCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
