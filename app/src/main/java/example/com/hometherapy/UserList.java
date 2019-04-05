@@ -17,12 +17,18 @@ import java.util.List;
  */
 public class UserList {
 
+    // private member variable.
     private List<User> _userList;
 
+    // constructor
     public UserList() {
         _userList = new ArrayList<>();
     }
 
+    /**
+     * Add a user to the List <User> member variable.
+     * @param user
+     */
     public void addUser(User user) {
         _userList.add(user);
     }
