@@ -86,7 +86,8 @@ public class MyClients extends AppCompatActivity
         // verify mAuth ID
         Log.d(TAG, "mAuth ID: " + mAuth.getUid());
 
-        // query users from firebase where therapist (mAuth id) equals assigned therapist ID
+        // query users from firebase where therapist (mAuth id) equals assigned therapist ID,
+        // and attach listener.
         Query query = mUsersRef.orderByChild("_assignedTherapistUID").equalTo(mAuth.getUid());
         query.addListenerForSingleValueEvent(valueEventListener);
 
@@ -120,23 +121,43 @@ public class MyClients extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     } // END onCreate()
 
+    // query users from firebase where therapist (mAuth id) equals assigned therapist ID,
+    // and attach listener.
+
     // listener for user data
+    // Adding a ValueEventListener will allow our app to extract the clients of a therapist from
+    // realtime database.
     ValueEventListener valueEventListener = new ValueEventListener() {
+        // onDataChange: An event callback method. This method is triggered once when the listener
+        // is attached (with the initial value) and again every time the data, including children,
+        // changes.
+        // DataSnapshot: A DataSnapshot instance contains data from a Firebase Database location,
+        // in this case the users. Any time you read Database data, you
+        // receive the data as a DataSnapshot.
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             _tempUserList.clear();
+            // is there a dataSnapShot...
             if (dataSnapshot.exists()) {
+                // if so, get the user data in the snapshot (from Realtime Database)...
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // and store in local User variable
                     User user = snapshot.getValue(User.class);
+                    // then add user to temp User list.
                     _tempUserList.add(user);
                 }
             }
+            // update the listView when there is a change
             _adapterUserList.notifyDataSetChanged();
         }
+        // This method is called when onDataChange() fails to read the value.
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
 
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -147,6 +168,12 @@ public class MyClients extends AppCompatActivity
         }
     }
 
+    /**
+     * Navigation menu options
+     * Called when an item in the navigation menu is selected.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
