@@ -167,15 +167,6 @@ public class MyExercises extends AppCompatActivity
             super.onBackPressed();
         }
     }
-/*
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.my_exercises, menu);
-        return true;
-    }
-*/
 
     /**
      * Navigation menu options
