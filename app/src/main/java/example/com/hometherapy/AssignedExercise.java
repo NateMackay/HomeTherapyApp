@@ -9,10 +9,6 @@ import java.util.Map;
  * Model class for assigned exercise
  * This is a class / data structure for an assigned exercise.
  * This is the bridge between the user (client) and the exercise.
- * A separate shared prefs database holds assigned exercises,
- * or rather, a String in a JSON format that maps to an
- * AssignedExerciseList object, which object holds a
- * List <AssignedExercise> , or a list of assigned exercises.
  * This extends Exercise, so that an Assigned Exercise object
  * not only inherits the fields that an Exercise has,
  * but it extends it and also holds the email address
