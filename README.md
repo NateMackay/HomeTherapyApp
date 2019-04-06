@@ -52,6 +52,8 @@ The app was developed with a basic MVC design. There are multiple activities tha
 
 A prior version that was forked from this project was developed using Shared Preferences and the GSON library for storing data. While this worked fine for testing purposes, it did not allow for multiple users sharing the same dataset.
 
+The current version uses Firebase authentication for managing users and the Firebase Realtime database for storing of all data, including user, exercise, and assigned exercise data.
+
 ## Authors
 
 * Eric Burns (https://github.com/eburns000)
